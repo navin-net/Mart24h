@@ -1,15 +1,16 @@
 @extends('dashboard.master')
+@section('title', __('messages.dashboard'))
 
 @section('content')
+
 @if(Auth::user()->role === 'admin')
 <div id="adminAlert" class="alert alert-primary alert-dismissible fade show" role="alert">
-    {{ __('welcome_mart24h') }}
+    {{ __('messages.welcome') }}
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 @else
 <div id="userAlert" class="alert alert-primary alert-dismissible fade show" role="alert">
-    {{ __('welcome_mart24h_users') }}
-    <p>{{ __('Mart_24h') }}</p>
+    {{ __('messages.welcome') }}
 
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
@@ -108,7 +109,7 @@
             </div>
           </div>
         </div>
-        <div class="row">
+        {{-- <div class="row">
           <div class="col-lg-4 d-flex align-items-stretch">
             <div class="card w-100">
               <div class="card-body p-4">
@@ -358,7 +359,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> --}}
 
 
 

@@ -16,6 +16,20 @@
           </ul>
           <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
             <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+            <div x-data="{ open: false }" class="relative">
+                <div x-show="open" @click.away="open = false" class="absolute mt-2 w-48 bg-white border rounded shadow-lg">
+                    @foreach (['en' => __('messages.english'), 'km' => __('messages.khmer')] as $lang => $language)
+                    @if (app()->getLocale() !== $lang)
+                        <a href="{{ route('language.switch', ['language' => $lang]) }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                            {{ $language }}
+                        </a>
+                    @endif
+                @endforeach
+
+                </div>
+            </div>
+
+
                 {{-- <a class="nav-link nav-icon-hover" href="javascript:void(0)">
                     <i class="ti ti-bell-ringing"></i>
                     <div class="notification bg-primary rounded-circle"></div>

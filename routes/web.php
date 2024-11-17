@@ -3,6 +3,10 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\ProductController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,9 +23,9 @@ use Illuminate\Support\Facades\App;
 // });
 
 
-// Route::get('/', function () {
-//     return view('login');
-// });
+Route::get('/', function () {
+    return view('welcome');
+});
 
 
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
@@ -37,5 +41,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
 Route::middleware('auth')->get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+Route::middleware('auth')->get('/product', [ProductController::class, 'index'])->name('index');
 
 
+
+
+///lang
+// Route::post('language-switch', [LanguageController::class, 'switchLanguage'])->name('language.switch');
+Route::get('/switch-language/{language}', [LanguageController::class, 'switch'])->name('language.switch');
