@@ -7,6 +7,18 @@ return [
     'khmer'     => 'ខ្មែរ',
     'english'     => 'អង់គ្លេស',
     'list_products' => 'បញ្ជីផលិតផល',
+    'list_setting'  => 'បញ្ជីការកំណត់',
+    'setting'       => 'ការកំណត់',
+    'brand'       => 'ម៉ាក',
+    'category'       => 'ប្រភេទ',
+    'quality'       => 'គុណភាព',
+    'settings_shop' => 'ការកំណត់ហាង',
+    'sales'         => 'ការលក់',
+    'purchas'       => 'ការទិញ',
+    'logout'        => 'ចាកចេញ',
+    'mart_24h'      => 'ម៉ាត 24 ម៉ោង។',
+    'report'        => 'របាយការ'
+
 
 
 ];

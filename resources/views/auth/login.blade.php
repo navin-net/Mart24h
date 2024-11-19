@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    {{-- <title>Document</title> --}}
+    <link rel="icon" type="image/x-icon" href="../picture/pie-chart.ico">
+    <title>@yield('title', 'Login')</title> <!-- Use the title section or default value -->
     @include('layouts.styles')
     <style>
         /* Background image styling */
