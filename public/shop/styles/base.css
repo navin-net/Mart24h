@@ -1,0 +1,119 @@
+/**
+ * WEBSITE: https://themefisher.com
+ * TWITTER: https://twitter.com/themefisher
+ * FACEBOOK: https://facebook.com/themefisher
+ * GITHUB: https://github.com/themefisher/
+ */
+
+html {
+
+    overflow-x: hidden;
+
+    font-size: 16px
+}
+
+body {
+
+    overflow-x: hidden;
+
+    --tw-bg-opacity: 1;
+
+    background-color: rgb(250 250 250 / var(--tw-bg-opacity, 1));
+
+    background-image: url("/images/body-bg.svg");
+
+    background-size: cover;
+
+    background-repeat: no-repeat;
+
+    font-family: Poppins, sans-serif;
+
+    font-weight: 400;
+
+    line-height: 1.625;
+
+    --tw-text-opacity: 1;
+
+    color: rgb(136 136 136 / var(--tw-text-opacity, 1))
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+
+    font-family: Merriweather, sans-serif;
+
+    font-weight: 700;
+
+    line-height: 1.25;
+
+    --tw-text-opacity: 1;
+
+    color: rgb(34 34 34 / var(--tw-text-opacity, 1))
+}
+
+h1,
+.h1 {
+
+    font-size: 2.399798297585031rem
+}
+
+@media (min-width: 768px) {
+
+    h1,
+.h1 {
+
+        font-size: 2.9997478719812887rem
+    }
+}
+
+h2,
+.h2 {
+
+    font-size: 1.9264502152066136rem
+}
+
+@media (min-width: 768px) {
+
+    h2,
+.h2 {
+
+        font-size: 2.408062769008267rem
+    }
+}
+
+h3,
+.h3 {
+
+    font-size: 1.5464676491371294rem
+}
+
+@media (min-width: 768px) {
+
+    h3,
+.h3 {
+
+        font-size: 1.9330845614214116rem
+    }
+}
+
+h4,
+.h4 {
+
+    font-size: 1.5517934041000003rem
+}
+
+h5,
+.h5 {
+
+    font-size: 1.24571rem
+}
+
+h6,
+.h6 {
+
+    font-size: 1rem
+}
