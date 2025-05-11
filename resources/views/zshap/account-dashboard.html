@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Dashboard - ShopEase</title>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* Custom animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideInUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* General styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .btn-primary {
+            background-color: #3a86ff;
+            border-color: #3a86ff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2a75e0;
+            border-color: #2a75e0;
+        }
+        
+        .cart-icon {
+            position: relative;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 0.7rem;
+            background-color: #ff3a5e;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        footer {
+            background-color: #f8f9fa;
+            padding: 3rem 0;
+            margin-top: 3rem;
+        }
+        
+        /* Dashboard specific styles */
+        .dashboard-container {
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .dashboard-sidebar {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 100px;
+        }
+        
+        .dashboard-nav .nav-link {
+            color: #495057;
+            padding: 0.8rem 1rem;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-nav .nav-link:hover {
+            background-color: #f1f3f5;
+        }
+        
+        .dashboard-nav .nav-link.active {
+            background-color: #e9f0ff;
+            color: #3a86ff;
+            font-weight: 500;
+        }
+        
+        .dashboard-nav .nav-link svg {
+            margin-right: 10px;
+        }
+        
+        .dashboard-content {
+            animation: slideInRight 0.8s ease-out;
+        }
+        
+        .dashboard-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .dashboard-card-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid #e9ecef;
+            background-color: #f8f9fa;
+        }
+        
+        .dashboard-card-body {
+            padding: 1.25rem;
+        }
+        
+        .user-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #e9f0ff;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            padding: 1.25rem;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            animation: slideInUp 0.8s ease-out;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .stat-orders {
+            background-color: #e9f0ff;
+            color: #3a86ff;
+        }
+        
+        .stat-wishlist {
+            background-color: #fff0f3;
+            color: #ff3a5e;
+        }
+        
+        .stat-reviews {
+            background-color: #f1f9f5;
+            color: #20c997;
+        }
+        
+        .stat-rewards {
+            background-color: #fff8e6;
+            color: #ffc107;
+        }
+        
+        .order-item {
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .order-status {
+            font-size: 0.8rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+        
+        .status-delivered {
+            background-color: #f1f9f5;
+            color: #20c997;
+        }
+        
+        .status-processing {
+            background-color: #fff8e6;
+            color: #ffc107;
+        }
+        
+        .status-shipped {
+            background-color: #e9f0ff;
+            color: #3a86ff;
+        }
+        
+        .address-card {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .address-card:hover {
+            border-color: #3a86ff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .address-card.default {
+            border-color: #3a86ff;
+            background-color: #e9f0ff;
+        }
+        
+        .address-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .address-actions .btn {
+            padding: 3px 10px;
+            font-size: 0.8rem;
+        }
+        
+        .wishlist-item {
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .wishlist-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .wishlist-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        
+        .tab-pane {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @media (max-width: 767.98px) {
+            .dashboard-sidebar {
+                margin-bottom: 20px;
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white py-3 sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">ShopEase</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="product-list.html">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Categories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">New Arrivals</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+                <form class="d-flex me-3">
+                    <div class="input-group">
+                        <input class="form-control" type="search" placeholder="Search products...">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+                <div class="cart-icon me-2">
+                    <button class="btn btn-outline-dark position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cart3" viewBox="0 0 16 16">
+                            <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                        </svg>
+                        <span class="cart-badge">3</span>
+                    </button>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle me-1" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                        </svg>
+                        John Doe
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item active" href="account-dashboard.html">My Account</a></li>
+                        <li><a class="dropdown-item" href="#">My Orders</a></li>
+                        <li><a class="dropdown-item" href="#">My Wishlist</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="login.html">Sign Out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Section -->
+    <section class="py-5">
+        <div class="container dashboard-container">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-lg-3 mb-4 mb-lg-0">
+                    <div class="dashboard-sidebar p-4">
+                        <div class="text-center mb-4">
+                            <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="John Doe" class="user-avatar mb-3">
+                            <h5 class="mb-1">John Doe</h5>
+                            <p class="text-muted mb-0">john.doe@example.com</p>
+                        </div>
+                        
+                        <hr>
+                        
+                        <nav class="dashboard-nav">
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#overview" data-bs-toggle="pill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-grid" viewBox="0 0 16 16">
+                                            <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/>
+                                        </svg>
+                                        Overview
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#orders" data-bs-toggle="pill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-box-seam" viewBox="0 0 16 16">
+                                            <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2l-2.218-.887zm3.564 1.426L5.596 5 8 5.961 14.154 3.5l-2.404-.961zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923l6.5 2.6zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464L7.443.184z"/>
+                                        </svg>
+                                        My Orders
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#wishlist" data-bs-toggle="pill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+                                            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                                        </svg>
+                                        Wishlist
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#addresses" data-bs-toggle="pill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                                            <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
+                                            <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                        </svg>
+                                        Addresses
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#account" data-bs-toggle="pill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+                                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                                        </svg>
+                                        Account Details
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#settings" data-bs-toggle="pill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                                            <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+                                            <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+                                        </svg>
+                                        Settings
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                        
+                        <hr>
+                        
+                        <div class="text-center">
+                            <a href="login.html" class="btn btn-outline-danger">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-box-arrow-right me-1" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                                </svg>
+                                Sign Out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Main Content -->
+                <div class="col-lg-9">
+                    <div class="tab-content dashboard-content">
+                        <!-- Overview Tab -->
+                        <div class="tab-pane fade show active" id="overview">
+                            <h4 class="mb-4">Dashboard</h4>
+                            
+                            <!-- Stats Row -->
+                            <div class="row">
+                                <div class="col-md-3 col-6">
+                                    <div class="stat-card">
+                                        <div class="stat-icon stat-orders">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-box-seam" viewBox="0 0 16 16">
+                                                <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2l-2.218-.887zm3.564 1.426L5.596 5 8 5.961 14.154 3.5l-2.404-.961zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923l6.5 2.6zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464L7.443.184z"/>
+                                            </svg>
+                                        </div>
+                                        <h3 class="h5 mb-1">5</h3>
+                                        <p class="text-muted mb-0">Total Orders</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="stat-card">
+                                        <div class="stat-icon stat-wishlist">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+                                                <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                                            </svg>
+                                        </div>
+                                        <h3 class="h5 mb-1">12</h3>
+                                        <p class="text-muted mb-0">Wishlist Items</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="stat-card">
+                                        <div class="stat-icon stat-reviews">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-star" viewBox="0 0 16 16">
+                                                <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                                            </svg>
+                                        </div>
+                                        <h3 class="h5 mb-1">3</h3>
+                                        <p class="text-muted mb-0">Reviews</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="stat-card">
+                                        <div class="stat-icon stat-rewards">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-award" viewBox="0 0 16 16">
+                                                <path d="M9.669.864 8 0 6.331.864l-1.858.282-.842 1.68-1.337 1.32L2.6 6l-.306 1.854 1.337 1.32.842 1.68 1.858.282L8 12l1.669-.864 1.858-.282.842-1.68 1.337-1.32L13.4 6l.306-1.854-1.337-1.32-.842-1.68L9.669.864zm1.196 1.193.684 1.365 1.086 1.072L12.387 6l.248 1.506-1.086 1.072-.684 1.365-1.51.229L8 10.874l-1.355-.702-1.51-.229-.684-1.365-1.086-1.072L3.614 6l-.25-1.506 1.087-1.072.684-1.365 1.51-.229L8 1.126l1.356.702 1.509.229z"/>
+                                                <path d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1 4 11.794z"/>
+                                            </svg>
+                                        </div>
+                                        <h3 class="h5 mb-1">250</h3>
+                                        <p class="text-muted mb-0">Reward Points</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Recent Orders -->
+                            <div class="dashboard-card mt-4">
+                                <div class="dashboard-card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Recent Orders</h5>
+                                    <a href="#orders" data-bs-toggle="pill" class="btn btn-sm btn-outline-primary">View All</a>
+                                </div>
+                                <div class="dashboard-card-body">
+                                    <div class="order-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-2 col-4">
+                                                <span class="text-muted">#ORD-2305</span>
+                                            </div>
+                                            <div class="col-md-3 col-8">
+                                                <span>May 15, 2023</span>
+                                            </div>
+                                            <div class="col-md-3 col-4">
+                                                <span class="fw-bold">$149.99</span>
+                                            </div>
+                                            <div class="col-md-2 col-4">
+                                                <span class="order-status status-delivered">Delivered</span>
+                                            </div>
+                                            <div class="col-md-2 col-4 text-end">
+                                                <a href="#" class="btn btn-sm btn-outline-secondary">Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="order-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-2 col-4">
+                                                <span class="text-muted">#ORD-2304</span>
+                                            </div>
+                                            <div class="col-md-3 col-8">
+                                                <span>April 28, 2023</span>
+                                            </div>
+                                            <div class="col-md-3 col-4">
+                                                <span class="fw-bold">$89.99</span>
+                                            </div>
+                                            <div class="col-md-2 col-4">
+                                                <span class="order-status status-shipped">Shipped</span>
+                                            </div>
+                                            <div class="col-md-2 col-4 text-end">
+                                                <a href="#" class="btn btn-sm btn-outline-secondary">Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="order-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-2 col-4">
+                                                <span class="text-muted">#ORD-2303</span>
+                                            </div>
+                                            <div class="col-md-3 col-8">
+                                                <span>April 10, 2023</span>
+                                            </div>
+                                            <div class="col-md-3 col-4">
+                                                <span class="fw-bold">$219.97</span>
+                                            </div>
+                                            <div class="col-md-2 col-4">
+                                                <span class="order-status status-processing">Processing</span>
+                                            </div>
+                                            <div class="col-md-2 col-4 text-end">
+                                                <a href="#" class="btn btn-sm btn-outline-secondary">Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Recent Wishlist -->
+                            <div class="dashboard-card mt-4">
+                                <div class="dashboard-card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Wishlist</h5>
+                                    <a href="#wishlist" data-bs-toggle="pill" class="btn btn-sm btn-outline-primary">View All</a>
+                                </div>
+                                <div class="dashboard-card-body">
+                                    <div class="row">
+                                        <div class="col-md-4 col-6 mb-3 mb-md-0">
+                                            <div class="card h-100 border-0">
+                                                <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="card-img-top" alt="Wireless Headphones">
+                                                <div class="card-body p-3">
+                                                    <h6 class="card-title mb-1">Wireless Headphones</h6>
+                                                    <p class="text-primary mb-2">$89.99</p>
+                                                    <button class="btn btn-sm btn-primary">Add to Cart</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-6 mb-3 mb-md-0">
+                                            <div class="card h-100 border-0">
+                                                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="card-img-top" alt="Running Shoes">
+                                                <div class="card-body p-3">
+                                                    <h6 class="card-title mb-1">Running Shoes</h6>
+                                                    <p class="text-primary mb-2">$129.99</p>
+                                                    <button class="btn btn-sm btn-primary">Add to Cart</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-6 mb-3 mb-md-0">
+                                            <div class="card h-100 border-0">
+                                                <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="card-img-top" alt="Smart Watch Mini">
+                                                <div class="card-body p-3">
+                                                    <h6 class="card-title mb-1">Smart Watch Mini</h6>
+                                                    <p class="text-primary mb-2">$99.99</p>
+                                                    <button class="btn btn-sm btn-primary">Add to Cart</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Orders Tab -->
+                        <div class="tab-pane fade" id="orders">
+                            <h4 class="mb-4">My Orders</h4>
+                            
+                            <div class="dashboard-card">
+                                <div class="dashboard-card-body">
+                                    <div class="order-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-2 col-4">
+                                                <span class="text-muted">#ORD-2305</span>
+                                            </div>
+                                            <div class="col-md-3 col-8">
+                                                <span>May 15, 2023</span>
+                                            </div>
+                                            <div class="col-md-3 col-4">
+                                                <span class="fw-bold">$149.99</span>
+                                            </div>
+                                            <div class="col-md-2 col-4">
+                                                <span class="order-status status-delivered">Delivered</span>
+                                            </div>
+                                            <div class="col-md-2 col-4 text-end">
+                                                <a href="#" class="btn btn-sm btn-outline-secondary">Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="order-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-2 col-4">
+                                                <span class="text-muted">#ORD-2304</span>
+                                            </div>
+                                            <div class="col-md-3 col-8">
+                                                <span>April 28, 2023</span>
+                                            </div>
+                                            <div class="col-md-3 col-4">
+                                                <span class="fw-bold">$89.99</span>
+                                            </div>
+                                            <div class="col-md-2 col-4">
+                                                <span class="order-status status-shipped">Shipped</span>
+                                            </div>
+                                            <div class="col-md-2 col-4 text-end">
+                                                <a href="#" class="btn btn-sm btn-outline-secondary">Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="order-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-2 col-4">
+                                                <span class="text-muted">#ORD-2303</span>
+                                            </div>
+                                            <div class="col-md-3 col-8">
+                                                <span>April 10, 2023</span>
+                                            </div>
+                                            <div class="col-md-3 col-4">
+                                                <span class="fw-bold">$219.97</span>
+                                            </div>
+                                            <div class="col-md-2 col-4">
+                                                <span class="order-status status-processing">Processing</span>
+                                            </div>
+                                            <div class="col-md-2 col-4 text-end">
+                                                <a href="#" class="btn btn-sm btn-outline-secondary">Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="order-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-2 col-4">
+                                                <span class="text-muted">#ORD-2302</span>
+                                            </div>
+                                            <div class="col-md-3 col-8">
+                                                <span>March 22, 2023</span>
+                                            </div>
+                                            <div class="col-md-3 col-4">
+                                                <span class="fw-bold">$349.99</span>
+                                            </div>
+                                            <div class="col-md-2 col-4">
+                                                <span class="order-status status-delivered">Delivered</span>
+                                            </div>
+                                            <div class="col-md-2 col-4 text-end">
+                                                <a href="#" class="btn btn-sm btn-outline-secondary">Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="order-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-2 col-4">
+                                                <span class="text-muted">#ORD-2301</span>
+                                            </div>
+                                            <div class="col-md-3 col-8">
+                                                <span>February 15, 2023</span>
+                                            </div>
+                                            <div class="col-md-3 col-4">
+                                                <span class="fw-bold">$79.99</span>
+                                            </div>
+                                            <div class="col-md-2 col-4">
+                                                <span class="order-status status-delivered">Delivered</span>
+                                            </div>
+                                            <div class="col-md-2 col-4 text-end">
+                                                <a href="#" class="btn btn-sm btn-outline-secondary">Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Wishlist Tab -->
+                        <div class="tab-pane fade" id="wishlist">
+                            <h4 class="mb-4">My Wishlist</h4>
+                            
+                            <div class="dashboard-card">
+                                <div class="dashboard-card-body">
+                                    <div class="row">
+                                        <div class="col-md-4 col-6 mb-4">
+                                            <div class="card h-100 border-0">
+                                                <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="card-img-top" alt="Wireless Headphones">
+                                                <div class="card-body p-3">
+                                                    <h6 class="card-title mb-1">Wireless Headphones</h6>
+                                                    <p class="text-primary mb-2">$89.99</p>
+                                                    <div class="d-flex gap-2">
+                                                        <button class="btn btn-sm btn-primary flex-grow-1">Add to Cart</button>
+                                                        <button class="btn btn-sm btn-outline-danger">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-6 mb-4">
+                                            <div class="card h-100 border-0">
+                                                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="card-img-top" alt="Running Shoes">
+                                                <div class="card-body p-3">
+                                                    <h6 class="card-title mb-1">Running Shoes</h6>
+                                                    <p class="text-primary mb-2">$129.99</p>
+                                                    <div class="d-flex gap-2">
+                                                        <button class="btn btn-sm btn-primary flex-grow-1">Add to Cart</button>
+                                                        <button class="btn btn-sm btn-outline-danger">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-6 mb-4">
+                                            <div class="card h-100 border-0">
+                                                <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="card-img-top" alt="Smart Watch Mini">
+                                                <div class="card-body p-3">
+                                                    <h6 class="card-title mb-1">Smart Watch Mini</h6>
+                                                    <p class="text-primary mb-2">$99.99</p>
+                                                    <div class="d-flex gap-2">
+                                                        <button class="btn btn-sm btn-primary flex-grow-1">Add to Cart</button>
+                                                        <button class="btn btn-sm btn-outline-danger">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-6 mb-4">
+                                            <div class="card h-100 border-0">
+                                                <img src="https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="card-img-top" alt="Bluetooth Speaker">
+                                                <div class="card-body p-3">
+                                                    <h6 class="card-title mb-1">Bluetooth Speaker</h6>
+                                                    <p class="text-primary mb-2">$79.99</p>
+                                                    <div class="d-flex gap-2">
+                                                        <button class="btn btn-sm btn-primary flex-grow-1">Add to Cart</button>
+                                                        <button class="btn btn-sm btn-outline-danger">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-6 mb-4">
+                                            <div class="card h-100 border-0">
+                                                <img src="https://images.unsplash.com/photo-1600086827875-a63b01f1335c?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="card-img-top" alt="Fitness Tracker">
+                                                <div class="card-body p-3">
+                                                    <h6 class="card-title mb-1">Fitness Tracker Band</h6>
+                                                    <p class="text-primary mb-2">$59.99</p>
+                                                    <div class="d-flex gap-2">
+                                                        <button class="btn btn-sm btn-primary flex-grow-1">Add to Cart</button>
+                                                        <button class="btn btn-sm btn-outline-danger">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-6 mb-4">
+                                            <div class="card h-100 border-0">
+                                                <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="card-img-top" alt="Digital Camera">
+                                                <div class="card-body p-3">
+                                                    <h6 class="card-title mb-1">Digital Camera</h6>
+                                                    <p class="text-primary mb-2">$349.99</p>
+                                                    <div class="d-flex gap-2">
+                                                        <button class="btn btn-sm btn-primary flex-grow-1">Add to Cart</button>
+                                                        <button class="btn btn-sm btn-outline-danger">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Addresses Tab -->
+                        <div class="tab-pane fade" id="addresses">
+                            <h4 class="mb-4">My Addresses</h4>
+                            
+                            <div class="dashboard-card">
+                                <div class="dashboard-card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Saved Addresses</h5>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg me-1" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
+                                        </svg>
+                                        Add New Address
+                                    </button>
+                                </div>
+                                <div class="dashboard-card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="address-card default">
+                                                <div class="d-flex justify-content-between">
+                                                    <h6 class="mb-1">Home</h6>
+                                                    <span class="badge bg-primary">Default</span>
+                                                </div>
+                                                <p class="mb-1">John Doe</p>
+                                                <p class="mb-1">123 Main Street, Apt 4B</p>
+                                                <p class="mb-1">New York, NY 10001</p>
+                                                <p class="mb-1">United States</p>
+                                                <p class="mb-2">Phone: (123) 456-7890</p>
+                                                <div class="address-actions">
+                                                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                                                    <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="address-card">
+                                                <div class="d-flex justify-content-between">
+                                                    <h6 class="mb-1">Office</h6>
+                                                </div>
+                                                <p class="mb-1">John Doe</p>
+                                                <p class="mb-1">456 Business Ave, Suite 200</p>
+                                                <p class="mb-1">San Francisco, CA 94107</p>
+                                                <p class="mb-1">United States</p>
+                                                <p class="mb-2">Phone: (987) 654-3210</p>
+                                                <div class="address-actions">
+                                                    <button class="btn btn-sm btn-outline-primary">Set as Default</button>
+                                                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                                                    <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Account Details Tab -->
+                        <div class="tab-pane fade" id="account">
+                            <h4 class="mb-4">Account Details</h4>
+                            
+                            <div class="dashboard-card">
+                                <div class="dashboard-card-header">
+                                    <h5 class="mb-0">Personal Information</h5>
+                                </div>
+                                <div class="dashboard-card-body">
+                                    <form>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6 mb-3 mb-md-0">
+                                                <label for="firstName" class="form-label">First Name</label>
+                                                <input type="text" class="form-control" id="firstName" value="John">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="lastName" class="form-label">Last Name</label>
+                                                <input type="text" class="form-control" id="lastName" value="Doe">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Email Address</label>
+                                            <input type="email" class="form-control" id="email" value="john.doe@example.com">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="phone" class="form-label">Phone Number</label>
+                                            <input type="tel" class="form-control" id="phone" value="(123) 456-7890">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <div class="dashboard-card mt-4">
+                                <div class="dashboard-card-header">
+                                    <h5 class="mb-0">Change Password</h5>
+                                </div>
+                                <div class="dashboard-card-body">
+                                    <form>
+                                        <div class="mb-3">
+                                            <label for="currentPassword" class="form-label">Current Password</label>
+                                            <input type="password" class="form-control" id="currentPassword">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="newPassword" class="form-label">New Password</label>
+                                            <input type="password" class="form-control" id="newPassword">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                                            <input type="password" class="form-control" id="confirmPassword">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Update Password</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Settings Tab -->
+                        <div class="tab-pane fade" id="settings">
+                            <h4 class="mb-4">Settings</h4>
+                            
+                            <div class="dashboard-card">
+                                <div class="dashboard-card-header">
+                                    <h5 class="mb-0">Notification Preferences</h5>
+                                </div>
+                                <div class="dashboard-card-body">
+                                    <form>
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="orderUpdates" checked>
+                                                <label class="form-check-label" for="orderUpdates">Order Updates</label>
+                                            </div>
+                                            <div class="form-text text-muted">Receive notifications about your order status</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="promotions" checked>
+                                                <label class="form-check-label" for="promotions">Promotions and Offers</label>
+                                            </div>
+                                            <div class="form-text text-muted">Receive notifications about sales and special offers</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="newsletter" checked>
+                                                <label class="form-check-label" for="newsletter">Newsletter</label>
+                                            </div>
+                                            <div class="form-text text-muted">Receive our weekly newsletter</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="productUpdates">
+                                                <label class="form-check-label" for="productUpdates">Product Updates</label>
+                                            </div>
+                                            <div class="form-text text-muted">Receive notifications when products in your wishlist are updated</div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Save Preferences</button>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <div class="dashboard-card mt-4">
+                                <div class="dashboard-card-header">
+                                    <h5 class="mb-0">Privacy Settings</h5>
+                                </div>
+                                <div class="dashboard-card-body">
+                                    <form>
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="dataSharing" checked>
+                                                <label class="form-check-label" for="dataSharing">Data Sharing</label>
+                                            </div>
+                                            <div class="form-text text-muted">Allow us to use your shopping data to improve your experience</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="cookies" checked>
+                                                <label class="form-check-label" for="cookies">Cookies</label>
+                                            </div>
+                                            <div class="form-text text-muted">Allow us to use cookies to enhance your browsing experience</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="thirdParty">
+                                                <label class="form-check-label" for="thirdParty">Third-Party Marketing</label>
+                                            </div>
+                                            <div class="form-text text-muted">Allow third-party partners to send you marketing communications</div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add Address Modal -->
+    <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="addressName" class="form-label">Address Name</label>
+                                <input type="text" class="form-control" id="addressName" placeholder="Home, Office, etc.">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="fullName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="fullName">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addressLine1" class="form-label">Address Line 1</label>
+                            <input type="text" class="form-control" id="addressLine1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="addressLine2" class="form-label">Address Line 2 (Optional)</label>
+                            <input type="text" class="form-control" id="addressLine2">
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="city">
+                            </div>
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label for="state" class="form-label">State/Province</label>
+                                <input type="text" class="form-control" id="state">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="zipCode" class="form-label">Zip/Postal Code</label>
+                                <input type="text" class="form-control" id="zipCode">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="country" class="form-label">Country</label>
+                            <select class="form-select" id="country">
+                                <option selected>United States</option>
+                                <option>Canada</option>
+                                <option>United Kingdom</option>
+                                <option>Australia</option>
+                                <option>Germany</option>
+                                <option>France</option>
+                                <option>Japan</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone">
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="defaultAddress">
+                            <label class="form-check-label" for="defaultAddress">Set as default address</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary">Save Address</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5 class="mb-3">ShopEase</h5>
+                    <p>Your one-stop shop for all your needs. We provide quality products at affordable prices.</p>
+                    <div class="d-flex gap-3 mt-3">
+                        <a href="#" class="text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
+                                <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-twitter" viewBox="0 0 16 16">
+                                <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
+                                <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <h5 class="mb-3">Shop</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">All Products</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">New Arrivals</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Best Sellers</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">On Sale</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2">
+                    <h5 class="mb-3">Support</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Contact Us</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">FAQs</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Shipping</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Returns</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="mb-3">Contact</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt me-2" viewBox="0 0 16 16">
+                                <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
+                                <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                            </svg>
+                            123 Shopping St, Commerce City, ST 12345
+                        </li>
+                        <li class="mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone me-2" viewBox="0 0 16 16">
+                                <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+                            </svg>
+                            (123) 456-7890
+                        </li>
+                        <li class="mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope me-2" viewBox="0 0 16 16">
+                                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
+                            </svg>
+                            info@shopease.com
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-md-0">© 2023 ShopEase. All rights reserved.</p>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-inline text-md-end mb-0">
+                        <li class="list-inline-item"><a href="#" class="text-white text-decoration-none">Privacy Policy</a></li>
+                        <li class="list-inline-item ms-3"><a href="#" class="text-white text-decoration-none">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5.3 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Tab navigation via URL hash
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for hash in URL
+            const hash = window.location.hash;
+            if (hash) {
+                const tab = document.querySelector(`[href="${hash}"]`);
+                if (tab) {
+                    const bsTab = new bootstrap.Tab(tab);
+                    bsTab.show();
+                }
+            }
+            
+            // Update URL hash when tab changes
+            const tabLinks = document.querySelectorAll('.dashboard-nav .nav-link');
+            tabLinks.forEach(link => {
+                link.addEventListener('shown.bs.tab', function(e) {
+                    window.location.hash = e.target.getAttribute('href');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

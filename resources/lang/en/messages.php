@@ -78,5 +78,14 @@ return [
     'edit_brand'    => 'Edit Brand',
     'export_to_excel' => 'Export To Excel',
     'current_image' => 'Current Image',
+    'shop_settings'     => 'Shop Settings',
+    'stock_management_system' => 'Stock Management System',
+    'slider'        => 'Slider',
+    'all'            => 'All',
+    'total_sales'    => 'Total Sales',
+    'dashboard_welcome' => 'Dashboard Welcome',
+    'sales_report'      => 'Sales Report',
+    'recent_activity'   => 'Recent Activity',
+    'please_select_someone_columns_first_if_you_want_to_export' => 'Please select someone columns first if you want to export.',
     'mart_24h'      => 'Mart 24h'
 ];

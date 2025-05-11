@@ -81,7 +81,32 @@
 
             </div>
         </div>
+
+
+
+
         <div class="settings-heading">{{ __('messages.getting_started') }}</div>
+                <div class="mb-2">
+            <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('slider') ? 'active' : '' }}"
+                data-bs-toggle="collapse"
+                href="#shop-nav"
+                aria-expanded="{{ request()->is( 'slider') ? 'true' : 'false' }}"
+                aria-controls="shop-nav">
+                 <div>
+                     <i class="bi bi-shop"></i>
+                     <span>{{ __('messages.shop_settings') }}</span>
+                 </div>
+                 <i class="bi bi-chevron-down"></i>
+             </a>
+             <div id="shop-nav" class="collapse {{ request()->is('slider') ? 'show' : '' }} ps-4 mt-1">
+
+                <a href="{{ url('/slider') }}" class="nav-link d-flex align-items-center {{ request()->is('slider') ? 'active' : '' }}">
+                    <i class="bi bi-tags"></i>
+                    <span>{{ __('messages.slider') }}</span>
+                </a>
+
+            </div>
+        </div>
         <a href="{{ url('/documentation') }}" class="nav-link d-flex align-items-center {{ request()->is('documentation') ? 'active' : '' }}">
             <i class="bi bi-file-earmark-text"></i>
             <span>{{ __('messages.documentation') }}</span>

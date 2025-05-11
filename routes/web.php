@@ -26,6 +26,10 @@ Route::get('/empty_page', function () {
 });
 
 
+Route::get('pos',function(){
+    return view('pos');
+});
+
 Route::get('/', function () {
     return view('hello');
 })->name('hello');

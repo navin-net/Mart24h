@@ -30,15 +30,15 @@
             change="8% increase"
             changeType="success"
         />
-        <x-stat-card
-            title="{{ __('messages.customers') }}"
-            value="540"
-            icon="bi-people"
-            iconColor="#a855f7"
-            bgColor="rgba(168, 85, 247, 0.2)"
-            change="12% increase"
-            changeType="success"
-        />
+<x-stat-card
+    title="{{ __('messages.brands') }}"
+    value="{{ $brandCount }}"
+    icon="bi bi-tags"
+    iconColor="#a855f7"
+    bgColor="rgba(168, 85, 247, 0.2)"
+    {{-- change="12% increase" --}}
+    {{-- changeType="success" --}}
+/>
     </div>
 
     <!-- Reports & Recent Activity -->

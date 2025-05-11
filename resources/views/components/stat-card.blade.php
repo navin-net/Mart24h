@@ -19,7 +19,7 @@
             </div>
             <h3 class="mb-1">{{ $value }}</h3>
             <div class="text-{{ $changeType }} small">
-                <i class="bi bi-arrow-up"></i>
+                {{-- <i class="bi bi-arrow-up"></i> --}}
                 <span>{{ $change }}</span>
             </div>
         </div>

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Brand;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -52,26 +54,26 @@ class AuthController extends Controller
             'login' => 'required|string',
             'password' => 'required',
         ]);
-    
+
         $key = 'login|' . $request->ip();
-    
+
         if (RateLimiter::tooManyAttempts($key, 3)) {
             $seconds = RateLimiter::availableIn($key);
-    
+
             return back()->withErrors([
                 'login' => 'Too many login attempts. Please try again in ' . gmdate('i:s', $seconds) . ' minutes.',
             ])->withInput($request->only('login'));
         }
-    
+
         $loginInput = $request->input('login');
-    
+
         $field = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
-    
+
         $credentials = [
             $field => $loginInput,
             'password' => $request->input('password'),
         ];
-    
+
         if (Auth::attempt($credentials)) {
             if (Auth::user()->role_id != 1) {
                 Auth::logout();
@@ -79,19 +81,19 @@ class AuthController extends Controller
                     'login' => 'Your account does not have permission to log in.',
                 ])->withInput($request->only('login'));
             }
-    
+
             RateLimiter::clear($key);
             $request->session()->regenerate();
             return redirect()->route('dashboard');
         }
-    
+
         RateLimiter::hit($key, 180);
-    
+
         return back()->withErrors([
             'login' => 'The provided credentials do not match our records.',
         ])->withInput($request->only('login'));
     }
-    
+
 
     // Handle logout
     public function logout(Request $request)
@@ -106,6 +108,9 @@ class AuthController extends Controller
     // Dashboard view - both user and admin
     public function dashboard()
     {
-        return view('admin.dashboard.main');
+
+        // $brandCount = Brand::count();
+        $brandCount = Brand::count();
+        return view('admin.dashboard.main', ['brandCount' => $brandCount]);
     }
 }

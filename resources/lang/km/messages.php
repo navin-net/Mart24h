@@ -81,4 +81,14 @@ return [
     'edit_brand' => 'កែសម្រួលម៉ាក',
     'current_image' => 'រូបភាពបច្ចុប្បន្ន',
     'export_to_excel' => 'នាំចេញទៅ Excel',
+    'stock_management_system' => 'ប្រព័ន្ធគ្រប់គ្រងស្តុក',
+    'shop_settings' => 'ការកំណត់ហាង',
+    'please_select_someone_columns_first_if_you_want_to_export' => 'សូមជ្រើសរើសជួរឈរណាជាមុនសិនប្រសិនបើអ្នកចង់នាំចេញ។',
+    'slider'        => 'គ្រាប់រំកិល',
+    'total_sales' => 'ការលក់សរុប',
+    'dashboard_welcome' => 'ផ្ទាំងគ្រប់គ្រង សូមស្វាគមន៍',
+    'sales_report' => 'របាយការណ៍លក់',
+    'recent_activity' => 'សកម្មភាពថ្មីៗ',
+    'all'            => 'ទាំងអស់',
+
 ];
