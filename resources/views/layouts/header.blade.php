@@ -11,16 +11,25 @@
 
         <div class="d-flex align-items-center">
             <!-- Search - Desktop Only -->
-            <div class="d-none d-md-flex align-items-center me-3 px-3 py-1 rounded search-bar desktop-only">
+            {{-- <div class="d-none d-md-flex align-items-center me-3 px-3 py-1 rounded search-bar desktop-only">
                 <i class="bi bi-search text-muted me-2"></i>
                 <input type="text" class="form-control form-control-sm border-0 bg-transparent" placeholder="Search...">
                 <span class="text-muted small ms-2">Ctrl K</span>
-            </div>
+            </div> --}}
+    <!-- POS Icon with Link -->
+    {{-- <a href="#" class="d-none d-md-flex align-items-center me-3 px-3 py-1 rounded text-primary" role="button" aria-label="POS" title="POS">
+    <i class="bi bi-stripe"></i>    </a> --}}
+    <!-- Shop Icon with Link -->
+    {{-- <a href="#" class="d-none d-md-flex align-items-center me-3 px-3 py-1 rounded text-success" role="button" aria-label="Shop" title="Shop">
+        <i class="bi bi-shop"></i>
+    </a> --}}
+
 
             <!-- Theme Toggle -->
             <div class="theme-toggle me-3" id="themeToggle" role="button" aria-label="Toggle theme">
                 <i class="bi bi-sun-fill fs-5"></i>
             </div>
+
 
             <!-- Language Dropdown - Desktop Only -->
             <div class="dropdown me-3 desktop-only">

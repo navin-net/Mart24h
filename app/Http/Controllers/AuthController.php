@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use App\Models\Products;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -111,6 +112,7 @@ class AuthController extends Controller
 
         // $brandCount = Brand::count();
         $brandCount = Brand::count();
-        return view('admin.dashboard.main', ['brandCount' => $brandCount]);
+        $productCount = Products::count();
+        return view('admin.dashboard.main', ['brandCount' => $brandCount,'productCount'=>$productCount]);
     }
 }

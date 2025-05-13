@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\Admin\CategoriesController;
+use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\Admin\QualitysController;
 use App\Http\Controllers\Admin\SettingsController;
 
@@ -31,22 +32,25 @@ Route::get('pos',function(){
 });
 
 Route::get('/', function () {
-    return view('hello');
-})->name('hello');
+    return view('shop.index');
+});
 
 
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::get('/admin', [AuthController::class, 'showLoginForm'])->name('login');
 // Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])
+Route::post('/admin', [AuthController::class, 'login'])
     ->middleware('throttle:3,1') // 3 attempts in 3 minutes
-    ->name('login');
+    ->name('admin');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
 Route::middleware('auth')->get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 Route::middleware('auth')->group(function () {
+    Route::resource('products', ProductController::class)->except(['show']);
+    Route::get('/products/getData', [ProductController::class, 'getData'])->name('products.getData');
+    Route::get('/products/subcategories', [ProductController::class, 'getSubCategories'])->name('products.subcategories');
     Route::resource('/brands', BrandController::class)->except(['show']);
     Route::get('/brands/export', [BrandController::class, 'export'])->name('brands.export');
     // Route::get('/brands/getData', [BrandController::class, 'getData'])->name('brands.getData');

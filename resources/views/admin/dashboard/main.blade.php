@@ -9,37 +9,41 @@
         <h1 class="display-6 fw-bold mb-3">{{ __('messages.stock_management_system') }}</h1>
         <p class="text-muted mb-4">{{ __('messages.dashboard_welcome') }}</p>
     </div>
-
-    <!-- Stats Cards -->
-    <div class="row g-3">
+<div class="row g-3">
+    <div class="col-md-4">
         <x-stat-card
-            title="{{ __('messages.total_sales') }}"
-            value="$24,500"
-            icon="bi-graph-up"
-            iconColor="#0ea5e9"
-            bgColor="rgba(14, 165, 233, 0.2)"
-            change="12% increase"
-            changeType="success"
+            title="{{ __('messages.brands') }}"
+            value="{{ $brandCount }}"
+            icon="bi bi-tags"
+            iconColor="#a855f7"
+            bgColor="rgba(168, 85, 247, 0.2)"
+            link="{{ route('brands.index') }}"
         />
+    </div>
+
+    <div class="col-md-4">
         <x-stat-card
             title="{{ __('messages.products') }}"
-            value="1,240"
-            icon="bi-box-seam"
-            iconColor="#22c55e"
-            bgColor="rgba(34, 197, 94, 0.2)"
-            change="8% increase"
-            changeType="success"
+            value="{{ $productCount }}"
+            icon="bi bi-box-seam"
+            iconColor="#10b981"
+            bgColor="rgba(16, 185, 129, 0.2)"
+            link="{{ route('products.index') }}"
         />
-<x-stat-card
-    title="{{ __('messages.brands') }}"
-    value="{{ $brandCount }}"
-    icon="bi bi-tags"
-    iconColor="#a855f7"
-    bgColor="rgba(168, 85, 247, 0.2)"
-    {{-- change="12% increase" --}}
-    {{-- changeType="success" --}}
-/>
     </div>
+
+    <div class="col-md-4">
+        <x-stat-card
+            title="{{ __('messages.orders') }}"
+            {{-- value="{{ $orderCount }}" --}}
+            icon="bi bi-cart-check"
+            iconColor="#f59e0b"
+            bgColor="rgba(245, 158, 11, 0.2)"
+            {{-- link="{{ route('orders.index') }}" --}}
+        />
+    </div>
+</div>
+
 
     <!-- Reports & Recent Activity -->
     <div class="row mt-3">

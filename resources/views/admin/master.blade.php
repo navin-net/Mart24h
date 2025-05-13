@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}" data-bs-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,310 +14,373 @@
     <link href="{{ asset('assets1/bootstrap.min.css') }}" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-<!-- Bootstrap 5.3 CSS -->
+    <!-- Bootstrap 5.3 CSS -->
 
-<!-- DataTables CSS (Bootstrap 5 style) -->
-<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-<link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css" rel="stylesheet">
-<style>
-    :root {
-        --sidebar-width: 260px;
-        --header-height: 60px;
-        --primary-color: #0ea5e9;
-        --transition-speed: 0.3s;
-    }
-    [data-bs-theme="light"] {
-        --bg-color: #ffffff;
-        --sidebar-bg: #f8fafc;
-        --header-bg: #ffffff;
-        --card-bg: #ffffff;
-        --border-color: rgba(0, 0, 0, 0.1);
-        --text-color: #1e293b;
-        --text-muted: #64748b;
-        --hover-bg: rgba(0, 0, 0, 0.05);
-    }
-    [data-bs-theme="dark"] {
-        --bg-color: #0f172a;
-        --sidebar-bg: #020617;
-        --header-bg: #020617;
-        --card-bg: #1e293b;
-        --border-color: rgba(255, 255, 255, 0.1);
-        --text-color: #e2e8f0;
-        --text-muted: #94a3b8;
-        --hover-bg: rgba(255, 255, 255, 0.05);
-    }
-    body {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        overflow-x: hidden;
-        background-color: var(--bg-color);
-        color: var(--text-color);
-        transition: background-color var(--transition-speed), color var(--transition-speed);
-    }
-    .app-header {
-        height: var(--header-height);
-        border-bottom: 1px solid var(--border-color);
-        background-color: var(--header-bg);
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1030;
-        transition: background-color var(--transition-speed);
-    }
-    .sidebar {
-        width: var(--sidebar-width);
-        position: fixed;
-        top: var(--header-height);
-        left: 0;
-        bottom: 0;
-        background-color: var(--sidebar-bg);
-        border-right: 1px solid var(--border-color);
-        transition: transform var(--transition-speed) ease, background-color var(--transition-speed);
-        z-index: 1020;
-        overflow-y: auto;
-        transform: translateX(-100%); /* Always closed by default */
-    }
-    .main-content {
-        margin-left: 0; /* Always full width */
-        margin-top: var(--header-height);
-        transition: margin-left var(--transition-speed) ease;
-        flex: 1;
-        background-color: var(--bg-color);
-        min-height: calc(100vh - var(--header-height));
-        padding: 1.5rem;
-    }
-    .sidebar-visible .sidebar {
-        transform: translateX(0);
-    }
-    .nav-link {
-        color: var(--text-color);
-        border-radius: 4px;
-        margin-bottom: 5px;
-        transition: all 0.2s;
-        padding: 0.5rem 1rem;
-    }
-    .nav-link:hover {
-        background-color: var(--hover-bg);
-        transform: translateX(5px); /* Hover effect - slight movement */
-        color: var(--primary-color); /* Hover effect - color change */
-    }
-    .nav-link.active {
-        background-color: rgba(14, 165, 233, 0.2);
-        color: #38bdf8;
-        font-weight: 500;
-    }
-    .nav-link i {
-        width: 20px;
-        text-align: center;
-        margin-right: 10px;
-        transition: transform 0.2s; /* Hover effect for icons */
-    }
-    .nav-link:hover i {
-        transform: scale(1.2); /* Hover effect - icon grows */
-    }
-    .settings-heading {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: var(--text-muted);
-        padding: 0.5rem 1rem;
-        margin-top: 1.5rem;
-        margin-bottom: 0.5rem;
-    }
-    .back-to-top {
-        position: fixed;
-        bottom: 25px;
-        right: 25px;
-        display: none;
-        z-index: 1030;
-        width: 40px;
-        height: 40px;
-        background-color: #0ea5e9;
-        color: white;
-        border: none;
-        transition: transform 0.2s, background-color 0.2s;
-    }
-    .back-to-top:hover {
-        transform: translateY(-3px);
-        background-color: #0284c7;
-    }
-    .back-to-top.show {
-        display: flex;
-    }
-    .card {
-        border-radius: 8px;
-        background-color: var(--card-bg);
-        border: 1px solid var(--border-color);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: background-color var(--transition-speed), border-color var(--transition-speed), transform 0.2s;
-    }
-    .card:hover {
-        transform: translateY(-5px); /* Hover effect - card rises */
-        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-    }
-    .card-header {
-        background-color: transparent;
-        border-bottom: 1px solid var(--border-color);
-        transition: border-color var(--transition-speed);
-    }
-    .theme-toggle {
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 0.375rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background-color 0.2s, transform 0.2s;
-        color: var(--text-color);
-    }
-    .theme-toggle:hover {
-        background-color: var(--hover-bg);
-        transform: rotate(15deg); /* Hover effect - slight rotation */
-    }
-    .btn-outline-custom {
-        border: 1px solid var(--border-color);
-        color: var(--text-color);
-        background-color: transparent;
-        transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
-    }
-    .btn-outline-custom:hover {
-        background-color: var(--hover-bg);
-        transform: translateY(-2px); /* Hover effect - button rises */
-    }
-    .section-title {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: var(--text-muted);
-        margin-bottom: 1rem;
-    }
-    .dropdown-menu {
-        background-color: var(--card-bg);
-        border: 1px solid var(--border-color);
-        transition: background-color var(--transition-speed), border-color var(--transition-speed);
-    }
-    .dropdown-item {
-        color: var(--text-color);
-        transition: color var(--transition-speed), background-color var(--transition-speed), transform 0.2s;
-    }
-    .dropdown-item:hover {
-        background-color: var(--hover-bg);
-        transform: translateX(5px); /* Hover effect - slight movement */
-    }
-    .search-bar {
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
-        transition: background-color var(--transition-speed), box-shadow 0.2s;
-    }
-    .search-bar:hover {
-        box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.3);
-    }
-    [data-bs-theme="light"] .search-bar {
-        background-color: rgba(0, 0, 0, 0.05);
-    }
-    .stat-card-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        transition: transform 0.2s;
-    }
-    .card:hover .stat-card-icon {
-        transform: scale(1.1) rotate(10deg); /* Hover effect - icon grows and rotates */
-    }
-    .sidebar-user {
-        padding: 1rem;
-        border-bottom: 1px solid var(--border-color);
-        margin-bottom: 1rem;
-        display: none;
-    }
-    /* Overlay for sidebar on mobile */
-    .sidebar-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1015;
-        display: none;
-    }
-    .sidebar-visible .sidebar-overlay {
-        display: block;
-    }
-    /* DataTables customization */
-    .dataTables_wrapper .dataTables_length,
-    .dataTables_wrapper .dataTables_filter,
-    .dataTables_wrapper .dataTables_info,
-    .dataTables_wrapper .dataTables_processing,
-    .dataTables_wrapper .dataTables_paginate {
-        color: var(--text-color) !important;
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        color: var(--text-color) !important;
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-        background: var(--primary-color) !important;
-        color: white !important;
-        border-color: var(--primary-color) !important;
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        background: var(--hover-bg) !important;
-        color: var(--primary-color) !important;
-    }
-    table.dataTable tbody tr {
-        background-color: var(--card-bg) !important;
-        color: var(--text-color) !important;
-    }
-    table.dataTable.stripe tbody tr.odd {
-        background-color: rgba(0, 0, 0, 0.05) !important;
-    }
-    [data-bs-theme="dark"] table.dataTable.stripe tbody tr.odd {
-        background-color: rgba(255, 255, 255, 0.05) !important;
-    }
-    @media (max-width: 992px) {
-        .main-content {
-            padding: 1rem;
+    <!-- DataTables CSS (Bootstrap 5 style) -->
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --header-height: 60px;
+            --primary-color: #0ea5e9;
+            --transition-speed: 0.3s;
         }
-        .sidebar-user {
+
+        [data-bs-theme="light"] {
+            --bg-color: #ffffff;
+            --sidebar-bg: #f8fafc;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --hover-bg: rgba(0, 0, 0, 0.05);
+        }
+
+        [data-bs-theme="dark"] {
+            --bg-color: #0f172a;
+            --sidebar-bg: #020617;
+            --header-bg: #020617;
+            --card-bg: #1e293b;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-color: #e2e8f0;
+            --text-muted: #94a3b8;
+            --hover-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color var(--transition-speed), color var(--transition-speed);
         }
-        .desktop-only {
-            display: none !important;
+
+        .app-header {
+            height: var(--header-height);
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--header-bg);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            transition: background-color var(--transition-speed);
         }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            bottom: 0;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            transition: transform var(--transition-speed) ease, background-color var(--transition-speed);
+            z-index: 1020;
+            overflow-y: auto;
+            transform: translateX(-100%);
+            /* Always closed by default */
+        }
+
+        .main-content {
+            margin-left: 0;
+            /* Always full width */
+            margin-top: var(--header-height);
+            transition: margin-left var(--transition-speed) ease;
+            flex: 1;
+            background-color: var(--bg-color);
+            min-height: calc(100vh - var(--header-height));
+            padding: 1.5rem;
+        }
+
+        .sidebar-visible .sidebar {
+            transform: translateX(0);
+        }
+
+        .nav-link {
+            color: var(--text-color);
+            border-radius: 4px;
+            margin-bottom: 5px;
+            transition: all 0.2s;
+            padding: 0.5rem 1rem;
+        }
+
+        .nav-link:hover {
+            background-color: var(--hover-bg);
+            transform: translateX(5px);
+            /* Hover effect - slight movement */
+            color: var(--primary-color);
+            /* Hover effect - color change */
+        }
+
+        .nav-link.active {
+            background-color: rgba(14, 165, 233, 0.2);
+            color: #38bdf8;
+            font-weight: 500;
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+            margin-right: 10px;
+            transition: transform 0.2s;
+            /* Hover effect for icons */
+        }
+
+        .nav-link:hover i {
+            transform: scale(1.2);
+            /* Hover effect - icon grows */
+        }
+
+        .settings-heading {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            display: none;
+            z-index: 1030;
+            width: 40px;
+            height: 40px;
+            background-color: #0ea5e9;
+            color: white;
+            border: none;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-3px);
+            background-color: #0284c7;
+        }
+
+        .back-to-top.show {
+            display: flex;
+        }
+
         .card {
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color var(--transition-speed), border-color var(--transition-speed), transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            /* Hover effect - card rises */
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid var(--border-color);
+            transition: border-color var(--transition-speed);
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, transform 0.2s;
+            color: var(--text-color);
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--hover-bg);
+            transform: rotate(15deg);
+            /* Hover effect - slight rotation */
+        }
+
+        .btn-outline-custom {
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            background-color: transparent;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+        }
+
+        .btn-outline-custom:hover {
+            background-color: var(--hover-bg);
+            transform: translateY(-2px);
+            /* Hover effect - button rises */
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
             margin-bottom: 1rem;
         }
-        .card-body {
+
+        .dropdown-menu {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            transition: background-color var(--transition-speed), border-color var(--transition-speed);
+        }
+
+        .dropdown-item {
+            color: var(--text-color);
+            transition: color var(--transition-speed), background-color var(--transition-speed), transform 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--hover-bg);
+            transform: translateX(5px);
+            /* Hover effect - slight movement */
+        }
+
+        .search-bar {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            transition: background-color var(--transition-speed), box-shadow 0.2s;
+        }
+
+        .search-bar:hover {
+            box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.3);
+        }
+
+        [data-bs-theme="light"] .search-bar {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .card:hover .stat-card-icon {
+            transform: scale(1.1) rotate(10deg);
+            /* Hover effect - icon grows and rotates */
+        }
+
+        .sidebar-user {
             padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1rem;
+            display: none;
         }
-        h1.display-6 {
-            font-size: 1.75rem;
+
+        /* Overlay for sidebar on mobile */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1015;
+            display: none;
         }
-        .app-header {
-            height: 56px;
+
+        .sidebar-visible .sidebar-overlay {
+            display: block;
         }
-        .main-content {
-            margin-top: 56px;
+
+        /* DataTables customization */
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_processing,
+        .dataTables_wrapper .dataTables_paginate {
+            color: var(--text-color) !important;
         }
-        .sidebar {
-            top: 56px;
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: var(--text-color) !important;
         }
-    }
-</style>
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            background: var(--primary-color) !important;
+            color: white !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: var(--hover-bg) !important;
+            color: var(--primary-color) !important;
+        }
+
+        table.dataTable tbody tr {
+            background-color: var(--card-bg) !important;
+            color: var(--text-color) !important;
+        }
+
+        table.dataTable.stripe tbody tr.odd {
+            background-color: rgba(0, 0, 0, 0.05) !important;
+        }
+
+        [data-bs-theme="dark"] table.dataTable.stripe tbody tr.odd {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .sidebar-user {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .desktop-only {
+                display: none !important;
+            }
+
+            .card {
+                margin-bottom: 1rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            h1.display-6 {
+                font-size: 1.75rem;
+            }
+
+            .app-header {
+                height: 56px;
+            }
+
+            .main-content {
+                margin-top: 56px;
+            }
+
+            .sidebar {
+                top: 56px;
+            }
+        }
+    </style>
     @yield('styles')
 </head>
+
 <body>
     <div class="sidebar-overlay"></div>
 
-<!-- Header -->
+    <!-- Header -->
     @include('layouts.header')
 
     <!-- Sidebar -->
@@ -337,125 +401,98 @@
     <!-- Bootstrap 5.3 JS -->
     <script src="{{ asset('assets1/bootstrap.bundle.min.js') }}"></script>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<!-- DataTables JS -->
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
-<!-- DataTables Buttons -->
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+    <!-- DataTables Buttons -->
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
 
-    <!-- Custom Scripts -->
-    <script>
-  document.addEventListener('DOMContentLoaded', () => {
-            const themeToggle = document.getElementById('themeToggle');
-            const html = document.documentElement;
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const body = document.body;
-            const sidebar = document.querySelector('.sidebar');
-            const sidebarOverlay = document.querySelector('.sidebar-overlay');
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const body = document.body;
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarOverlay = document.querySelector('.sidebar-overlay');
 
-            function setTheme(theme) {
-                html.setAttribute('data-bs-theme', theme);
-                localStorage.setItem('theme', theme);
-                themeToggle.innerHTML = theme === 'dark' ? '<i class="bi bi-sun-fill fs-5"></i>' : '<i class="bi bi-moon-stars-fill fs-5"></i>';
-            }
+        let sidebarManuallyClosed = false;
 
-            const savedTheme = localStorage.getItem('theme');
-            setTheme(savedTheme || 'dark');
+        function setTheme(theme) {
+            html.setAttribute('data-bs-theme', theme);
+            localStorage.setItem('theme', theme);
+            themeToggle.innerHTML = theme === 'dark'
+                ? '<i class="bi bi-sun-fill fs-5"></i>'
+                : '<i class="bi bi-moon-stars-fill fs-5"></i>';
+        }
 
-            themeToggle.addEventListener('click', () => {
-                const currentTheme = html.getAttribute('data-bs-theme');
-                setTheme(currentTheme === 'dark' ? 'light' : 'dark');
-            });
+        const savedTheme = localStorage.getItem('theme');
+        setTheme(savedTheme || 'dark');
 
-            // Toggle sidebar visibility
-            function toggleSidebar() {
-                body.classList.toggle('sidebar-visible');
-            }
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-bs-theme');
+            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
 
-            sidebarToggle.addEventListener('click', toggleSidebar);
+        // Sidebar toggle
+        sidebarToggle?.addEventListener('click', () => {
+            const isVisible = body.classList.contains('sidebar-visible');
+            body.classList.toggle('sidebar-visible');
+            sidebarManuallyClosed = isVisible; // true when closing
+        });
 
-            // Close sidebar when clicking outside
-            sidebarOverlay.addEventListener('click', () => {
-                body.classList.remove('sidebar-visible');
-            });
+        // Overlay click closes sidebar and marks it manually closed
+        sidebarOverlay?.addEventListener('click', () => {
+            body.classList.remove('sidebar-visible');
+            sidebarManuallyClosed = true;
+        });
 
-            // Close sidebar when clicking on a link (mobile)
-            const sidebarLinks = document.querySelectorAll('.sidebar .nav-link');
-            sidebarLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth < 992) {
-                        body.classList.remove('sidebar-visible');
-                    }
-                });
-            });
-
-            // Hover effect to show sidebar
-            document.addEventListener('mousemove', (e) => {
-                if (e.clientX < 10 && !body.classList.contains('sidebar-visible')) {
-                    body.classList.add('sidebar-visible');
-                } else if (e.clientX > 300 && body.classList.contains('sidebar-visible') && !sidebar.contains(e.target)) {
+        // Close sidebar on link click (for mobile)
+        const sidebarLinks = document.querySelectorAll('.sidebar .nav-link');
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 992) {
                     body.classList.remove('sidebar-visible');
-                }
-            });
-
-            const backToTopButton = document.querySelector('.back-to-top');
-            window.addEventListener('scroll', () => {
-                backToTopButton.classList.toggle('show', window.scrollY > 300);
-            });
-
-            backToTopButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            // Initialize DataTable
-            if ($.fn.DataTable) {
-                $('#productsTable').DataTable({
-                    responsive: true,
-                    language: {
-                        search: "",
-                        searchPlaceholder: "Search...",
-                    },
-                    lengthMenu: [5, 10, 25, 50],
-                    pageLength: 5
-                });
-            }
-
-            const ctx = document.getElementById('salesChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    datasets: [{
-                        label: 'Sales',
-                        data: [1200, 1900, 1500, 2200, 1800, 2500, 2000],
-                        borderColor: '#0ea5e9',
-                        backgroundColor: 'rgba(14, 165, 233, 0.2)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
+                    sidebarManuallyClosed = true;
                 }
             });
         });
-    </script>
+
+        // Prevent reopening sidebar on hover/movement
+        document.addEventListener('mousemove', (e) => {
+            if (window.innerWidth >= 992 || sidebarManuallyClosed) return;
+            if (e.clientX < 10 && !body.classList.contains('sidebar-visible')) {
+                body.classList.add('sidebar-visible');
+            }
+        });
+
+        // Always show on desktop
+        if (window.innerWidth >= 992) {
+            body.classList.add('sidebar-visible');
+            sidebarManuallyClosed = false;
+        }
+
+        const backToTopButton = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            backToTopButton.classList.toggle('show', window.scrollY > 300);
+        });
+
+        backToTopButton?.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+</script>
 
     @stack('scripts')
 </body>
+
 </html>

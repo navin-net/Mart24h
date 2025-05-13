@@ -15,9 +15,6 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('brand_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('category_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('subcategory_id')->nullable()->constrained()->onDelete('set null');
             $table->string('name');
             $table->string('sku')->unique();
             $table->text('description')->nullable();
@@ -25,8 +22,15 @@ return new class extends Migration
             $table->decimal('cost_price', 10, 2);
             $table->decimal('selling_price', 10, 2);
             $table->string('image')->nullable();
+
+            $table->foreignId('brand_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('category_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('subcategory_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('quality_id')->nullable()->constrained()->onDelete('set null');
+
             $table->timestamps();
         });
+
     }
 
     /**
