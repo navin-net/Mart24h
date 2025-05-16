@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-       Schema::create('purchases', function (Blueprint $table) {
+        Schema::create('profiles', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('supplier_id')->nullable();
-            $table->decimal('total_amount', 10, 2);
-            $table->date('date');
+            $table->unsignedBigInteger('user_id')->unique(); // One profile per user
+            $table->string('image')->nullable(); // Profile image path
+            $table->date('dob')->nullable(); // Date of birth
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('purchases');
+        Schema::dropIfExists('profiles');
     }
 };

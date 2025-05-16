@@ -2,12 +2,30 @@
 @section('title', __('messages.add_products'))
 @section('content')
     <div class="container-fluid">
+                <div class="pagetitle mb-4">
+            <h1 class="display-6 fw-bold">{{ $pageTitle }}</h1>
+            <nav>
+                <ol class="breadcrumb rounded-3 p-2">
+                    @foreach ($breadcrumbs as $breadcrumb)
+                        <li class="breadcrumb-item {{ $breadcrumb['active'] ? 'active text-muted' : '' }}">
+                            @if (!$breadcrumb['active'])
+                                <a href="{{ $breadcrumb['url'] }}"
+                                    class="text-primary text-decoration-none">{{ $breadcrumb['label'] }}</a>
+                            @else
+                                {{ $breadcrumb['label'] }}
+                            @endif
+                        </li>
+                    @endforeach
+                </ol>
+            </nav>
+        </div>
+
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
+                    {{-- <div class="card-header">
                         <h3 class="card-title">{{ $heading }}</h3>
-                    </div>
+                    </div> --}}
                     <div class="card-body">
                         <div id="formError" class="alert alert-danger d-none" role="alert"></div>
                         <form id="createProductForm" enctype="multipart/form-data">
@@ -49,7 +67,7 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="subcategory_id" class="form-label">{{ __('messages.subcategory') }}</label>
-                                    <select name="subcategory_id" id="subcategory_id" class="form-select" required disabled>
+                                    <select name="subcategory_id" id="subcategory_id" class="form-select"  disabled>
                                         <option value="">{{ __('messages.select_subcategory') }}</option>
                                     </select>
                                     <div class="invalid-feedback" id="subcategory_id_error"></div>

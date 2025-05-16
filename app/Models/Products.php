@@ -4,6 +4,10 @@ namespace App\Models;
 
 use App\Models\Brand;
 use App\Models\Categories;
+use App\Models\ProductImage;
+use App\Models\PurchaseItem;
+use App\Models\Qualitys;
+use App\Models\SubCategory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -48,5 +52,6 @@ class Products extends Model
     {
         return $this->hasMany(ProductImage::class);
     }
+
 
 }

@@ -75,12 +75,12 @@
                                 <table class="table table-striped table-bordered rounded-3 align-middle" id="brandsTable">
                                     <thead class="table-primary">
                                         <tr>
-                                            <th scope="col" class="py-3"><input type="checkbox" id="selectAll"
+                                            <th ><input type="checkbox" id="selectAll"
                                                     class="form-check-input"></th>
-                                            <th scope="col" class="py-3">{{ __('messages.code') }}</th>
-                                            <th scope="col" class="py-3">{{ __('messages.image') }}</th>
-                                            <th scope="col" class="py-3">{{ __('messages.name') }}</th>
-                                            <th scope="col" class="py-3">{{ __('messages.slug') }}</th>
+                                            <th >{{ __('messages.code') }}</th>
+                                            <th >{{ __('messages.image') }}</th>
+                                            <th >{{ __('messages.name') }}</th>
+                                            <th >{{ __('messages.slug') }}</th>
                                             <th scope="col" class="py-3 text-center" width="120">
                                                 {{ __('messages.actions') }}</th>
                                         </tr>
@@ -146,11 +146,11 @@
         <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content rounded-3 border-0 shadow">
-                    <div class="modal-header border-0 rounded-top-3">
+                    {{-- <div class="modal-header border-0 rounded-top-3">
                         <h5 class="modal-title display-6 fw-bold" id="imageModalLabel">{{ __('messages.current_image') }}
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+                    </div> --}}
                     <div class="modal-body text-center">
                         <img id="modalImage" src="/placeholder.svg" alt="Brand Image" class="img-fluid rounded-3">
                     </div>
@@ -247,7 +247,7 @@
                 pageLength: 10,
                 lengthMenu: [
                     [10, 20, 30, 50, -1],
-                    [10, 20, 30, 50, "{{ __('messages.all') }}"]
+                    ["{{ __('messages.10') }}", "{{ __('messages.20') }}", "{{ __('messages.30') }}", "{{ __('messages.50') }}", "{{ __('messages.all') }}"]
                 ],
                 buttons: [],
                 responsive: true,

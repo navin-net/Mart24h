@@ -37,7 +37,8 @@
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3"
                                             aria-labelledby="actionDropdown">
-                                            <li><a class="dropdown-item" href="#" id="addProductBtn">
+                                            <li><a class="dropdown-item" href="{{ __('products/create') }}"
+                                                    id="addProductBtn">
                                                     <i class="bi bi-plus-circle me-2"></i>{{ __('messages.add') }}</a>
                                             </li>
                                             <li><a class="dropdown-item" href="#" id="exportProducts">
@@ -73,6 +74,7 @@
                                 <table id="productsTable" class="table table-striped table-bordered rounded-3 align-middle">
                                     <thead class="table-primary">
                                         <tr>
+                                            <th><input type="checkbox" id="selectAll"></th>
                                             <th>{{ __('messages.image') }}</th>
                                             <th>{{ __('messages.name') }}</th>
                                             <th>{{ __('messages.sku') }}</th>
@@ -99,11 +101,11 @@
         <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content rounded-3 border-0 shadow">
-                    <div class="modal-header border-0 rounded-top-3">
+                    {{-- <div class="modal-header border-0 rounded-top-3">
                         <h5 class="modal-title display-6 fw-bold" id="imageModalLabel">{{ __('messages.current_image') }}
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+                    </div> --}}
                     <div class="modal-body text-center">
                         <img id="modalImage" src="/placeholder.svg" alt="Product Image" class="img-fluid rounded-3">
                     </div>
@@ -121,7 +123,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        {{ __('messages.delete_confirmation') }}
+                        {{ __('messages.delete_confirm') }}
                     </div>
                     <div class="modal-footer">
                         <form id="deleteProductForm" method="POST">
@@ -184,7 +186,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="edit_subcategory_id"
                                         class="form-label">{{ __('messages.subcategory') }}</label>
-                                    <select name="subcategory_id" id="edit_subcategory_id" class="form-select" required
+                                    <select name="subcategory_id" id="edit_subcategory_id" class="form-select"
                                         disabled>
                                         <option value="">{{ __('messages.select_subcategory') }}</option>
                                     </select>
@@ -265,8 +267,15 @@
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('products.index') }}",
-                columns: [
-
+                columns: [{
+                        data: 'id',
+                        name: 'id',
+                        render: function(data) {
+                            return `<input type="checkbox" class="ProductCheckbox" value="${data}">`;
+                        },
+                        searchable: false,
+                        orderable: false
+                    },
                     {
                         data: 'image',
                         name: 'image',
@@ -277,6 +286,8 @@
                                 <img src="${imagePath}" width="50" class="img-thumbnail brand-image-thumbnail">
                             </a>`;
                         }
+
+                        
                     },
                     {
                         data: 'name',
@@ -289,22 +300,25 @@
                     {
                         data: 'brand_name',
                         name: 'brand_name',
-                        defaultContent: 'N/A'
+                        defaultContent: 'N/A',
                     },
                     {
                         data: 'category_name',
                         name: 'category_name',
                         defaultContent: 'N/A'
+
                     },
                     {
                         data: 'subcategory_name',
                         name: 'subcategory_name',
                         defaultContent: 'N/A'
+
                     },
                     {
                         data: 'quality_name',
                         name: 'quality_name',
                         defaultContent: 'N/A'
+
                     },
                     {
                         data: 'stock_quantity',
@@ -340,6 +354,12 @@
                     infoFiltered: "{{ __('messages.filtered_from_total_entries', ['total' => '_MAX_']) }}"
                 }
             });
+
+
+        $('#selectAll').on('click', function() {
+            var isChecked = $(this).prop('checked');
+            $('.ProductCheckbox').prop('checked', isChecked);
+        });
 
             // Update modal image src
             $('#productsTable').on('click', '.image-popup', function(e) {
@@ -378,7 +398,7 @@
 
                         $('#edit_category_id').html(
                             '<option value="">{{ __('messages.select_category') }}</option>'
-                            );
+                        );
                         $.each(response.categories, function(index, category) {
                             $('#edit_category_id').append('<option value="' + category
                                 .id + '">' + category.name + '</option>');
@@ -387,7 +407,7 @@
 
                         $('#edit_subcategory_id').html(
                             '<option value="">{{ __('messages.select_subcategory') }}</option>'
-                            );
+                        );
                         $.each(response.subcategories, function(index, subcategory) {
                             $('#edit_subcategory_id').append('<option value="' +
                                 subcategory.id + '">' + subcategory.name +
@@ -398,7 +418,7 @@
 
                         $('#edit_quality_id').html(
                             '<option value="">{{ __('messages.select_quality') }}</option>'
-                            );
+                        );
                         $.each(response.qualities, function(index, quality) {
                             $('#edit_quality_id').append('<option value="' + quality
                                 .id + '">' + quality.name + '</option>');
@@ -417,7 +437,7 @@
                     error: function(xhr) {
                         $('#alertsContainer').html(
                             '<div class="alert alert-danger alert-dismissible fade show" role="alert">Failed to load product data. Please try again.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
-                            );
+                        );
                     }
                 });
             });
@@ -448,7 +468,7 @@
                             } else {
                                 subcategorySelect.append(
                                     '<option value="">{{ __('messages.no_subcategories') }}</option>'
-                                    );
+                                );
                             }
                         },
                         error: function(xhr) {
@@ -482,7 +502,7 @@
                             '<div class="alert alert-success alert-dismissible fade show" role="alert">' +
                             response.message +
                             '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
-                            );
+                        );
                         setTimeout(function() {
                             $('#alertsContainer .alert').alert('close');
                         }, 5000);
@@ -500,7 +520,7 @@
                         } else if (xhr.status === 419) {
                             $('#modalError').text(
                                 'CSRF token mismatch. Please refresh the page and try again.'
-                                );
+                            );
                         } else {
                             $('#modalError').text('Server error (' + xhr.status +
                                 '). Please try again.');
@@ -564,4 +584,5 @@
             });
         });
     </script>
+
 @endpush

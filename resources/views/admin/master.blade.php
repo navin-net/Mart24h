@@ -381,10 +381,10 @@
     <div class="sidebar-overlay"></div>
 
     <!-- Header -->
-    @include('layouts.header')
+    @include('admin.layouts.header')
 
     <!-- Sidebar -->
-    @include('layouts.slider')
+    @include('admin.layouts.slider')
 
     <!-- Main Content -->
     <main class="main-content">

@@ -119,6 +119,16 @@ return [
     'add_products'  => 'Add Products',
     'subcategory'   => 'Sub Category',
     'edit_product'  => 'Edit Product',
-
-
+    'sku'           => 'Stock Keeping Unit',
+    'product_deleted_successfully' => 'Product Deleted Successfully',
+    'product_updated'  => 'Product Updated',
+    'delete_product'    => 'Delete Product',
+    'pos' =>    'POS',
+    '20' =>  '20',
+    '10' => '10',
+    '30' => '30',
+    '40' => '40',
+    'purchase_created' => 'Purchase Created',
+    'purchases_list'    => 'Purchases List',
+    '50' => '50',
 ];

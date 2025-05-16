@@ -11,6 +11,7 @@ use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
 {
+
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -37,6 +38,22 @@ class ProductController extends Controller
                 ->addColumn('action', function ($row) {
                     return view('admin.products.partials.actions', compact('row'))->render();
                 })
+                ->filterColumn('brand_name', function ($query, $keyword) {
+                    $query->where('brands.name', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('category_name', function ($query, $keyword) {
+                    $query->where('categories.name', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('subcategory_name', function ($query, $keyword) {
+                    $query->where('sub_categories.name', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('quality_name', function ($query, $keyword) {
+                    $query->where('qualitys.name', 'like', "%{$keyword}%");
+                })
+                ->orderColumn('brand_name', 'brands.name $1')
+                ->orderColumn('category_name', 'categories.name $1')
+                ->orderColumn('subcategory_name', 'sub_categories.name $1')
+                ->orderColumn('quality_name', 'qualitys.name $1')
                 ->rawColumns(['action', 'image'])
                 ->make(true);
         }
@@ -51,7 +68,6 @@ class ProductController extends Controller
             ]
         ]);
     }
-
     public function getData()
     {
         $data = DB::table('products')
@@ -67,9 +83,9 @@ class ProductController extends Controller
                 'sub_categories.name as subcategory_name',
                 'qualitys.name as quality_name'
             )
-            ->join('brands', 'products.brand_id', '=', 'brands.id')
+            ->leftJoin('brands', 'products.brand_id', '=', 'brands.id')
             ->join('categories', 'products.category_id', '=', 'categories.id')
-            ->join('sub_categories', 'products.subcategory_id', '=', 'sub_categories.id')
+            ->leftJoin('sub_categories', 'products.subcategory_id', '=', 'sub_categories.id')
             ->join('qualitys', 'products.quality_id', '=', 'qualitys.id')
             ->get();
 
@@ -104,7 +120,7 @@ class ProductController extends Controller
             'brand_id' => 'required|exists:brands,id',
             'category_id' => 'required|exists:categories,id',
             'subcategory_id' => [
-                'required',
+                // 'required',
                 'exists:sub_categories,id',
                 function ($attribute, $value, $fail) use ($request) {
                     $subCategory = DB::table('sub_categories')
@@ -180,10 +196,10 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:191',
             'sku' => 'required|string|max:191|unique:products,sku,' . $id,
-            'brand_id' => 'required|exists:brands,id',
+            // 'brand_id' => 'required|exists:brands,id',
             'category_id' => 'required|exists:categories,id',
             'subcategory_id' => [
-                'required',
+                // 'required',
                 'exists:sub_categories,id',
                 function ($attribute, $value, $fail) use ($request) {
                     $subCategory = DB::table('sub_categories')

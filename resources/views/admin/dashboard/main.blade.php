@@ -9,8 +9,16 @@
         <h1 class="display-6 fw-bold mb-3">{{ __('messages.stock_management_system') }}</h1>
         <p class="text-muted mb-4">{{ __('messages.dashboard_welcome') }}</p>
     </div>
+
+    @if (session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
 <div class="row g-3">
-    <div class="col-md-4">
+    {{-- <div class="col-md-4">
         <x-stat-card
             title="{{ __('messages.brands') }}"
             value="{{ $brandCount }}"
@@ -19,8 +27,17 @@
             bgColor="rgba(168, 85, 247, 0.2)"
             link="{{ route('brands.index') }}"
         />
+    </div> --}}
+    <div class="col-md-4">
+        <x-stat-card
+            title="{{ __('messages.purchases') }}"
+            value="{{ $purchasesCount }}"
+            icon="bi bi-tags"
+            iconColor="#a855f7"
+            bgColor="rgba(168, 85, 247, 0.2)"
+            link="{{ route('purchases.index') }}"
+        />
     </div>
-
     <div class="col-md-4">
         <x-stat-card
             title="{{ __('messages.products') }}"
@@ -108,6 +125,14 @@
     </div>
 
 @endsection
+@push('scripts')
+<script>
+    setTimeout(() => {
+        const alert = document.querySelector('.alert');
+        if (alert) alert.remove();
+    }, 4000); // hides after 4 seconds
+</script>
+@endpush
 
 @push('scripts')
     <!-- Chart.js for Sales Chart -->

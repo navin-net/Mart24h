@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="icon" type="image/x-icon" href="../picture/pie-chart.ico">
     <title>@yield('title', 'Login')</title>
-    @include('layouts.styles')
+    @include('admin.layouts.styles')
     <style>
         /* Background image styling */
         body {
