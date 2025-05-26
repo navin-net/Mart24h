@@ -187,23 +187,33 @@ class PurchasesController extends Controller
         ], 200);
     }
 
-    public function destroy($id)
-    {
-        $purchase = Purchase::findOrFail($id);
+public function destroy($id)
+{
+    $purchase = Purchase::findOrFail($id);
 
-        DB::transaction(function () use ($purchase) {
-            foreach ($purchase->items as $item) {
-                Products::where('id', $item->product_id)
-                    ->decrement('stock_quantity', $item->quantity);
-            }
+    DB::transaction(function () use ($purchase) {
+        // Delete purchase_items and update stock quantities in one transaction
+        DB::table('purchase_items')
+            ->join('products', 'purchase_items.product_id', '=', 'products.id')
+            ->where('purchase_items.purchase_id', $purchase->id)
+            ->delete();
 
-            $purchase->delete();
-        });
+        // Decrement stock quantities using a subquery to get quantities from deleted items
+        DB::table('products')
+            ->join('purchase_items', 'products.id', '=', 'purchase_items.product_id')
+            ->whereIn('purchase_items.purchase_id', [$purchase->id])
+            ->update([
+                'stock_quantity' => DB::raw('stock_quantity - purchase_items.quantity')
+            ]);
 
-        session()->flash('success', __('messages.purchase_deleted_successfully'));
+        // Delete the purchase
+        $purchase->delete();
+    });
 
-        return response()->json(['message' => __('messages.purchase_deleted_successfully')], 200);
-    }
+    session()->flash('success', __('messages.purchase_deleted_successfully'));
+
+    return response()->json(['message' => __('messages.purchase_deleted_successfully')], 200);
+}
 
     public function bulkDelete(Request $request)
     {

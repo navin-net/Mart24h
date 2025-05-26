@@ -123,6 +123,9 @@
             </div>
         </div>
     </div>
+        <a href="#" class="back-to-top rounded-circle shadow d-flex align-items-center justify-content-center">
+        <i class="bi bi-arrow-up"></i>
+    </a>
 
 @endsection
 @push('scripts')

@@ -130,5 +130,13 @@ return [
     '40' => '40',
     'purchase_created' => 'Purchase Created',
     'purchases_list'    => 'Purchases List',
+    'my_account' => 'My Account',
+    'personal_information' =>  'Personal Information',
+    'dob' => 'Brith Date',
+    'manage_your_personal_information_and_security' => 'Manage Your Personal Information And Security',
     '50' => '50',
+    'email'         => 'Email',
+    'change_password' => 'Change Password',
+
+
 ];

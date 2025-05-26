@@ -394,9 +394,7 @@
     </main>
 
     <!-- Back to Top -->
-    <a href="#" class="back-to-top rounded-circle shadow d-flex align-items-center justify-content-center">
-        <i class="bi bi-arrow-up"></i>
-    </a>
+
 
     <!-- Bootstrap 5.3 JS -->
     <script src="{{ asset('assets1/bootstrap.bundle.min.js') }}"></script>
@@ -414,82 +412,90 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const themeToggle = document.getElementById('themeToggle');
-        const html = document.documentElement;
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const body = document.body;
-        const sidebar = document.querySelector('.sidebar');
-        const sidebarOverlay = document.querySelector('.sidebar-overlay');
-
-        let sidebarManuallyClosed = false;
-
-        function setTheme(theme) {
-            html.setAttribute('data-bs-theme', theme);
-            localStorage.setItem('theme', theme);
-            themeToggle.innerHTML = theme === 'dark'
-                ? '<i class="bi bi-sun-fill fs-5"></i>'
-                : '<i class="bi bi-moon-stars-fill fs-5"></i>';
-        }
-
-        const savedTheme = localStorage.getItem('theme');
-        setTheme(savedTheme || 'dark');
-
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = html.getAttribute('data-bs-theme');
-            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
-        });
-
-        // Sidebar toggle
-        sidebarToggle?.addEventListener('click', () => {
-            const isVisible = body.classList.contains('sidebar-visible');
-            body.classList.toggle('sidebar-visible');
-            sidebarManuallyClosed = isVisible; // true when closing
-        });
-
-        // Overlay click closes sidebar and marks it manually closed
-        sidebarOverlay?.addEventListener('click', () => {
-            body.classList.remove('sidebar-visible');
-            sidebarManuallyClosed = true;
-        });
-
-        // Close sidebar on link click (for mobile)
-        const sidebarLinks = document.querySelectorAll('.sidebar .nav-link');
-        sidebarLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                if (window.innerWidth < 992) {
-                    body.classList.remove('sidebar-visible');
-                    sidebarManuallyClosed = true;
-                }
-            });
-        });
-
-        // Prevent reopening sidebar on hover/movement
-        document.addEventListener('mousemove', (e) => {
-            if (window.innerWidth >= 992 || sidebarManuallyClosed) return;
-            if (e.clientX < 10 && !body.classList.contains('sidebar-visible')) {
-                body.classList.add('sidebar-visible');
-            }
-        });
-
-        // Always show on desktop
-        if (window.innerWidth >= 992) {
-            body.classList.add('sidebar-visible');
-            sidebarManuallyClosed = false;
-        }
-
-        const backToTopButton = document.querySelector('.back-to-top');
-        window.addEventListener('scroll', () => {
-            backToTopButton.classList.toggle('show', window.scrollY > 300);
-        });
-
-        backToTopButton?.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.querySelectorAll('.sidebar .nav-link[data-bs-toggle="collapse"]').forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.stopPropagation();
         });
     });
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const body = document.body;
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarOverlay = document.querySelector('.sidebar-overlay');
+
+    function setTheme(theme) {
+        html.setAttribute('data-bs-theme', theme);
+        localStorage.setItem('theme', theme);
+        themeToggle.innerHTML = theme === 'dark'
+            ? '<i class="bi bi-sun-fill fs-5"></i>'
+            : '<i class="bi bi-moon-stars-fill fs-5"></i>';
+    }
+
+    const savedTheme = localStorage.getItem('theme');
+    setTheme(savedTheme || 'dark');
+
+    themeToggle?.addEventListener('click', () => {
+        const currentTheme = html.getAttribute('data-bs-theme');
+        setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    });
+
+    // --- Sidebar State Persistence ---
+    const savedSidebarState = localStorage.getItem('sidebar-visible');
+
+    if (savedSidebarState === 'true') {
+        body.classList.add('sidebar-visible');
+    } else {
+        body.classList.remove('sidebar-visible');
+    }
+
+    sidebarToggle?.addEventListener('click', () => {
+        const isVisible = body.classList.toggle('sidebar-visible');
+        localStorage.setItem('sidebar-visible', isVisible);
+    });
+
+    sidebarOverlay?.addEventListener('click', () => {
+        body.classList.remove('sidebar-visible');
+        localStorage.setItem('sidebar-visible', false);
+    });
+
+    const sidebarLinks = document.querySelectorAll('.sidebar .nav-link');
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth < 992) {
+                body.classList.remove('sidebar-visible');
+                localStorage.setItem('sidebar-visible', false);
+            }
+        });
+    });
+
+    // Remove auto-show on hover
+    // Optional: you can also remove this block if hover reveal isn't wanted:
+    /*
+    document.addEventListener('mousemove', (e) => {
+        if (window.innerWidth >= 992 || savedSidebarState === 'false') return;
+        if (e.clientX < 10 && !body.classList.contains('sidebar-visible')) {
+            body.classList.add('sidebar-visible');
+            localStorage.setItem('sidebar-visible', true);
+        }
+    });
+    */
+
+    const backToTopButton = document.querySelector('.back-to-top');
+    window.addEventListener('scroll', () => {
+        backToTopButton.classList.toggle('show', window.scrollY > 300);
+    });
+
+    backToTopButton?.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+});
+
 </script>
 
     @stack('scripts')

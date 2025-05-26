@@ -17,9 +17,16 @@ class CategoriesController extends Controller
             return DataTables::of($data)
                 ->addColumn('action', function ($row) {
                     return '
-                        <button class="btn btn-primary btn-sm editCategory" data-id="' . $row->id . '">Edit</button>
-                        <button class="btn btn-danger btn-sm deleteCategory" data-id="' . $row->id . '">Delete</button>
-                    ';
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="actionDropdown' . $row->id . '" data-bs-toggle="dropdown" aria-expanded="false">
+                Actions
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="actionDropdown' . $row->id . '">
+                <li><a class="dropdown-item editCategory" href="javascript:void(0);" data-id="' . $row->id . '">Edit</a></li>
+                <li><a class="dropdown-item deleteCategory" href="javascript:void(0);" data-id="' . $row->id . '">Delete</a></li>
+                </ul>
+        </div>
+    ';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -91,5 +98,4 @@ class CategoriesController extends Controller
 
         return response()->json(['success' => 'Selected categories deleted successfully.']);
     }
-
 }

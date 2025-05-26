@@ -13,13 +13,7 @@ class DatabaseSeeder extends Seeder
         $productNames = [
             'iPhone 14 Pro',
             'MacBook Air M2',
-            'Dell XPS 13',
-            'Asus ROG Zephyrus',
-            'MSI Stealth GS66',
-            'iPhone 15',
-            'MacBook Pro 16',
-            'Dell Inspiron 15',
-            'Asus ZenBook 14',
+
             'MSI Katana GF76'
         ];
 

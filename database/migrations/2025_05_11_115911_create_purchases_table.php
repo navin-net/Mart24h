@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('supplier_id')->nullable();
             $table->decimal('total_amount', 10, 2);
+            $table->string('status');
             $table->date('date');
             $table->timestamps();
         });
