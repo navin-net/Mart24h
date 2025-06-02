@@ -137,6 +137,6 @@ return [
     '50' => '50',
     'email'         => 'Email',
     'change_password' => 'Change Password',
-
+    'list_sales' =>  'List Sales',
 
 ];

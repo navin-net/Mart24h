@@ -20,6 +20,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->timestamps();
         });
+
+
     }
 
     /**
@@ -29,6 +31,7 @@ return new class extends Migration
      */
     public function down()
     {
+
         Schema::dropIfExists('banners');
     }
 };

@@ -73,12 +73,28 @@
                 <span>{{ __('messages.create') }}</span>
             </a>
         </div>
-
-        <a href="{{ url('/sales') }}"
-            class="nav-link d-flex align-items-center {{ request()->is('sales') ? 'active' : '' }}">
-            <i class="bi bi-receipt"></i>
-            <span>{{ __('messages.sales') }}</span>
+      <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('sales*') ? 'active' : '' }}"
+            data-bs-toggle="collapse" href="#shop-nav-sales"
+            aria-expanded="{{ request()->is('sales*') ? 'true' : 'false' }}" aria-controls="shop-nav-sales">
+            <div>
+                <i class="bi bi-shop"></i>
+                <span>{{ __('messages.sales') }}</span>
+            </div>
+            <i class="bi bi-chevron-down"></i>
         </a>
+        <div id="shop-nav-sales" class="collapse {{ request()->is('sales*') ? 'show' : '' }} ps-4 mt-1">
+         <a href="{{ url('/sales') }}"
+                class="nav-link d-flex align-items-center {{ request()->is('sales') ? 'active' : '' }}">
+                <i class="bi bi-tags"></i>
+                <span>{{ __('messages.list_sales') }}</span>
+            </a>
+            <a href="{{ url('/sales/create') }}"
+                class="nav-link d-flex align-items-center {{ request()->is('sales/create') ? 'active' : '' }}">
+                <i class="bi bi-tags"></i>
+                <span>{{ __('messages.create') }}</span>
+            </a>
+        </div>
+
 
         <a href="{{ url('/purchases') }}"
             class="nav-link d-flex align-items-center {{ request()->is('purchases') ? 'active' : '' }}">

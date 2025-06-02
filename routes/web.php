@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CategoriesController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\PurchasesController;
 use App\Http\Controllers\Admin\QualitysController;
+use App\Http\Controllers\Admin\SalesController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\Shop\MainController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
+
 
 
 
@@ -36,13 +38,10 @@ Route::get('/empty_page', function () {
 });
 
 
-Route::get('pos', function () {
-    return view('pos');
+Route::get('testing', function () {
+    return view('testing');
 });
 
-Route::get('testing',function (){
-    return view('hello');
-});
 
 // Route::get('/', function () {
 //     return view('shop.index');
@@ -88,9 +87,15 @@ Route::put('/users/{id}/profile', [ProfileController::class, 'update'])->name('p
     Route::delete('/qualitys/bulk-delete', [QualitysController::class, 'bulkDelete'])->name('qualitys.bulkDelete');
     Route::resource('categories', CategoriesController::class)->except(['show']);
     Route::post('/categories/bulk-delete', [CategoriesController::class, 'bulkDelete'])->name('categories.bulkDelete');
-    Route::resource('/users', UserController::class)->except(['show']);
-    Route::get('/user/getData', [UserController::class, 'getData'])->name('user.getData');
-    Route::post('/users/bulk-delete', [UserController::class, 'bulkDelete'])->name('users.bulkDelete');
+
+
+
+
+    Route::resource('/sales', SalesController::class)->except(['show']);
+    Route::get('/sales/show/{id}', [SalesController::class, 'show'])->name('sales.show');
+    Route::get('/sales/getData', [SalesController::class, 'getData'])->name('sales.getData');
+    Route::post('/sales/bulk-delete', [SalesController::class, 'bulkDelete'])->name('sales.bulkDelete');
+    Route::get('/sales/export', [SalesController::class, 'export'])->name('sales.export');
 
 
 ///Settings

@@ -118,4 +118,5 @@ return [
     'personal_information' => 'ព័ត៌មានផ្ទាល់ខ្លួន',
     'dob' => 'ថ្ងៃខែឆ្នាំកំណើត',
     'change_password' => 'ប្តូរលេខសម្ងាត់',
+    'list_sales' => 'រាយបញ្ជីលក់',
 ];
