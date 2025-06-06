@@ -38,9 +38,9 @@
                                 <div class="col-md-6">
                                     <label for="status" class="form-label fw-medium">{{ __('messages.status') }} <span class="text-danger">*</span></label>
                                     <select name="status" id="status" class="form-select rounded-3" required>
-                                        <option value="pending">Pending</option>
-                                        <option value="completed">Completed</option>
-                                        <option value="cancelled">Cancelled</option>
+                                        <option value="pending">{{ __('messages.pending') }}</option>
+                                        <option value="completed">{{ __('messages.completed') }}</option>
+                                        <option value="cancelled">{{ __('messages.cancelled') }}</option>
                                     </select>
                                     <div class="invalid-feedback" id="status-error"></div>
                                 </div>
@@ -83,6 +83,45 @@
             </div>
         </div>
     </section>
+
+    <!-- Submission Confirmation Modal -->
+    <div class="modal fade" id="confirmSubmitModal" tabindex="-1" aria-labelledby="confirmSubmitModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmSubmitModalLabel">{{ __('messages.confirm_submission') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="stockIssues"></div>
+                    <p id="confirmMessage">{{ __('messages.confirm_sale_submission') }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">{{ __('messages.no') }}</button>
+                    <button type="button" class="btn btn-primary btn-sm" id="confirmSubmitBtn">{{ __('messages.yes') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Product Confirmation Modal -->
+    <div class="modal fade" id="confirmAddProductModal" tabindex="-1" aria-labelledby="confirmAddProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmAddProductModalLabel">{{ __('messages.confirm_add_product') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="addProductMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">{{ __('messages.no') }}</button>
+                    <button type="button" class="btn btn-primary btn-sm" id="confirmAddProductBtn">{{ __('messages.yes') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -91,6 +130,7 @@
 $(document).ready(function () {
     let itemIndex = 0;
     const products = @json($products);
+    let pendingProduct = null; // Store product data temporarily for confirmation
 
     // Product search and suggestions
     function initProductSearch() {
@@ -111,8 +151,8 @@ $(document).ready(function () {
 
             let html = '';
             matches.forEach(p => {
-                html += `<div class="suggestion-item px-3 py-2 cursor-pointer" data-id="${p.id}" data-name="${p.name}" data-price="${p.selling_price}">
-                    ${p.name} (SKU: ${p.sku})
+                html += `<div class="suggestion-item px-3 py-2 cursor-pointer" data-id="${p.id}" data-name="${p.name}" data-price="${p.selling_price}" data-stock="${p.stock_quantity}">
+                    ${p.name} (SKU: ${p.sku}, Stock: ${p.stock_quantity})
                 </div>`;
             });
             suggestionsDiv.html(html).show();
@@ -122,42 +162,34 @@ $(document).ready(function () {
             const id = $(this).data('id');
             const name = $(this).data('name');
             const price = $(this).data('price');
+            const stock = parseInt($(this).data('stock')) || 0;
 
-            // Add to table without clearing input
-            const newRow = `
-                <tr class="item-row">
-                    <td>
-                        ${name}
-                        <input type="hidden" name="items[${itemIndex}][product_id]" value="${id}">
-                    </td>
-                    <td>
-                        <input type="number" name="items[${itemIndex}][quantity]" class="form-control quantity" value="1" min="1" required>
-                    </td>
-                    <td>
-                        <input type="number" step="0.01" name="items[${itemIndex}][sale_price]" class="form-control sale_price" value="${price}" required>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger btn-sm remove-item">Remove</button>
-                    </td>
-                </tr>`;
-            $('#itemsBody').append(newRow);
-            itemIndex++;
-            updateTotalAmount();
-
-            // Keep input active and re-filter suggestions
-            const keyword = input.val().toLowerCase().trim();
-            if (keyword.length >= 2) {
-                const matches = products.filter(p => p.name && p.name.toLowerCase().includes(keyword) && !$('#itemsBody [name="items[]\\[product_id\\]"]').filter((i, el) => $(el).val() == p.id).length);
-                let html = '';
-                matches.forEach(p => {
-                    html += `<div class="suggestion-item px-3 py-2 cursor-pointer" data-id="${p.id}" data-name="${p.name}" data-price="${p.selling_price}">
-                        ${p.name} (SKU: ${p.sku})
-                    </div>`;
-                });
-                suggestionsDiv.html(html).show();
-            } else {
+            // Prevent adding duplicate products
+            if ($(`#itemsBody [name="items[]\\[product_id\\]"][value="${id}"]`).length > 0) {
+                $('#alertsContainer').html(`
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        The product "${name}" is already added to the sale.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `);
+                input.val('');
                 suggestionsDiv.hide();
+                return;
             }
+
+            // If stock is 0, show confirmation modal
+            if (stock <= 0) {
+                pendingProduct = { id, name, price, stock };
+                $('#addProductMessage').text(`The product "${name}" is out of stock. Do you want to add it anyway?`);
+                const modal = new bootstrap.Modal(document.getElementById('confirmAddProductModal'));
+                modal.show();
+                return;
+            }
+
+            // Add product directly if stock is available
+            addProductToTable(id, name, price, stock);
+            input.val('');
+            suggestionsDiv.hide();
         });
 
         $(document).on('click', function (e) {
@@ -166,6 +198,43 @@ $(document).ready(function () {
             }
         });
     }
+
+    // Function to add product to table
+    function addProductToTable(id, name, price, stock) {
+        const newRow = `
+            <tr class="item-row" data-product-id="${id}">
+                <td>
+                    ${name}
+                    <input type="hidden" name="items[${itemIndex}][product_id]" value="${id}">
+                    <input type="hidden" class="stock-quantity" value="${stock}">
+                </td>
+                <td>
+                    <input type="number" name="items[${itemIndex}][quantity]" class="form-control quantity" value="1" min="1" required>
+                </td>
+                <td>
+                    <input type="number" step="0.01" name="items[${itemIndex}][sale_price]" class="form-control sale_price" value="${price}" required>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm remove-item">{{ __('messages.remove') }}</button>
+                </td>
+            </tr>`;
+        $('#itemsBody').append(newRow);
+        itemIndex++;
+        updateTotalAmount();
+    }
+
+    // Handle confirm add product button click
+    $('#confirmAddProductBtn').on('click', function () {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmAddProductModal'));
+        modal.hide();
+
+        if (pendingProduct) {
+            addProductToTable(pendingProduct.id, pendingProduct.name, pendingProduct.price, pendingProduct.stock);
+            $('.product-search').val('');
+            $('.suggestions').hide();
+            pendingProduct = null;
+        }
+    });
 
     // Remove item
     $(document).on('click', '.remove-item', function () {
@@ -184,31 +253,84 @@ $(document).ready(function () {
         $('#total_amount').val(total.toFixed(2));
     }
 
-    // Update total on quantity or price change
+    // Update total and validate stock on quantity or price change
     $(document).on('input', '.quantity, .sale_price', function () {
+        const row = $(this).closest('.item-row');
+        const quantity = parseFloat(row.find('.quantity').val()) || 0;
+        const stock = parseInt(row.find('.stock-quantity').val()) || 0;
+        const productName = row.find('td:first').text().trim();
+
+        if (quantity > stock && stock > 0) {
+            row.find('.quantity').addClass('is-invalid');
+            $('#alertsContainer').html(`
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    The quantity for "${productName}" exceeds available stock (${stock}). You can still proceed with the sale if confirmed.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `);
+        } else {
+            row.find('.quantity').removeClass('is-invalid');
+            $('#alertsContainer').html('');
+        }
         updateTotalAmount();
     });
 
     // Initialize product search
     initProductSearch();
 
-    // Form submission
+    // Form submission with confirmation
     $('#saleForm').on('submit', function (e) {
         e.preventDefault();
         if ($('#itemsBody .item-row').length === 0) {
             $('#alertsContainer').html(`
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    Please add at least one item to the sale.
+                    {{ __('messages.please_add_at_least_one_item') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             `);
             return;
         }
 
+        // Check for stock issues
+        let stockIssuesHtml = '';
+        $('#itemsBody .item-row').each(function () {
+            const quantity = parseFloat($(this).find('.quantity').val()) || 0;
+            const stock = parseInt($(this).find('.stock-quantity').val()) || 0;
+            const productName = $(this).find('td:first').text().trim();
+
+            if (quantity > stock && stock >= 0) {
+                $(this).find('.quantity').addClass('is-invalid');
+                stockIssuesHtml += `
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        The quantity for "${productName}" exceeds available stock (${stock}).
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+            }
+        });
+
+        // Update modal content
+        $('#stockIssues').html(stockIssuesHtml);
+        if (stockIssuesHtml) {
+            $('#confirmMessage').text('{{ __('messages.stock_issues_detected') }}');
+        } else {
+            $('#confirmMessage').text('{{ __('messages.confirm_sale_submission') }}');
+        }
+
+        // Show the confirmation modal
+        const modal = new bootstrap.Modal(document.getElementById('confirmSubmitModal'));
+        modal.show();
+    });
+
+    // Handle confirm submit button click
+    $('#confirmSubmitBtn').on('click', function () {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmSubmitModal'));
+        modal.hide();
+
         $.ajax({
             url: '{{ route("sales.store") }}',
             type: 'POST',
-            data: $(this).serialize(),
+            data: $('#saleForm').serialize(),
             success: function (response) {
                 $('#alertsContainer').html(`
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -229,7 +351,7 @@ $(document).ready(function () {
                 }
                 $('#alertsContainer').html(`
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        Please fix the errors below.
+                        {{ __('messages.please_fix_errors') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 `);

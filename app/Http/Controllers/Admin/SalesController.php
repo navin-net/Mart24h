@@ -43,7 +43,7 @@ class SalesController extends Controller
                     </a>';
             })
             ->editColumn('total_amount', function ($sale) {
-                return number_format($sale->total_amount, 2);
+                return ($sale->total_amount);
             })
             ->rawColumns(['action'])
             ->make(true);
@@ -51,17 +51,7 @@ class SalesController extends Controller
 
     public function create()
     {
-        $products = Products::select('id',    'name',
-        'sku',
-        'description',
-        'stock_quantity',
-        'cost_price',
-        'selling_price',
-        'image', // main image (optional if you use gallery)
-        'brand_id',
-        'category_id',
-        'subcategory_id',
-        'quality_id')->get();
+        $products = Products::select('id', 'name', 'sku', 'stock_quantity', 'selling_price')->get();
         return view('admin.sales.create', compact('products'));
     }
 
@@ -107,7 +97,6 @@ class SalesController extends Controller
             'redirect' => route('sales.index')
         ], 201);
     }
-
     public function show($id)
     {
         $sale = Sale::with('items.product')->findOrFail($id);
@@ -117,8 +106,8 @@ class SalesController extends Controller
     public function edit($id)
     {
         $sale = Sale::with('items.product')->findOrFail($id);
-        $products = Products::select('id', 'name', 'sku')->get();
-        return response()->json(['sale' => $sale, 'products' => $products]);
+        $products = Products::select('id', 'name', 'sku', 'stock_quantity', 'selling_price')->get();
+        return view('admin.sales.edit', compact('sale', 'products'));
     }
 
     public function update(Request $request, $id)
@@ -165,12 +154,16 @@ class SalesController extends Controller
                     'sale_price' => $item['sale_price'],
                 ]);
 
+                // Update stock (allows negative stock)
                 Products::where('id', $item['product_id'])
                     ->decrement('stock_quantity', $item['quantity']);
             }
         });
 
-        return response()->json(['message' => __('messages.sale_updated_successfully')]);
+        return response()->json([
+            'message' => __('messages.sale_updated_successfully'),
+            'redirect' => route('sales.index')
+        ]);
     }
 
     public function destroy($id)
