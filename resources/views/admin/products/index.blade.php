@@ -186,8 +186,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="edit_subcategory_id"
                                         class="form-label">{{ __('messages.subcategory') }}</label>
-                                    <select name="subcategory_id" id="edit_subcategory_id" class="form-select"
-                                        disabled>
+                                    <select name="subcategory_id" id="edit_subcategory_id" class="form-select" disabled>
                                         <option value="">{{ __('messages.select_subcategory') }}</option>
                                     </select>
                                     <div class="invalid-feedback" id="edit_subcategory_id_error"></div>
@@ -287,7 +286,7 @@
                             </a>`;
                         }
 
-                        
+
                     },
                     {
                         data: 'name',
@@ -356,10 +355,10 @@
             });
 
 
-        $('#selectAll').on('click', function() {
-            var isChecked = $(this).prop('checked');
-            $('.ProductCheckbox').prop('checked', isChecked);
-        });
+            $('#selectAll').on('click', function() {
+                var isChecked = $(this).prop('checked');
+                $('.ProductCheckbox').prop('checked', isChecked);
+            });
 
             // Update modal image src
             $('#productsTable').on('click', '.image-popup', function(e) {
@@ -567,22 +566,26 @@
                     },
                     error: function(xhr) {
                         $('#deleteProductModal').modal('hide');
-                        const errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr
-                            .responseJSON.error :
+
+                        const errorMessage = xhr.responseJSON?.error || xhr.responseJSON
+                            ?.message ||
                             'Failed to delete the product. Please try again.';
+
                         const errorAlert = `
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                ${errorMessage}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>`;
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            ${errorMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>`;
+
                         $('#alertsContainer').html(errorAlert);
+
                         setTimeout(function() {
                             $('#alertsContainer .alert').alert('close');
                         }, 5000);
                     }
+
                 });
             });
         });
     </script>
-
 @endpush

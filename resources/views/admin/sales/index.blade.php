@@ -77,6 +77,7 @@
                                         <tr>
                                             <th><input type="checkbox" id="selectAll" class="form-check-input"></th>
                                             <th>{{ __('messages.total_amount') }}</th>
+                                            <th>{{ __('messages.customer') }}</th>
                                             <th>{{ __('messages.date') }}</th>
                                             <th>{{ __('messages.item_count') }}</th>
                                             <th>{{ __('messages.total_quantity') }}</th>
@@ -141,104 +142,6 @@
             </div>
         </div>
 
-        <!-- Show Modal -->
-        <div class="modal fade" id="showSaleModal" tabindex="-1" aria-labelledby="showSaleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content rounded-3 border-0 shadow">
-                    <div class="modal-header border-0 rounded-top-3">
-                        <h5 class="modal-title fw-semibold" id="showSaleModalLabel">
-                            {{ __('messages.sale_details') }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p><strong>{{ __('messages.id') }}:</strong> <span id="show-id"></span></p>
-                        <p><strong>{{ __('messages.total_amount') }}:</strong> <span id="show-total_amount"></span></p>
-                        <p><strong>{{ __('messages.status') }}:</strong> <span id="show-status"></span></p>
-                        <p><strong>{{ __('messages.date') }}:</strong> <span id="show-date"></span></p>
-                        <h5>{{ __('messages.items') }}</h5>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered rounded-3">
-                                <thead>
-                                    <tr>
-                                        <th>{{ __('messages.product') }}</th>
-                                        <th>{{ __('messages.quantity') }}</th>
-                                        <th>{{ __('messages.sale_price') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="show-items"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="modal-footer border-0">
-                        <button type="button" class="btn btn-secondary btn-sm rounded-3"
-                            data-bs-dismiss="modal">{{ __('messages.close') }}</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Edit Modal -->
-        <div class="modal fade" id="editSaleModal" tabindex="-1" aria-labelledby="editSaleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content rounded-3 border-0 shadow">
-                    <div class="modal-header border-0 rounded-top-3">
-                        <h5 class="modal-title fw-semibold" id="editSaleModalLabel">
-                            {{ __('messages.edit_sale') }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="edit-error-alert" class="alert alert-danger alert-dismissible fade show d-none"
-                            role="alert">
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                aria-label="Close"></button>
-                        </div>
-                        <form id="edit-sale-form">
-                            @csrf
-                            @method('PUT')
-                            <input type="hidden" id="edit-id">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="edit-total_amount"
-                                        class="form-label fw-medium">{{ __('messages.total_amount') }} <span
-                                            class="text-danger">*</span></label>
-                                    <input type="number" step="0.01" name="total_amount" id="edit-total_amount"
-                                        class="form-control rounded-3" required>
-                                    <div class="invalid-feedback" id="total_amount-error"></div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="edit-status"
-                                        class="form-label fw-medium">{{ __('messages.status') }} <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text" name="status" id="edit-status" class="form-control rounded-3"
-                                        required>
-                                    <div class="invalid-feedback" id="status-error"></div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <label for="edit-date" class="form-label fw-medium">{{ __('messages.date') }} <span
-                                            class="text-danger">*</span></label>
-                                    <input type="date" name="date" id="edit-date" class="form-control rounded-3"
-                                        required>
-                                    <div class="invalid-feedback" id="date-error"></div>
-                                </div>
-                            </div>
-                            <div id="edit-items"></div>
-                            <button type="button" onclick="addEditItem()"
-                                class="btn btn-secondary btn-sm rounded-3 mb-3">{{ __('messages.add_another_item') }}</button>
-                            <div class="modal-footer border-0">
-                                <button type="button" class="btn btn-secondary btn-sm rounded-3"
-                                    data-bs-dismiss="modal">{{ __('messages.cancel') }}</button>
-                                <button type="submit"
-                                    class="btn btn-primary btn-sm rounded-3">{{ __('messages.update') }}</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 @endsection
 
@@ -286,6 +189,12 @@
                         data: 'total_amount',
                         name: 'total_amount',
                         render: $.fn.dataTable.render.number(',', '.', 2)
+                    },
+                    {
+                        data: 'customer_id',
+                        name: 'customer_id',
+                        defaultContent: 'N/A',
+                        searchable: false
                     },
                     {
                         data: 'date',

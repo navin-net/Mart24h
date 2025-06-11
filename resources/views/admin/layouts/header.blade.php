@@ -5,7 +5,7 @@
             <a href="{{ route('dashboard') }}" class="text-decoration-none">
                 <span class="fw-bold fs-4" style="color: #0ea5e9;">StockMangment</span>
             </a>
-               <button id="sidebarToggle" class="btn btn-link p-0 text-body" type="button" aria-label="Toggle sidebar">
+            <button id="sidebarToggle" class="btn btn-link p-0 text-body" type="button" aria-label="Toggle sidebar">
                 <i class="bi bi-list fs-4"></i>
             </button>
         </div>
@@ -29,7 +29,7 @@
             <div class="me-3">
                 <a href="{{ url('/') }}" class="btn nbt-outline-custom d-flex align-items-center">
                     <i class="bi bi-shop me-2"></i>
-                    {{ __('messages.shop') }}
+                    <!-- {{ __('messages.shop') }} -->
 
                 </a>
             </div>
@@ -38,16 +38,18 @@
                 <i class="bi bi-sun-fill fs-5"></i>
             </div>
 
+            <!-- Product Alert Dropdown -->
+
+
+
+
 
             <!-- Language Dropdown - Desktop Only -->
             <div class="dropdown me-3 desktop-only">
-                <button class="btn nbt-outline-custom dropdown-toggle d-flex align-items-center" type="button"
+                <button class="btn nbt-outline-custom  d-flex align-items-center" type="button"
                     data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="{{ app()->getLocale() == 'en' ? asset('flag/gb-eng.jpg') : asset('flag/kh.jpg') }}"
-                        alt="Lang" class="me-2" width="20" height="14">
-                    <span class="d-none d-md-block ps-2">
-                        {{ app()->getLocale() == 'en' ? __('messages.english') : __('messages.khmer') }}
-                    </span>
+                        alt="Lang" width="20" height="14">
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li>
@@ -68,7 +70,28 @@
                     </li>
                 </ul>
             </div>
+            <div class="dropdown me-3">
+                <button class="btn btn-outline-danger position-relative" id="cartIcon" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                        id="cartBadge" style="display: none;">
+                        0
+                    </span>
+                </button>
 
+                <div class="dropdown-menu dropdown-menu-end p-2" style="width: 300px;" id="alertContainer">
+                    <h6 class="dropdown-header text-danger">
+                        <div id="alertList">
+                            <div class="text-muted small">No alerts</div>
+                        </div>
+                    </h6>
+                    <hr class="dropdown-divider">
+
+                    <a class="dropdown-item text-center" href="{{ url('/products') }}">
+                        {{ __('messages.see_all') }}</a>
+                </div>
+            </div>
             <div class="me-3 desktop-only">
                 <a href="{{ url('/pos') }}" class="btn btn-success d-flex align-items-center">
                     <i class="bi bi-grid me-2"></i>
@@ -77,17 +100,16 @@
             </div>
 
 
+
+
             <!-- User Dropdown - Desktop Only -->
             <div class="dropdown desktop-only">
                 <button class="btn btn-outline-custom dropdown-toggle d-flex align-items-center" type="button"
                     data-bs-toggle="dropdown" aria-expanded="false">
-<img
-    src="{{ Auth::user()->profile && Auth::user()->profile->image
-        ? asset('storage/' . Auth::user()->profile->image)
-        : asset('assets/img/profile-img.jpg') }}"
-    alt="Profile"
-    class="rounded-circle me-2"
-    width="40" height="40">
+                    <img src="{{ Auth::user()->profile && Auth::user()->profile->image
+                        ? asset('storage/' . Auth::user()->profile->image)
+                        : asset('assets/img/profile-img.jpg') }}"
+                        alt="Profile" class="rounded-circle me-2" width="40" height="40">
 
                     <span>{{ Auth::user()->name }}</span>
                 </button>

@@ -32,15 +32,13 @@ class SalesController extends Controller
         return DataTables::of($query)
             ->addColumn('action', function ($sale) {
                 return '
-                    <a href="#" class="show-sale action-btn" data-id="' . $sale->id . '" title="View">
-                        <i class="bi bi-eye-fill text-primary"></i>
-                    </a>
+
+                    <a href="' . route('sales.show', $sale->id) . '" class="action-btn" title="show">
+                        <i class="bi bi-eye-fill text-primary"></i></a>
                     <a href="' . route('sales.edit', $sale->id) . '" class="action-btn" title="Edit">
-                        <i class="bi bi-pencil-fill text-warning"></i>
-                    </a>
+                        <i class="bi bi-pencil-fill text-warning"></i></a>
                     <a href="#" class="delete-sale action-btn" data-id="' . $sale->id . '" title="Delete">
-                        <i class="bi bi-trash-fill text-danger"></i>
-                    </a>';
+                        <i class="bi bi-trash-fill text-danger"></i></a>';
             })
             ->editColumn('total_amount', function ($sale) {
                 return ($sale->total_amount);
@@ -97,11 +95,12 @@ class SalesController extends Controller
             'redirect' => route('sales.index')
         ], 201);
     }
-    public function show($id)
-    {
-        $sale = Sale::with('items.product')->findOrFail($id);
-        return response()->json(['sale' => $sale]);
-    }
+public function show($id)
+{
+    $sale = Sale::with('items.product')->findOrFail($id);
+
+    return view('admin.sales.show', compact('sale'));
+}
 
     public function edit($id)
     {
@@ -165,7 +164,6 @@ class SalesController extends Controller
             'redirect' => route('sales.index')
         ]);
     }
-
     public function destroy($id)
     {
         DB::transaction(function () use ($id) {
@@ -200,6 +198,7 @@ class SalesController extends Controller
 
         return response()->json(['message' => __('messages.selected_sales_deleted_successfully')]);
     }
+
 
     public function export(Request $request)
     {

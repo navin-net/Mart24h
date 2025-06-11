@@ -23,12 +23,14 @@ class SalesExport implements FromCollection, WithHeadings
         }
         return $query->get()->map(function ($sale) {
             return [
-                'id' => $sale->id,
-                'total_amount' => $sale->total_amount,
+                // 'id' => $sale->id,
+                'customer' => $sale->customer_id ?? 'N/A',
                 'status' => $sale->status,
                 'date' => $sale->date,
                 'item_count' => $sale->items->count(),
                 'total_quantity' => $sale->items->sum('quantity'),
+                'total_amount' => $sale->total_amount,
+
             ];
         });
     }
@@ -36,12 +38,14 @@ class SalesExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'ID',
-            'Total Amount',
-            'Status',
-            'Date',
-            'Item Count',
-            'Total Quantity',
+            // 'ID',
+            __('messages.customer'),
+            __('messages.status'),
+            __('messages.date'),
+            __('messages.item_count'),
+            __('messages.total_quantity'),
+            __('messages.total_amount'),
+
         ];
     }
 }

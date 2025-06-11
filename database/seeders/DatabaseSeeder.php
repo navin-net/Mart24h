@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         // Seed 10 product records
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 3; $i++) {
             // Randomly select a product name
             $name = $productNames[array_rand($productNames)];
             // Generate a unique SKU

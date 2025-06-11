@@ -20,6 +20,7 @@ class Products extends Model
         'sku',
         'description',
         'stock_quantity',
+        'expiry_date',
         'cost_price',
         'selling_price',
         'image', // main image (optional if you use gallery)

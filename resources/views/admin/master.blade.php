@@ -15,8 +15,8 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Bootstrap 5.3 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
     <!-- DataTables CSS (Bootstrap 5 style) -->
     <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css" rel="stylesheet">
@@ -395,7 +395,9 @@
     </main>
 
     <!-- Back to Top -->
-
+        <a href="#" class="back-to-top rounded-circle shadow d-flex align-items-center justify-content-center">
+        <i class="bi bi-arrow-up"></i>
+    </a>
 
     <!-- Bootstrap 5.3 JS -->
     <script src="{{ asset('assets1/bootstrap.bundle.min.js') }}"></script>
@@ -413,91 +415,140 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-<script>
-    document.querySelectorAll('.sidebar .nav-link[data-bs-toggle="collapse"]').forEach(link => {
-        link.addEventListener('click', function (e) {
-            e.stopPropagation();
+    <script>
+        document.querySelectorAll('.sidebar .nav-link[data-bs-toggle="collapse"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
         });
-    });
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const themeToggle = document.getElementById('themeToggle');
-    const html = document.documentElement;
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const body = document.body;
-    const sidebar = document.querySelector('.sidebar');
-    const sidebarOverlay = document.querySelector('.sidebar-overlay');
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000;
+            const localISOTime = new Date(now - offset).toISOString().slice(0, 16);
+            // document.getElementById('date').value = localISOTime;
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('themeToggle');
+            const html = document.documentElement;
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const body = document.body;
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarOverlay = document.querySelector('.sidebar-overlay');
 
-    function setTheme(theme) {
-        html.setAttribute('data-bs-theme', theme);
-        localStorage.setItem('theme', theme);
-        themeToggle.innerHTML = theme === 'dark'
-            ? '<i class="bi bi-sun-fill fs-5"></i>'
-            : '<i class="bi bi-moon-stars-fill fs-5"></i>';
-    }
+            function setTheme(theme) {
+                html.setAttribute('data-bs-theme', theme);
+                localStorage.setItem('theme', theme);
+                themeToggle.innerHTML = theme === 'dark' ?
+                    '<i class="bi bi-sun-fill fs-5"></i>' :
+                    '<i class="bi bi-moon-stars-fill fs-5"></i>';
+            }
 
-    const savedTheme = localStorage.getItem('theme');
-    setTheme(savedTheme || 'dark');
+            const savedTheme = localStorage.getItem('theme');
+            setTheme(savedTheme || 'dark');
 
-    themeToggle?.addEventListener('click', () => {
-        const currentTheme = html.getAttribute('data-bs-theme');
-        setTheme(currentTheme === 'dark' ? 'light' : 'dark');
-    });
+            themeToggle?.addEventListener('click', () => {
+                const currentTheme = html.getAttribute('data-bs-theme');
+                setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+            });
 
-    // --- Sidebar State Persistence ---
-    const savedSidebarState = localStorage.getItem('sidebar-visible');
+            // --- Sidebar State Persistence ---
+            const savedSidebarState = localStorage.getItem('sidebar-visible');
 
-    if (savedSidebarState === 'true') {
-        body.classList.add('sidebar-visible');
-    } else {
-        body.classList.remove('sidebar-visible');
-    }
+            if (savedSidebarState === 'true') {
+                body.classList.add('sidebar-visible');
+            } else {
+                body.classList.remove('sidebar-visible');
+            }
 
-    sidebarToggle?.addEventListener('click', () => {
-        const isVisible = body.classList.toggle('sidebar-visible');
-        localStorage.setItem('sidebar-visible', isVisible);
-    });
+            sidebarToggle?.addEventListener('click', () => {
+                const isVisible = body.classList.toggle('sidebar-visible');
+                localStorage.setItem('sidebar-visible', isVisible);
+            });
 
-    sidebarOverlay?.addEventListener('click', () => {
-        body.classList.remove('sidebar-visible');
-        localStorage.setItem('sidebar-visible', false);
-    });
-
-    const sidebarLinks = document.querySelectorAll('.sidebar .nav-link');
-    sidebarLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            if (window.innerWidth < 992) {
+            sidebarOverlay?.addEventListener('click', () => {
                 body.classList.remove('sidebar-visible');
                 localStorage.setItem('sidebar-visible', false);
-            }
+            });
+
+            const sidebarLinks = document.querySelectorAll('.sidebar .nav-link');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 992) {
+                        body.classList.remove('sidebar-visible');
+                        localStorage.setItem('sidebar-visible', false);
+                    }
+                });
+            });
+
+            // Remove auto-show on hover
+            // Optional: you can also remove this block if hover reveal isn't wanted:
+            /*
+            document.addEventListener('mousemove', (e) => {
+                if (window.innerWidth >= 992 || savedSidebarState === 'false') return;
+                if (e.clientX < 10 && !body.classList.contains('sidebar-visible')) {
+                    body.classList.add('sidebar-visible');
+                    localStorage.setItem('sidebar-visible', true);
+                }
+            });
+            */
+
+            const backToTopButton = document.querySelector('.back-to-top');
+            window.addEventListener('scroll', () => {
+                backToTopButton.classList.toggle('show', window.scrollY > 300);
+            });
+
+            backToTopButton?.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
         });
-    });
+    </script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const alertList = document.getElementById('alertList');
+    const cartBadge = document.getElementById('cartBadge');
 
-    // Remove auto-show on hover
-    // Optional: you can also remove this block if hover reveal isn't wanted:
-    /*
-    document.addEventListener('mousemove', (e) => {
-        if (window.innerWidth >= 992 || savedSidebarState === 'false') return;
-        if (e.clientX < 10 && !body.classList.contains('sidebar-visible')) {
-            body.classList.add('sidebar-visible');
-            localStorage.setItem('sidebar-visible', true);
-        }
-    });
-    */
+    fetch('/api/product-alerts')
+        .then(res => res.json())
+        .then(products => {
+            alertList.innerHTML = '';  // clear old alerts
 
-    const backToTopButton = document.querySelector('.back-to-top');
-    window.addEventListener('scroll', () => {
-        backToTopButton.classList.toggle('show', window.scrollY > 300);
-    });
+            if (!products.length) {
+                alertList.innerHTML = '<div class="text-muted small">No alerts</div>';
+                cartBadge.style.display = 'none';
+                return;
+            }
 
-    backToTopButton?.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+            cartBadge.style.display = 'inline-block';
+            cartBadge.textContent = products.length;
+
+            products.forEach(product => {
+                // Create clickable alert item linking to product detail page
+                const alertItem = document.createElement('a');
+                alertItem.href = `/products/${product.id}`;
+                alertItem.className = 'dropdown-item d-flex justify-content-between align-items-center';
+                alertItem.textContent = product.name;
+
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-danger rounded-pill';
+                badge.textContent = `Stock: ${product.stock_quantity}`;
+
+                alertItem.appendChild(badge);
+                alertList.appendChild(alertItem);
+            });
+        })
+        .catch(err => {
+            console.error('Failed to fetch product alerts:', err);
+            alertList.innerHTML = '<div class="text-danger small">Error loading alerts</div>';
+            cartBadge.style.display = 'none';
+        });
 });
-
 </script>
+
+
 
     @stack('scripts')
 </body>

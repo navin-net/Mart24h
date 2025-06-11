@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Products;
+use App\Models\SaleItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -256,17 +257,32 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $product = Products::findOrFail($id);
+
+        $hasSaleItems = SaleItem::where('product_id', $product->id)->exists();
+
+        if ($hasSaleItems) {
+            return response()->json([
+                'message' => __('messages.product_cannot_be_deleted_has_sales')
+            ], 400);
+        }
+
         if ($product->image && file_exists(public_path('upload/image/' . $product->image))) {
             if (is_writable(public_path('upload/image/' . $product->image))) {
                 unlink(public_path('upload/image/' . $product->image));
             }
         }
+
+        // Delete the product
         $product->delete();
 
         session()->flash('success', __('messages.product_deleted_successfully'));
 
-        return response()->json(['message' => __('messages.product_deleted_successfully')], 200);
+        return response()->json([
+            'message' => __('messages.product_deleted_successfully')
+        ], 200);
     }
+
+
 
     public function getSubCategories(Request $request)
     {

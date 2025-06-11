@@ -55,6 +55,7 @@ Route::get('/product-detail/{id}', [MainController::class, 'productDetail'])->na
 Route::get('shop/about', [MainController::class, 'about'])->name('shop.about');
 Route::get('shop/contact', [MainController::class, 'contact'])->name('shop.contact');
 
+Route::get('/product-alerts', [AuthController::class, 'getAlerts']);
 
 
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
@@ -96,7 +97,7 @@ Route::put('/users/{id}/profile', [ProfileController::class, 'update'])->name('p
     Route::get('/sales/getData', [SalesController::class, 'getData'])->name('sales.getData');
     Route::post('/sales/bulk-delete', [SalesController::class, 'bulkDelete'])->name('sales.bulkDelete');
     Route::get('/sales/export', [SalesController::class, 'export'])->name('sales.export');
-
+    Route::get('/sales/detail/{id}', [SalesController::class, 'show'])->name('sales.show');
 
 ///Settings
     Route::resource('/settings', SettingsController::class)->except(['show']);

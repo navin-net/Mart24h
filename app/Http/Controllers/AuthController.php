@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use App\Models\Products;
 use App\Models\Purchase;
+use App\Models\Sale;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 
@@ -110,11 +113,58 @@ class AuthController extends Controller
     // Dashboard view - both user and admin
     public function dashboard()
     {
-
-        // $brandCount = Brand::count();
         $purchasesCount = Purchase::count();
         $brandCount = Brand::count();
+        $salesCount = Sale::count();
         $productCount = Products::count();
-        return view('admin.dashboard.main', ['brandCount' => $brandCount,'productCount'=>$productCount,'purchasesCount' => $purchasesCount]);
+
+        // Get sales totals per month (current year), grouped by month number (1-12)
+        $salesMonthly = Sale::select(
+            DB::raw('MONTH(date) as month'),
+            DB::raw('SUM(total_amount) as total')
+        )
+            ->whereYear('date', Carbon::now()->year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        // Initialize all 12 months
+        $salesData = [];
+        $labels = [];
+
+        for ($i = 1; $i <= 12; $i++) {
+            $labels[] = $i; // month number 1–12
+            $monthSales = $salesMonthly->firstWhere('month', $i);
+            $salesData[] = $monthSales ? $monthSales->total : 0;
+        }
+
+        // / Get latest 5 sales
+        $recentSales = Sale::orderBy('date', 'desc')->take(5)->get();
+
+        // Get latest 5 updated products
+        $recentProducts = Products::orderBy('updated_at', 'desc')->take(5)->get();
+
+        // Optional: Low stock alerts (products with quantity < 5)
+        $lowStockProducts = Products::where('stock_quantity', '<', 5)->orderBy('stock_quantity')->take(5)->get();
+
+
+        return view('admin.dashboard.main', [
+            'brandCount' => $brandCount,
+            'productCount' => $productCount,
+            'salesCount' => $salesCount,
+            'purchasesCount' => $purchasesCount,
+            'salesLabels' => $labels,
+            'salesData' => $salesData,
+            'recentSales' => $recentSales,
+            'recentProducts' => $recentProducts,
+            'lowStockProducts' => $lowStockProducts,
+        ]);
+    }
+    public function getAlerts()
+    {
+        // $today = now()->toDateString();
+
+        // ->orWhere('expiry_date', '<', $today)
+        return Products::where('stock_quantity', '<=', 0)->get(['id', 'name', 'stock_quantity']);
     }
 }
