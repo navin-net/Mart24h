@@ -146,6 +146,10 @@ return [
     'product_cannot_be_deleted_has_sales' => 'ផលិតផលមិនអាចលុបបាន មានលក់',
 'see_all' => 'មើលទាំងអស់',
     'data'  => 'ទិន្នន័យ',
+'new_sale' => 'លក់ថ្មី',
+'updated' => 'បានធ្វើបច្ចុប្បន្នភាព',
+'qty'   => 'ចំនួន',
+'low_stock_alert' => 'ការជូនដំណឹងអំពីស្តុកទាប',
     'total_quantity' => 'បរិមាណសរុប'
 
 

@@ -172,5 +172,9 @@ return [
     'stock_issues_detected' => 'Stock Issues Detected',
     'see_all'   => 'See All',
     'data'  => 'Data',
+    'new_sale'  => 'New Sale',
+    'updated'   => 'Updated',
+    'qty'       => 'Qty',
+    'low_stock_alert'   => 'Low Stock Alert',
     'product_cannot_be_deleted_has_sales' =>  'Product Cannot Be Deleted Has Sales'
 ];

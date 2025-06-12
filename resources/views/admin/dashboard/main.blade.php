@@ -53,9 +53,9 @@
                         <h5 class="card-title mb-0">{{ __('messages.sales_report') }}</h5>
                         <small class="text-muted">{{ __('messages.data') }}</small>
                     </div>
-                    <button class="btn btn-sm btn-outline-custom">
+<!--                     <button class="btn btn-sm btn-outline-custom">
                         <i class="bi bi-three-dots"></i>
-                    </button>
+                    </button> -->
                 </div>
                 <div class="card-body">
                     <canvas id="salesChart" height="300"></canvas>
@@ -80,7 +80,7 @@
                                     <div class="me-3 text-muted small">
                                         {{ \Carbon\Carbon::parse($sale->date)->diffForHumans() }}</div>
                                     <div class="rounded-circle bg-success" style="width: 8px; height: 8px;"></div>
-                                    <div class="ms-3">New sale: ${{ number_format($sale->total_amount, 2) }}</div>
+                                    <div class="ms-3">{{ __('messages.new_sale')}}: ${{ number_format($sale->total_amount, 2) }}</div>
                                 </div>
                             </div>
                         @endforeach
@@ -92,7 +92,7 @@
                                 <div class="d-flex align-items-center">
                                     <div class="me-3 text-muted small">{{ $product->updated_at->diffForHumans() }}</div>
                                     <div class="rounded-circle bg-info" style="width: 8px; height: 8px;"></div>
-                                    <div class="ms-3">Product "{{ $product->name }}" updated</div>
+                                    <div class="ms-3">{{__('messages.products')}} "{{ $product->name }}" {{__('messages.updated')}}</div>
                                 </div>
                             </div>
                         @endforeach
@@ -104,8 +104,8 @@
                                 <div class="d-flex align-items-center">
                                     <div class="me-3 text-muted small">{{ now()->diffForHumans() }}</div>
                                     <div class="rounded-circle bg-warning" style="width: 8px; height: 8px;"></div>
-                                    <div class="ms-3">Low stock alert: "{{ $product->name }}" (Qty:
-                                        {{ $product->quantity }})</div>
+                                    <div class="ms-3">{{__('messages.low_stock_alert')}}: "{{ $product->name }}" ({{__('messages.qty')}}:
+                                        {{ $product->stock_quantity }})</div>
                                 </div>
                             </div>
                         @endforeach
@@ -158,7 +158,7 @@
                         x: {
                             title: {
                                 display: true,
-                                text: 'Month Number'
+                                text: 'Month'
                             }
                         }
                     }
