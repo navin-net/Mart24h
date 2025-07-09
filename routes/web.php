@@ -8,6 +8,7 @@ use App\Http\Controllers\admin\PurchasesController;
 use App\Http\Controllers\Admin\QualitysController;
 use App\Http\Controllers\Admin\SalesController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LanguageController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Shop\MainController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
+
 
 
 
@@ -42,19 +44,17 @@ Route::get('testing', function () {
     return view('testing');
 });
 
-
-// Route::get('/', function () {
-//     return view('shop.index');
-// });
+Route::get('pos',function(){
+    return view('pos');
+});
 
 Route::get('/', [MainController::class, 'index']);
 // web.php
 Route::get('shop/products', [MainController::class, 'products'])->name('shop.products');
 Route::get('/product-detail/{id}', [MainController::class, 'productDetail'])->name('shop.productDetail');
-
 Route::get('shop/about', [MainController::class, 'about'])->name('shop.about');
 Route::get('shop/contact', [MainController::class, 'contact'])->name('shop.contact');
-
+Route::get('shop/new-arrivals',[MainController::class,'new_arrivals'])->name('shop.new-arrivals');
 Route::get('/product-alerts', [AuthController::class, 'getAlerts']);
 
 
@@ -71,14 +71,16 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 Route::middleware('auth')->group(function () {
 
-Route::get('/users/{id}/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-Route::put('/users/{id}/profile', [ProfileController::class, 'update'])->name('profile.update');    Route::resource('purchases', PurchasesController::class)->except(['show']);
+    Route::get('/users/{id}/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/users/{id}/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::resource('purchases', PurchasesController::class)->except(['show']);
     Route::post('purchases/bulk-delete', [PurchasesController::class, 'bulkDelete'])->name('purchases.bulkDelete');
     Route::get('purchases/export', [PurchasesController::class, 'export'])->name('purchases.export');
     Route::get('/purchases/getData', [PurchasesController::class, 'getData'])->name('purchases.getData');
-    Route::get('/purchases/show',[PurchasesController::class,'show'])->name('purchases.show');
+    Route::get('/purchases/show', [PurchasesController::class, 'show'])->name('purchases.show');
     Route::resource('products', ProductController::class)->except(['show']);
     Route::get('/products/getData', [ProductController::class, 'getData'])->name('products.getData');
+    Route::get('/products/show/{id}',[ProductController::class,'show'])->name('products.show');
     Route::get('/products/subcategories', [ProductController::class, 'getSubCategories'])->name('products.subcategories');
 
     Route::resource('/brands', BrandController::class)->except(['show']);
@@ -90,18 +92,19 @@ Route::put('/users/{id}/profile', [ProfileController::class, 'update'])->name('p
     Route::post('/categories/bulk-delete', [CategoriesController::class, 'bulkDelete'])->name('categories.bulkDelete');
 
 
+    Route::resource('/subcategories', SubCategoryController::class)->except(['show']);
 
 
     Route::resource('/sales', SalesController::class)->except(['show']);
-    Route::get('/sales/show/{id}', [SalesController::class, 'show'])->name('sales.show');
+    // Route::get('/sales/show/{id}', [SalesController::class, 'show'])->name('sales.show');
     Route::get('/sales/getData', [SalesController::class, 'getData'])->name('sales.getData');
     Route::post('/sales/bulk-delete', [SalesController::class, 'bulkDelete'])->name('sales.bulkDelete');
     Route::get('/sales/export', [SalesController::class, 'export'])->name('sales.export');
     Route::get('/sales/detail/{id}', [SalesController::class, 'show'])->name('sales.show');
 
-///Settings
+    ///Settings
     Route::resource('/settings', SettingsController::class)->except(['show']);
-Route::resource('/banner', BannerController::class)->except(['show']);
+    Route::resource('/banner', BannerController::class)->except(['show']);
     Route::post('/banner/bulk-delete', [BannerController::class, 'bulkDelete'])->name('banners.bulkDelete');
 });
 

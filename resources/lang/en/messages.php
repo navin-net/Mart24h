@@ -172,9 +172,16 @@ return [
     'stock_issues_detected' => 'Stock Issues Detected',
     'see_all'   => 'See All',
     'data'  => 'Data',
+    'total_sales' => 'Total Sales',
+    'total_purchases'   => 'Total Purchases',
+    'after_6_month' => 'After 6 Month',
     'new_sale'  => 'New Sale',
     'updated'   => 'Updated',
     'qty'       => 'Qty',
     'low_stock_alert'   => 'Low Stock Alert',
+    'out_of_stock'  => 'Out Of Stock',
+    'print'         => 'Printer',
+    'qualitys'      => 'Qualitys',
+    'edit_purchase' => 'Edit Purchase',
     'product_cannot_be_deleted_has_sales' =>  'Product Cannot Be Deleted Has Sales'
 ];

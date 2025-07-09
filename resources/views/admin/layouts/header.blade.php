@@ -83,7 +83,7 @@
                 <div class="dropdown-menu dropdown-menu-end p-2" style="width: 300px;" id="alertContainer">
                     <h6 class="dropdown-header text-danger">
                         <div id="alertList">
-                            <div class="text-muted small">No alerts</div>
+                            {{-- <div class="text-muted small">No alerts</div> --}}
                         </div>
                     </h6>
                     <hr class="dropdown-divider">

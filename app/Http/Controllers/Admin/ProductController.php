@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ProductImage;
 use App\Models\Products;
 use App\Models\SaleItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -115,59 +117,74 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:191',
-            'sku' => 'required|string|max:191|unique:products,sku',
-            'brand_id' => 'required|exists:brands,id',
-            'category_id' => 'required|exists:categories,id',
-            'subcategory_id' => [
-                // 'required',
-                'exists:sub_categories,id',
-                function ($attribute, $value, $fail) use ($request) {
-                    $subCategory = DB::table('sub_categories')
-                        ->where('id', $value)
-                        ->where('category_id', $request->category_id)
-                        ->first();
-                    if (!$subCategory) {
-                        $fail(__('messages.invalid_subcategory'));
-                    }
-                },
-            ],
-            'quality_id' => 'required|exists:qualitys,id',
-            'cost_price' => 'required|numeric|min:0',
-            'selling_price' => 'required|numeric|min:0',
-            'stock_quantity' => 'required|integer|min:0',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:191',
+                'sku' => 'required|string|max:191|unique:products,sku',
+                'brand_id' => 'required|exists:brands,id',
+                'category_id' => 'required|exists:categories,id',
+                'subcategory_id' => [
+                    'nullable',
+                    'exists:sub_categories,id',
+                    function ($attribute, $value, $fail) use ($request) {
+                        if ($value) {
+                            $subCategory = DB::table('sub_categories')
+                                ->where('id', $value)
+                                ->where('category_id', $request->category_id)
+                                ->first();
+                            if (!$subCategory) {
+                                $fail(__('messages.invalid_subcategory'));
+                            }
+                        }
+                    },
+                ],
+                'quality_id' => 'required|exists:qualitys,id', // Match table name from create()
+                'cost_price' => 'required|numeric|min:0',
+                'selling_price' => 'required|numeric|min:0',
+                'stock_quantity' => 'required|integer|min:0',
+                'description' => 'nullable|string',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'image_review.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $data = $request->except('image');
-
-        if ($image = $request->file('image')) {
-            $destinationPath = public_path('upload/image/');
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0755, true);
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
             }
-            if (!is_writable($destinationPath)) {
-                return response()->json(['error' => __('messages.server_error')], 500);
+
+            $data = $request->except('image', 'image_review');
+
+            // Handle main image upload
+            if ($request->hasFile('image')) {
+                $data['image'] = $request->file('image')->store('images', 'public');
             }
-            $profileImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
-            $image->move($destinationPath, $profileImage);
-            $data['image'] = 'upload/image/' . $profileImage; // Store full path
+
+            // Create the product
+            $product = Products::create($data);
+
+            // Handle review images
+            if ($request->hasFile('image_review')) {
+                foreach ($request->file('image_review') as $reviewImage) {
+                    $path = $reviewImage->store('images', 'public');
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image_review' => $path,
+                    ]);
+                }
+            }
+
+            session()->flash('success', __('messages.product_created'));
+
+            return response()->json([
+                'message' => __('messages.product_created'),
+                'redirect' => route('products.index')
+            ], 201);
+        } catch (\Exception $e) {
+            Log::error('Product creation failed: ' . $e->getMessage(), [
+                'request' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => 'Server error occurred. Please try again.'], 500);
         }
-
-        Products::create($data);
-
-        session()->flash('success', __('messages.product_created'));
-
-        return response()->json([
-            'message' => __('messages.product_created'),
-            'redirect' => route('products.index')
-        ], 201);
     }
 
     public function edit($id)
@@ -187,6 +204,47 @@ class ProductController extends Controller
             'categories' => $categories,
             'subcategories' => $subcategories,
             'qualities' => $qualities
+        ]);
+    }
+
+    public function show($id)
+    {
+        $product = DB::table('products')
+            ->select(
+                'products.*',
+                'brands.name as brand_name',
+                'categories.name as category_name',
+                'sub_categories.name as subcategory_name',
+                // 'product_images.image_review',
+                'qualitys.name as quality_name'
+            )
+            // ->leftJoin('product_images', 'products.id', '=', 'product_images.product_id')
+            ->leftJoin('brands', 'products.brand_id', '=', 'brands.id')
+            ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+            ->leftJoin('sub_categories', 'products.subcategory_id', '=', 'sub_categories.id')
+            ->leftJoin('qualitys', 'products.quality_id', '=', 'qualitys.id')
+            ->where('products.id', $id)
+            ->first();
+        
+        $images = DB::table('product_images')
+        ->where('product_id', $id)
+        ->pluck('image_review'); 
+        // pp($product,$images);
+
+        // return view('admin.products.show', [
+        //     'pageTitle' => __('messages.product_details'),
+        //     'heading' => __('messages.product_details'),
+        //     'product' => $product,
+        //     'image_review' => $images,
+        //     'breadcrumbs' => [
+        //         ['label' => __('messages.dashboard'), 'url' => route('dashboard'), 'active' => false],
+        //         ['label' => __('messages.products'), 'url' => route('products.index'), 'active' => false],
+        //         ['label' => __('messages.create'), 'url' => '', 'active' => true],
+        //     ]
+        // ]);
+        return response()->json([
+            'product' => $product,
+            'image_review' => $images
         ]);
     }
 
@@ -215,7 +273,7 @@ class ProductController extends Controller
             'quality_id' => 'required|exists:qualitys,id',
             'cost_price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
-            'stock_quantity' => 'required|integer|min:0',
+            // 'stock_quantity' => 'required|integer|min:0',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);

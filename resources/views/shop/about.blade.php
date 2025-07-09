@@ -1,6 +1,12 @@
 @extends('shop.layouts.app')
 @section('title','about')
 @section('content')
+    <div class="contact-header">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold">{{__('About')}}</h1>
+            <p class="lead">We'd love to hear from you. Get in touch with our team.</p>
+        </div>
+    </div>
     <!-- About Section -->
     <section class="about-section">
         <div class="container">

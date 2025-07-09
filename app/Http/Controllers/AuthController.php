@@ -21,7 +21,8 @@ class AuthController extends Controller
     // Show the registration form
     public function showRegisterForm()
     {
-        return view('auth.register');
+        $roles = DB::table('roles')->select('id', 'name')->get();
+        return view('auth.register', compact('roles'));
     }
 
 
@@ -34,13 +35,17 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'role_id' => 'required|exists:roles,id', // validate role
+
         ]);
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role_id' => 2, // Default role is 'user'
+            // 'role_id' => 2, // Default role is 'user'
+            'role_id' => $request->role_id,
+
         ]);
 
         return redirect()->route('login')->with('success', 'Registration successful. Please log in.');
@@ -127,25 +132,42 @@ class AuthController extends Controller
             ->groupBy('month')
             ->orderBy('month')
             ->get();
-
+        $purchasesMonthly = Purchase::select(
+            DB::raw('MONTH(date) as month'),
+            DB::raw('SUM(total_amount) as total')
+        )
+            ->whereYear('date', Carbon::now()->year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
         // Initialize all 12 months
         $salesData = [];
+        $purchasesData = [];
         $labels = [];
 
         for ($i = 1; $i <= 12; $i++) {
             $labels[] = $i; // month number 1–12
             $monthSales = $salesMonthly->firstWhere('month', $i);
             $salesData[] = $monthSales ? $monthSales->total : 0;
+
+            $monthPurchase = $purchasesMonthly->firstWhere('month', $i);
+            $purchasesData[] = $monthPurchase ? $monthPurchase->total : 0;
         }
 
-        // / Get latest 5 sales
-        $recentSales = Sale::orderBy('date', 'desc')->take(5)->get();
+        $recentBeforSales = Sale::whereDate('date', '>=', Carbon::now()->subMonths(2))
+            ->whereDate('date', '<', Carbon::today())
+            ->sum('total_amount');
 
+        $recentBeforPurchases = Purchase::whereDate('date', '>=', Carbon::now()->subMonth(2))
+            ->whereDate('date', '<', Carbon::today())
+            ->sum('total_amount');
+        // / Get latest 5 sales
+        $recentSales = Sale::whereDate('date', Carbon::today())->orderBy('date', 'desc')->take(1)->get();
         // Get latest 5 updated products
-        $recentProducts = Products::orderBy('updated_at', 'desc')->take(5)->get();
+        $recentProducts = Products::orderBy('updated_at', 'desc')->take(1)->get();
 
         // Optional: Low stock alerts (products with quantity < 5)
-        $lowStockProducts = Products::where('stock_quantity', '<', 5)->orderBy('stock_quantity')->take(5)->get();
+        $lowStockProducts = Products::where('stock_quantity', '<', 0)->orderBy('stock_quantity')->take(5)->get();
 
 
         return view('admin.dashboard.main', [
@@ -154,9 +176,12 @@ class AuthController extends Controller
             'salesCount' => $salesCount,
             'purchasesCount' => $purchasesCount,
             'salesLabels' => $labels,
+            'purchasesData' => $purchasesData,
             'salesData' => $salesData,
             'recentSales' => $recentSales,
+            'recentBeforSales'  => $recentBeforSales,
             'recentProducts' => $recentProducts,
+            'recentBeforPurchases'  => $recentBeforPurchases,
             'lowStockProducts' => $lowStockProducts,
         ]);
     }
@@ -165,6 +190,6 @@ class AuthController extends Controller
         // $today = now()->toDateString();
 
         // ->orWhere('expiry_date', '<', $today)
-        return Products::where('stock_quantity', '<=', 0)->get(['id', 'name', 'stock_quantity']);
+        return Products::where('stock_quantity', '<=', -1)->get(['id', 'name', 'stock_quantity']);
     }
 }

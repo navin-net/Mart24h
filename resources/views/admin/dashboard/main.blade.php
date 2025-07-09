@@ -53,9 +53,9 @@
                         <h5 class="card-title mb-0">{{ __('messages.sales_report') }}</h5>
                         <small class="text-muted">{{ __('messages.data') }}</small>
                     </div>
-<!--                     <button class="btn btn-sm btn-outline-custom">
-                        <i class="bi bi-three-dots"></i>
-                    </button> -->
+                    <!--                     <button class="btn btn-sm btn-outline-custom">
+                            <i class="bi bi-three-dots"></i>
+                        </button> -->
                 </div>
                 <div class="card-body">
                     <canvas id="salesChart" height="300"></canvas>
@@ -80,10 +80,43 @@
                                     <div class="me-3 text-muted small">
                                         {{ \Carbon\Carbon::parse($sale->date)->diffForHumans() }}</div>
                                     <div class="rounded-circle bg-success" style="width: 8px; height: 8px;"></div>
-                                    <div class="ms-3">{{ __('messages.new_sale')}}: ${{ number_format($sale->total_amount, 2) }}</div>
+                                    <div class="ms-3">{{ __('messages.new_sale') }}:
+                                        ${{ number_format($sale->total_amount, 2) }}</div>
                                 </div>
                             </div>
                         @endforeach
+
+                        {{-- Sale Befor --}}
+                        {{-- @foreach ($recentBeforSales as $salebe) --}}
+                        <div class="list-group-item bg-transparent border-bottom"
+                            style="border-color: var(--border-color) !important;">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3 text-muted small">
+                                    {{ __('messages.after_6_month') }}
+                                </div>
+                                <div class="rounded-circle bg-success" style="width: 8px; height: 8px;"></div>
+                                <div class="ms-3">
+                                    <div class="ms-3">{{ __('messages.total_sales') }}:
+                                        ${{ number_format($recentBeforSales, 2) }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="list-group-item bg-transparent border-bottom"
+                            style="border-color: var(--border-color) !important;">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3 text-muted small">
+                                    {{ __('messages.after_6_month') }}
+                                </div>
+                                <div class="rounded-circle bg-success" style="width: 8px; height: 8px;"></div>
+                                <div class="ms-3">
+                                    <div class="ms-3">{{ __('messages.total_purchases') }}:
+                                        ${{ number_format($recentBeforPurchases, 2) }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- @endforeach --}}
 
                         {{-- Product Updates --}}
                         @foreach ($recentProducts as $product)
@@ -92,7 +125,8 @@
                                 <div class="d-flex align-items-center">
                                     <div class="me-3 text-muted small">{{ $product->updated_at->diffForHumans() }}</div>
                                     <div class="rounded-circle bg-info" style="width: 8px; height: 8px;"></div>
-                                    <div class="ms-3">{{__('messages.products')}} "{{ $product->name }}" {{__('messages.updated')}}</div>
+                                    <div class="ms-3">{{ __('messages.products') }} "{{ $product->name }}"
+                                        {{ __('messages.updated') }}</div>
                                 </div>
                             </div>
                         @endforeach
@@ -104,7 +138,8 @@
                                 <div class="d-flex align-items-center">
                                     <div class="me-3 text-muted small">{{ now()->diffForHumans() }}</div>
                                     <div class="rounded-circle bg-warning" style="width: 8px; height: 8px;"></div>
-                                    <div class="ms-3">{{__('messages.low_stock_alert')}}: "{{ $product->name }}" ({{__('messages.qty')}}:
+                                    <div class="ms-3">{{ __('messages.low_stock_alert') }}: "{{ $product->name }}"
+                                        ({{ __('messages.qty') }}:
                                         {{ $product->stock_quantity }})</div>
                                 </div>
                             </div>
@@ -140,13 +175,22 @@
                 data: {
                     labels: @json($salesLabels), // [1, 2, ..., 12]
                     datasets: [{
-                        label: 'Sales by Month',
-                        data: @json($salesData),
-                        borderColor: '#0ea5e9',
-                        backgroundColor: 'rgba(14, 165, 233, 0.2)',
-                        fill: true,
-                        tension: 0.4
-                    }]
+                            label: 'Sales by Month',
+                            data: @json($salesData),
+                            borderColor: '#0ea5e9',
+                            backgroundColor: 'rgba(14, 165, 233, 0.2)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Purchases by Month',
+                            data: @json($purchasesData),
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
@@ -158,7 +202,7 @@
                         x: {
                             title: {
                                 display: true,
-                                text: 'Month'
+                                text: '{{ __('messages.month') }}'
                             }
                         }
                     }

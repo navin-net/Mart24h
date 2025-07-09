@@ -144,12 +144,16 @@ return [
     'customer' => 'អតិថិជន',
     'sale_deleted_successfully' => 'បានលុបការលក់ដោយជោគជ័យ',
     'product_cannot_be_deleted_has_sales' => 'ផលិតផលមិនអាចលុបបាន មានលក់',
-'see_all' => 'មើលទាំងអស់',
+    'see_all' => 'មើលទាំងអស់',
     'data'  => 'ទិន្នន័យ',
-'new_sale' => 'លក់ថ្មី',
-'updated' => 'បានធ្វើបច្ចុប្បន្នភាព',
-'qty'   => 'ចំនួន',
-'low_stock_alert' => 'ការជូនដំណឹងអំពីស្តុកទាប',
+    'new_sale' => 'លក់ថ្មី',
+    'updated' => 'បានធ្វើបច្ចុប្បន្នភាព',
+    'qty'   => 'ចំនួន',
+    'low_stock_alert' => 'ការជូនដំណឹងអំពីស្តុកទាប',
+    'total_sales' => 'ការលក់សរុប',
+    'after_6_month' => 'ក្រោយ 6 ខែ',
+    'total_purchases' => 'ការទិញសរុប',
+    'qualitys' => 'គុណភាព',
     'total_quantity' => 'បរិមាណសរុប'
 
 

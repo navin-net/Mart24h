@@ -84,7 +84,10 @@
             z-index: 1020;
             overflow-y: auto;
             transform: translateX(-100%);
-            /* Always closed by default */
+        }
+
+        .sidebar-visible .sidebar {
+            transform: translateX(0);
         }
 
         .main-content {
@@ -98,9 +101,7 @@
             padding: 1.5rem;
         }
 
-        .sidebar-visible .sidebar {
-            transform: translateX(0);
-        }
+
 
         .nav-link {
             color: var(--text-color);
@@ -147,28 +148,8 @@
             margin-bottom: 0.5rem;
         }
 
-        .back-to-top {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            display: none;
-            z-index: 1030;
-            width: 40px;
-            height: 40px;
-            background-color: #0ea5e9;
-            color: white;
-            border: none;
-            transition: transform 0.2s, background-color 0.2s;
-        }
 
-        .back-to-top:hover {
-            transform: translateY(-3px);
-            background-color: #0284c7;
-        }
 
-        .back-to-top.show {
-            display: flex;
-        }
 
         .card {
             border-radius: 8px;
@@ -292,10 +273,12 @@
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1015;
             display: none;
+            pointer-events: none;
         }
 
         .sidebar-visible .sidebar-overlay {
             display: block;
+            pointer-events: auto;
         }
 
         /* DataTables customization */
@@ -337,6 +320,7 @@
         }
 
         @media (max-width: 992px) {
+
             .main-content {
                 padding: 1rem;
             }
@@ -350,6 +334,23 @@
                 display: none !important;
             }
 
+            .app-header {
+                height: 56px;
+            }
+
+            .main-content {
+                margin-top: 56px;
+            }
+
+            .sidebar {
+                top: 56px;
+            }
+
+
+
+
+
+
             .card {
                 margin-bottom: 1rem;
             }
@@ -362,23 +363,40 @@
                 font-size: 1.75rem;
             }
 
-            .app-header {
-                height: 56px;
-            }
 
-            .main-content {
-                margin-top: 56px;
-            }
 
-            .sidebar {
-                top: 56px;
-            }
+
+
+        }
+
+
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 3.5rem;
+            height: 3.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(1rem);
+            transition: all 0.3s ease-in-out;
+            z-index: 1050;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-0.25rem);
         }
     </style>
     @yield('styles')
 </head>
 
-<body>
+<body data-bs-spy="scroll">
     <div class="sidebar-overlay"></div>
 
     <!-- Header -->
@@ -395,9 +413,13 @@
     </main>
 
     <!-- Back to Top -->
-        <a href="#" class="back-to-top rounded-circle shadow d-flex align-items-center justify-content-center">
-        <i class="bi bi-arrow-up"></i>
-    </a>
+    <button type="button"
+        class="btn btn-primary back-to-top rounded-circle shadow d-flex align-items-center justify-content-center"
+        id="backToTopBtn" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Back to top"
+        aria-label="Back to top">
+        <i class="bi bi-arrow-up fs-5"></i>
+    </button>
+
 
     <!-- Bootstrap 5.3 JS -->
     <script src="{{ asset('assets1/bootstrap.bundle.min.js') }}"></script>
@@ -470,7 +492,7 @@
                 localStorage.setItem('sidebar-visible', false);
             });
 
-            const sidebarLinks = document.querySelectorAll('.sidebar .nav-link');
+            const sidebarLinks = document.querySelectorAll('.sidebar .nav-link:not([data-bs-toggle="collapse"])');
             sidebarLinks.forEach(link => {
                 link.addEventListener('click', () => {
                     if (window.innerWidth < 992) {
@@ -480,73 +502,99 @@
                 });
             });
 
-            // Remove auto-show on hover
-            // Optional: you can also remove this block if hover reveal isn't wanted:
-            /*
-            document.addEventListener('mousemove', (e) => {
-                if (window.innerWidth >= 992 || savedSidebarState === 'false') return;
-                if (e.clientX < 10 && !body.classList.contains('sidebar-visible')) {
-                    body.classList.add('sidebar-visible');
-                    localStorage.setItem('sidebar-visible', true);
+
+            const collapseLinks = document.querySelectorAll('.sidebar .nav-link[data-bs-toggle="collapse"]');
+            collapseLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 992) {
+                        body.classList.add('sidebar-visible');
+                        localStorage.setItem('sidebar-visible', true);
+                    }
+                });
+            });
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const alertList = document.getElementById('alertList');
+            const cartBadge = document.getElementById('cartBadge');
+
+            fetch('/product-alerts')
+                .then(res => res.json())
+                .then(products => {
+                    alertList.innerHTML = ''; // clear old alerts
+
+                    if (!products.length) {
+                        alertList.innerHTML = '<div class="text-center small">Null</div>';
+                        cartBadge.style.display = 'none';
+                        return;
+                    }
+
+                    cartBadge.style.display = 'inline-block';
+                    cartBadge.textContent = products.length;
+
+                    products.forEach(product => {
+                        // Create clickable alert item linking to product detail page
+                        const alertItem = document.createElement('a');
+                        alertItem.href = `/products/show/${product.id}`;
+                        // {{ route('products.index') }}/' + id + '/edit'
+                        alertItem.className =
+                            'dropdown-item d-flex justify-content-between align-items-center';
+                        alertItem.textContent = product.name;
+
+                        const badge = document.createElement('span');
+                        badge.className = 'badge bg-danger rounded-pill';
+                        badge.textContent = `Stock: ${product.stock_quantity}`;
+
+                        alertItem.appendChild(badge);
+                        alertList.appendChild(alertItem);
+                    });
+                })
+                .catch(err => {
+                    console.error('Failed to fetch product alerts:', err);
+                    alertList.innerHTML = '<div class="text-danger small">Error loading alerts</div>';
+                    cartBadge.style.display = 'none';
+                });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const backToTopBtn = document.getElementById('backToTopBtn');
+            const scrollThreshold = 300;
+
+            // Initialize Bootstrap tooltip
+            const tooltip = new bootstrap.Tooltip(backToTopBtn);
+
+            // Show/hide button based on scroll position
+            function toggleBackToTopButton() {
+                if (window.pageYOffset > scrollThreshold) {
+                    backToTopBtn.classList.add('show');
+                } else {
+                    backToTopBtn.classList.remove('show');
                 }
-            });
-            */
+            }
 
-            const backToTopButton = document.querySelector('.back-to-top');
-            window.addEventListener('scroll', () => {
-                backToTopButton.classList.toggle('show', window.scrollY > 300);
-            });
-
-            backToTopButton?.addEventListener('click', (e) => {
-                e.preventDefault();
+            // Smooth scroll to top
+            function scrollToTop() {
                 window.scrollTo({
                     top: 0,
                     behavior: 'smooth'
                 });
+
+                // Hide tooltip after click
+                tooltip.hide();
+            }
+
+            // Event listeners
+            window.addEventListener('scroll', toggleBackToTopButton);
+            backToTopBtn.addEventListener('click', scrollToTop);
+
+            // Keyboard accessibility
+            backToTopBtn.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    scrollToTop();
+                }
             });
         });
     </script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const alertList = document.getElementById('alertList');
-    const cartBadge = document.getElementById('cartBadge');
-
-    fetch('/api/product-alerts')
-        .then(res => res.json())
-        .then(products => {
-            alertList.innerHTML = '';  // clear old alerts
-
-            if (!products.length) {
-                alertList.innerHTML = '<div class="text-muted small">No alerts</div>';
-                cartBadge.style.display = 'none';
-                return;
-            }
-
-            cartBadge.style.display = 'inline-block';
-            cartBadge.textContent = products.length;
-
-            products.forEach(product => {
-                // Create clickable alert item linking to product detail page
-                const alertItem = document.createElement('a');
-                alertItem.href = `/products/${product.id}`;
-                alertItem.className = 'dropdown-item d-flex justify-content-between align-items-center';
-                alertItem.textContent = product.name;
-
-                const badge = document.createElement('span');
-                badge.className = 'badge bg-danger rounded-pill';
-                badge.textContent = `Stock: ${product.stock_quantity}`;
-
-                alertItem.appendChild(badge);
-                alertList.appendChild(alertItem);
-            });
-        })
-        .catch(err => {
-            console.error('Failed to fetch product alerts:', err);
-            alertList.innerHTML = '<div class="text-danger small">Error loading alerts</div>';
-            cartBadge.style.display = 'none';
-        });
-});
-</script>
 
 
 

@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Products;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
-use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -50,7 +51,7 @@ class PurchasesController extends Controller
 
     public function create()
     {
-        $products = Products::select('id', 'name', 'sku')->get();
+        $products = Products::select('id', 'name', 'sku', 'stock_quantity', 'cost_price')->get();
 
         return view('admin.purchases.create', [
             'products' => $products,
@@ -69,6 +70,7 @@ class PurchasesController extends Controller
         $validator = Validator::make($request->all(), [
             'total_amount' => 'required|numeric|min:0',
             'date' => 'required|date',
+            'status' => 'required|in:pending,completed,cancelled',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
@@ -79,43 +81,64 @@ class PurchasesController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        DB::transaction(function () use ($request) {
-            $purchase = Purchase::create([
-                'supplier_id' => null,
-                'total_amount' => $request->total_amount,
-                'date' => $request->date,
-            ]);
+        // Verify total_amount and cost_price
+        $calculatedTotal = 0;
+        $productIds = array_column($request->items, 'product_id');
+        $products = Products::whereIn('id', $productIds)->pluck('cost_price', 'id');
 
-            foreach ($request->items as $item) {
-                PurchaseItem::create([
-                    'purchase_id' => $purchase->id,
-                    'product_id' => $item['product_id'],
-                    'quantity' => $item['quantity'],
-                    'cost_price' => $item['cost_price'],
+        foreach ($request->items as $index => $item) {
+            if (!isset($products[$item['product_id']]) || abs($products[$item['product_id']] - $item['cost_price']) > 0.01) {
+                $validator->errors()->add("items.$index.cost_price", 'Invalid cost price for the selected product.');
+            }
+            $calculatedTotal += $item['quantity'] * $item['cost_price'];
+        }
+
+        if ($validator->errors()->count() > 0) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        if (abs($calculatedTotal - $request->total_amount) > 0.01) {
+            return response()->json(['errors' => ['total_amount' => ['The total amount does not match the sum of items.']]], 422);
+        }
+
+        try {
+            DB::transaction(function () use ($request) {
+                $purchase = Purchase::create([
+                    'supplier_id' => null,
+                    'total_amount' => $request->total_amount,
+                    'date' => $request->date,
+                    'status' => $request->status,
                 ]);
 
-                Products::where('id', $item['product_id'])
-                    ->increment('stock_quantity', $item['quantity']);
-            }
-        });
-                $products = Products::select('id', 'name', 'sku')->get();
+                foreach ($request->items as $item) {
+                    PurchaseItem::create([
+                        'purchase_id' => $purchase->id,
+                        'product_id' => $item['product_id'],
+                        'quantity' => $item['quantity'],
+                        'cost_price' => $item['cost_price'],
+                    ]);
 
+                    $product = Products::find($item['product_id']);
+                    if ($product) {
+                        $product->increment('stock_quantity', $item['quantity']);
+                    } else {
+                        throw new \Exception("Product with ID {$item['product_id']} not found.");
+                    }
+                }
+            });
 
-        session()->flash('success', __('messages.purchase_created'));
+            session()->flash('success', __('messages.purchase_created'));
 
-        return view('admin.purchases.index', [
-            'pageTitle' => __('messages.purchases_list'),
-            'heading' => __('messages.purchases_list'),
-            'breadcrumbs' => [
-                ['label' => __('messages.dashboard'), 'url' => route('dashboard'), 'active' => false],
-                ['label' => __('messages.purchases'), 'url' => '', 'active' => true],
-            ],
-            'products' => $products
-        ]);
-        // return response()->json([
-        //     'message' => __('messages.purchase_created'),
-        //     'redirect' => route('purchases.index')
-        // ], 201);
+            Log::info('Purchase created', ['total_amount' => $request->total_amount, 'items' => $request->items]);
+
+            return response()->json([
+                'message' => __('messages.purchase_created_successfully'),
+                'redirect' => route('purchases.index')
+            ], 201);
+        } catch (\Exception $e) {
+            Log::error('Purchase creation failed', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'An error occurred while creating the purchase: ' . $e->getMessage()], 500);
+        }
     }
 
     public function show($id)
@@ -187,33 +210,29 @@ class PurchasesController extends Controller
         ], 200);
     }
 
-public function destroy($id)
-{
-    $purchase = Purchase::findOrFail($id);
+    public function destroy($id)
+    {
+        $purchase = Purchase::with('items')->findOrFail($id);
 
-    DB::transaction(function () use ($purchase) {
-        // Delete purchase_items and update stock quantities in one transaction
-        DB::table('purchase_items')
-            ->join('products', 'purchase_items.product_id', '=', 'products.id')
-            ->where('purchase_items.purchase_id', $purchase->id)
-            ->delete();
+        DB::transaction(function () use ($purchase) {
+            // Decrement stock quantities before deleting items
+            foreach ($purchase->items as $item) {
+                Products::where('id', $item->product_id)
+                    ->decrement('stock_quantity', $item->quantity);
+            }
 
-        // Decrement stock quantities using a subquery to get quantities from deleted items
-        DB::table('products')
-            ->join('purchase_items', 'products.id', '=', 'purchase_items.product_id')
-            ->whereIn('purchase_items.purchase_id', [$purchase->id])
-            ->update([
-                'stock_quantity' => DB::raw('stock_quantity - purchase_items.quantity')
-            ]);
+            // Delete purchase items
+            PurchaseItem::where('purchase_id', $purchase->id)->delete();
 
-        // Delete the purchase
-        $purchase->delete();
-    });
+            // Delete the purchase
+            $purchase->delete();
+        });
 
-    session()->flash('success', __('messages.purchase_deleted_successfully'));
+        session()->flash('success', __('messages.purchase_deleted_successfully'));
 
-    return response()->json(['message' => __('messages.purchase_deleted_successfully')], 200);
-}
+        return response()->json(['message' => __('messages.purchase_deleted_successfully')], 200);
+    }
+
 
     public function bulkDelete(Request $request)
     {

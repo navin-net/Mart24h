@@ -22,20 +22,20 @@
             </button>
             <ul class="dropdown-menu w-100">
                 <li>
-                    <a class="dropdown-item {{ app()->getLocale() == 'en' ? 'active' : '' }}"
-                        href="{{ url('/language/en') }}">
+                        <a class="dropdown-item d-flex align-items-center {{ app()->getLocale() == 'en' ? 'active' : '' }}"
+                            href="{{ route('language.switch', ['language' => 'en']) }}">
                         <i class="bi bi-flag me-2"></i>{{ __('messages.english') }}
                     </a>
                 </li>
                 <li>
-                    <a class="dropdown-item {{ app()->getLocale() == 'km' ? 'active' : '' }}"
-                        href="{{ url('/language/km') }}">
+                        <a class="dropdown-item d-flex align-items-center {{ app()->getLocale() == 'km' ? 'active' : '' }}"
+                            href="{{ route('language.switch', ['language' => 'km']) }}">
                         <i class="bi bi-flag me-2"></i>{{ __('messages.khmer') }}
                     </a>
                 </li>
             </ul>
         </div>
-
+<!--  -->
         <div class="input-group mb-3">
             <span class="input-group-text bg-transparent border-end-0">
                 <i class="bi bi-search"></i>

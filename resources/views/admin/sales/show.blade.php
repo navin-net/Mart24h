@@ -3,6 +3,26 @@
 @section('title', __('messages.view_sale'))
 
 @section('content')
+<style>
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        .section, .section * {
+            visibility: visible;
+        }
+        .section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+        .section .mt-3 {
+            display: none; /* Hide the buttons during printing */
+        }
+    }
+</style>
+
 <div class="container-fluid py-4">
     <div class="pagetitle mb-4">
         <h1 class="display-6 fw-bold">{{ __('messages.view_sale') }}</h1>
@@ -40,7 +60,6 @@
                                         {{ ucfirst($sale->status) }}
                                     </span>
                                 </div>
-
                             </div>
                         </div>
 
@@ -50,9 +69,8 @@
                                 <div>{{ $sale->date ?? '-' }}</div>
                             </div>
                             <div class="col-md-6">
-                                           <label class="form-label fw-medium">{{ __('messages.customer') }}</label>
+                                <label class="form-label fw-medium">{{ __('messages.customer') }}</label>
                                 <div>{{ $sale->customer->name ?? 'N/A' }}</div>
-
                             </div>
                         </div>
 
@@ -93,9 +111,14 @@
                             </table>
                         </div>
 
-                        <div class="mt-3">
-                            <a href="{{ route('sales.index') }}" class="btn btn-secondary btn-sm rounded-2">{{ __('messages.back') }}</a>
-                            <a href="{{ route('sales.edit', $sale->id) }}" class="btn btn-primary btn-sm rounded-2">{{ __('messages.edit') }}</a>
+                        <div class="mt-3 row">
+                            <div class="col-md-6 d-flex align-items-center">
+                                <a href="{{ route('sales.index') }}" class="btn btn-secondary btn-sm rounded-2 me-2">{{ __('messages.back') }}</a>
+                                <a href="{{ route('sales.edit', $sale->id) }}" class="btn btn-primary btn-sm rounded-2 me-2">{{ __('messages.edit') }}</a>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <button onclick="window.print()" class="btn btn-success btn-sm rounded-2">{{ __('messages.print') }}</button>
+                            </div>
                         </div>
                     </div>
                 </div>

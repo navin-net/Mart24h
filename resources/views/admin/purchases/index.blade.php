@@ -76,7 +76,6 @@
                                     <thead class="table-primary">
                                         <tr>
                                             <th><input type="checkbox" id="selectAll" class="form-check-input"></th>
-                                            {{-- <th>{{ __('messages.id') }}</th> --}}
                                             <th>{{ __('messages.total_amount') }}</th>
                                             <th>{{ __('messages.date') }}</th>
                                             <th>{{ __('messages.item_count') }}</th>
@@ -189,7 +188,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div id="edit-error-alert" class="alert alert-danger alert-dismissible fade show d-none"
+                        <div id="edit-error-alert" class="d-none"
                             role="alert">
                             <button type="button" class="btn-close" data-bs-dismiss="alert"
                                 aria-label="Close"></button>
@@ -204,25 +203,49 @@
                                         class="form-label fw-medium">{{ __('messages.total_amount') }} <span
                                             class="text-danger">*</span></label>
                                     <input type="number" step="0.01" name="total_amount" id="edit-total_amount"
-                                        class="form-control rounded-3" required>
+                                        class="form-control rounded-3" readonly required>
                                     <div class="invalid-feedback" id="total_amount-error"></div>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="edit-date" class="form-label fw-medium">{{ __('messages.date') }} <span
                                             class="text-danger">*</span></label>
-                                    <input type="date" name="date" id="edit-date" class="form-control rounded-3"
+                                    <input type="datetime-local" name="date" id="edit-date" class="form-control rounded-3"
                                         required>
                                     <div class="invalid-feedback" id="date-error"></div>
                                 </div>
+                                <div class="col-md-6">
+                                    <label for="edit-status" class="form-label fw-medium">{{ __('messages.status') }} <span
+                                            class="text-danger">*</span></label>
+                                    <select name="status" id="edit-status" class="form-select rounded-3" required>
+                                        <option value="pending">{{ __('messages.pending') }}</option>
+                                        <option value="completed">{{ __('messages.completed') }}</option>
+                                        <option value="cancelled">{{ __('messages.cancelled') }}</option>
+                                    </select>
+                                    <div class="invalid-feedback" id="status-error"></div>
+                                </div>
                             </div>
-                            <div id="edit-items"></div>
-                            <button type="button" onclick="addEditItem()"
-                                class="btn btn-secondary btn-sm rounded-3 mb-3">{{ __('messages.add_another_item') }}</button>
-                            <div class="modal-footer border-0">
-                                <button type="button" class="btn btn-secondary btn-sm rounded-3"
-                                    data-bs-dismiss="modal">{{ __('messages.cancel') }}</button>
-                                <button type="submit"
-                                    class="btn btn-primary btn-sm rounded-3">{{ __('messages.update') }}</button>
+                            <div class="mb-3">
+                                <h5>{{ __('messages.items') }}</h5>
+                                <div class="position-relative mb-3">
+                                    <label class="form-label fw-medium">{{ __('messages.product') }} <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control edit-product-search rounded-3" placeholder="{{ __('messages.search_product') }}" autocomplete="off">
+                                    <div class="edit-suggestions border position-absolute bg-white w-100 rounded-3 shadow-sm" style="display: none; z-index: 1000; max-height: 200px; overflow-y: auto;"></div>
+                                </div>
+                                <table class="table table-bordered table-hover" id="edit-itemsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ __('messages.product') }}</th>
+                                            <th>{{ __('messages.quantity') }}</th>
+                                            <th>{{ __('messages.cost_price') }}</th>
+                                            <th>{{ __('messages.action') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="edit-itemsBody"></tbody>
+                                </table>
+                            </div>
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-primary btn-sm rounded-3">{{ __('messages.update') }}</button>
+                                <button type="button" class="btn btn-secondary btn-sm rounded-3" data-bs-dismiss="modal">{{ __('messages.cancel') }}</button>
                             </div>
                         </form>
                     </div>
@@ -266,10 +289,6 @@
                         orderable: false,
                         searchable: false
                     },
-                    // {
-                    //     data: 'id',
-                    //     name: 'purchases.id'
-                    // },
                     {
                         data: 'total_amount',
                         name: 'purchases.total_amount',
@@ -366,7 +385,252 @@
                 });
             });
 
-            let editItemCount = 0;
+            let editItemIndex = 0;
+            const products = @json($products);
+            const STORAGE_KEY = 'edit_purchase_form_items';
+
+            // Load items from localStorage
+            function loadEditFromStorage() {
+                try {
+                    const savedItems = localStorage.getItem(STORAGE_KEY);
+                    if (savedItems) {
+                        const items = JSON.parse(savedItems);
+                        items.forEach(item => {
+                            addEditProductToTable(item.id, item.name, item.cost_price, item.quantity);
+                        });
+                        updateEditTotalAmount();
+
+                        if (items.length > 0) {
+                            $('#edit-error-alert').html(`
+                                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                    <i class="bi bi-info-circle"></i> Restored ${items.length} item(s) from your previous edit session.
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            `).removeClass('d-none');
+                            setTimeout(() => $('#edit-error-alert .alert-info').fadeOut(), 5000);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading from localStorage:', error);
+                    localStorage.removeItem(STORAGE_KEY);
+                }
+            }
+
+            // Save items to localStorage
+            function saveEditToStorage() {
+                try {
+                    const items = [];
+                    $('#edit-itemsBody .item-row').each(function() {
+                        const row = $(this);
+                        items.push({
+                            id: row.find('input[name*="[product_id]"]').val(),
+                            name: row.find('.fw-medium').text().trim(),
+                            cost_price: parseFloat(row.find('input[name*="[cost_price]"]').val()) || 0,
+                            quantity: parseInt(row.find('input[name*="[quantity]"]').val()) || 1
+                        });
+                    });
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+                } catch (error) {
+                    console.error('Error saving to localStorage:', error);
+                }
+            }
+
+            // Clear localStorage
+            function clearEditStorage() {
+                try {
+                    localStorage.removeItem(STORAGE_KEY);
+                } catch (error) {
+                    console.error('Error clearing localStorage:', error);
+                }
+            }
+
+            // Display no products message
+            function showEditNoProductsMessage(container, message = '{{ __('messages.no_products_available') }}') {
+                container.html(`
+                    <div class="px-3 py-2 text-muted">${message}</div>
+                `).show();
+            }
+
+            // Render product suggestions
+            function renderEditSuggestions(matches, container) {
+                if (matches.length === 0) {
+                    showEditNoProductsMessage(container, '{{ __('messages.no_products_found') }}');
+                    return;
+                }
+
+                let html = '';
+                matches.forEach(p => {
+                    const existingRow = $(`#edit-itemsBody input[name^="items["][name$="][product_id]"]`).filter(function() {
+                        return $(this).val() == p.id;
+                    }).closest('.item-row');
+
+                    const isSelected = existingRow.length > 0;
+                    const currentQty = isSelected ? existingRow.find('.quantity').val() : 0;
+
+                    html += `
+                        <div class="card suggestion-item cursor-pointer ${isSelected ? 'border-primary border-2' : ''}"
+                            data-id="${p.id}"
+                            data-name="${p.name}"
+                            data-cost_price="${p.cost_price || 0}">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="card-title mb-1 fw-semibold">${p.name}</h6>
+                                        <p class="card-subtitle text-muted small mb-0">SKU: ${p.sku}</p>
+                                    </div>
+                                    ${isSelected ? `
+                                        <div class="text-end">
+                                            <small class="text-primary fw-medium">In cart: ${currentQty}</small>
+                                            <div><small class="text-muted">Click to add +1</small></div>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.html(html).show();
+            }
+
+            // Initialize product search
+            function initEditProductSearch() {
+                const input = $('.edit-product-search');
+                const suggestionsDiv = $('.edit-suggestions');
+
+                if (!products || products.length === 0) {
+                    input.on('focus', () => showEditNoProductsMessage(suggestionsDiv));
+                    return;
+                }
+
+                input.on('focus', () => renderEditSuggestions(products, suggestionsDiv));
+
+                input.on('keyup', function() {
+                    const keyword = $(this).val().toLowerCase().trim();
+                    suggestionsDiv.empty().hide();
+
+                    if (keyword.length === 0) {
+                        renderEditSuggestions(products, suggestionsDiv);
+                        return;
+                    }
+
+                    if (keyword.length < 2) return;
+
+                    const matches = products.filter(p => p.name && p.name.toLowerCase().includes(keyword));
+                    renderEditSuggestions(matches, suggestionsDiv);
+                });
+
+                suggestionsDiv.on('click', '.suggestion-item', function() {
+                    const id = $(this).data('id');
+                    const name = $(this).data('name');
+                    const cost_price = $(this).data('cost_price');
+
+                    const existingRow = $(`#edit-itemsBody input[name^="items["][name$="][product_id]"]`).filter(function() {
+                        return $(this).val() == id;
+                    }).closest('.item-row');
+
+                    if (existingRow.length > 0) {
+                        const quantityInput = existingRow.find('.quantity');
+                        const currentQuantity = parseInt(quantityInput.val()) || 0;
+                        const newQuantity = currentQuantity + 1;
+
+                        quantityInput.val(newQuantity);
+                        quantityInput.trigger('input');
+
+                        input.val('');
+                        suggestionsDiv.hide();
+                        saveEditToStorage();
+
+                        $('#edit-error-alert').html(`
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle"></i> Quantity increased for "${name}". New quantity: ${newQuantity}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        `).removeClass('d-none');
+                        setTimeout(() => $('#edit-error-alert .alert-success').fadeOut(), 3000);
+                        return;
+                    }
+
+                    addEditProductToTable(id, name, cost_price);
+                    input.val('');
+                    suggestionsDiv.hide();
+                    saveEditToStorage();
+                });
+
+                $(document).on('click', function(e) {
+                    if (!$(e.target).closest('.edit-product-search, .edit-suggestions').length) {
+                        suggestionsDiv.hide();
+                    }
+                });
+            }
+
+            // Add product to table
+            function addEditProductToTable(id, name, cost_price, quantity = 1) {
+                const newRow = `
+                    <tr class="item-row" data-product-id="${id}">
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="fw-medium">${name}</div>
+                            </div>
+                            <input type="hidden" name="items[${editItemIndex}][product_id]" value="${id}">
+                        </td>
+                        <td>
+                            <input type="number" name="items[${editItemIndex}][quantity]" class="form-control quantity" value="${quantity}" min="1" required>
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" name="items[${editItemIndex}][cost_price]" class="form-control cost_price" value="${cost_price}" required>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm remove-item">
+                                <i class="bi bi-trash"></i> {{ __('messages.remove') }}
+                            </button>
+                        </td>
+                    </tr>`;
+                $('#edit-itemsBody').append(newRow);
+                editItemIndex++;
+                updateEditTotalAmount();
+
+                $('#edit-error-alert').html(`
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-plus-circle"></i> "${name}" added to cart successfully!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `).removeClass('d-none');
+                setTimeout(() => $('#edit-error-alert .alert-success').fadeOut(), 3000);
+            }
+
+            // Update total amount
+            function updateEditTotalAmount() {
+                let total = 0;
+                $('#edit-itemsBody .item-row').each(function() {
+                    const quantity = parseFloat($(this).find('.quantity').val()) || 0;
+                    const price = parseFloat($(this).find('.cost_price').val()) || 0;
+                    total += quantity * price;
+                });
+                $('#edit-total_amount').val(total.toFixed(2));
+            }
+
+            // Update total on quantity or price change
+            $(document).on('input', '#edit-itemsBody .quantity, #edit-itemsBody .cost_price', function() {
+                updateEditTotalAmount();
+                saveEditToStorage();
+            });
+
+            // Remove item
+            $(document).on('click', '#edit-itemsBody .remove-item', function() {
+                const productName = $(this).closest('.item-row').find('.fw-medium').text();
+                $(this).closest('.item-row').remove();
+                updateEditTotalAmount();
+                saveEditToStorage();
+
+                $('#edit-error-alert').html(`
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        <i class="bi bi-info-circle"></i> "${productName}" removed from cart.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `).removeClass('d-none');
+                setTimeout(() => $('#edit-error-alert .alert-info').fadeOut(), 3000);
+            });
+
             $(document).on('click', '.edit-purchase', function() {
                 const id = $(this).data('id');
                 $.ajax({
@@ -374,31 +638,24 @@
                     method: 'GET',
                     success: function(response) {
                         const purchase = response.purchase;
-                        const products = response.products;
                         $('#edit-id').val(purchase.id);
                         $('#edit-total_amount').val(purchase.total_amount).removeClass('is-invalid');
                         $('#edit-date').val(purchase.date).removeClass('is-invalid');
-                        let itemsHtml = '';
-                        editItemCount = purchase.items.length;
-                        purchase.items.forEach((item, index) => {
-                            itemsHtml += `
-                                <div class="item mb-3">
-                                    <label class="form-label fw-medium">{{ __('messages.product') }} <span class="text-danger">*</span></label>
-                                    <select name="items[${index}][product_id]" class="form-control rounded-3" required>
-                                        <option value="">{{ __('messages.select_product') }}</option>
-                                        ${products.map(p => `<option value="${p.id}" ${item.product_id == p.id ? 'selected' : ''}>${p.name} (SKU: ${p.sku})</option>`).join('')}
-                                    </select>
-                                    <div class="invalid-feedback" id="items[${index}][product_id]-error"></div>
-                                    <label class="form-label fw-medium mt-2">{{ __('messages.quantity') }} <span class="text-danger">*</span></label>
-                                    <input type="number" name="items[${index}][quantity]" value="${item.quantity}" placeholder="{{ __('messages.quantity') }}" class="form-control rounded-3 mt-2" required>
-                                    <div class="invalid-feedback" id="items[${index}][quantity]-error"></div>
-                                    <label class="form-label fw-medium mt-2">{{ __('messages.cost_price') }} <span class="text-danger">*</span></label>
-                                    <input type="number" step="0.01" name="items[${index}][cost_price]" value="${item.cost_price}" placeholder="{{ __('messages.cost_price') }}" class="form-control rounded-3 mt-2" required>
-                                    <div class="invalid-feedback" id="items[${index}][cost_price]-error"></div>
-                                </div>
-                            `;
+                        $('#edit-status').val(purchase.status || 'pending').removeClass('is-invalid');
+                        $('#edit-itemsBody').empty();
+                        editItemIndex = 0;
+                        purchase.items.forEach(item => {
+                            addEditProductToTable(
+                                item.product_id,
+                                item.product?.name || 'N/A',
+                                item.cost_price,
+                                item.quantity
+                            );
                         });
-                        $('#edit-items').html(itemsHtml);
+                        updateEditTotalAmount();
+                        clearEditStorage();
+                        saveEditToStorage();
+                        initEditProductSearch();
                         $('#editPurchaseModal').modal('show');
                     },
                     error: function(xhr) {
@@ -412,37 +669,25 @@
                 });
             });
 
-            window.addEditItem = function() {
-                const products = @json($products);
-                const itemsDiv = $('#edit-items');
-                const newItem = `
-                    <div class="item mb-3">
-                        <label class="form-label fw-medium">{{ __('messages.product') }} <span class="text-danger">*</span></label>
-                        <select name="items[${editItemCount}][product_id]" class="form-control rounded-3" required>
-                            <option value="">{{ __('messages.select_product') }}</option>
-                            ${products.map(p => `<option value="${p.id}">${p.name} (SKU: ${p.sku})</option>`).join('')}
-                        </select>
-                        <div class="invalid-feedback" id="items[${editItemCount}][product_id]-error"></div>
-                        <label class="form-label fw-medium mt-2">{{ __('messages.quantity') }} <span class="text-danger">*</span></label>
-                        <input type="number" name="items[${editItemCount}][quantity]" placeholder="{{ __('messages.quantity') }}" class="form-control rounded-3 mt-2" required>
-                        <div class="invalid-feedback" id="items[${editItemCount}][quantity]-error"></div>
-                        <label class="form-label fw-medium mt-2">{{ __('messages.cost_price') }} <span class="text-danger">*</span></label>
-                        <input type="number" step="0.01" name="items[${editItemCount}][cost_price]" placeholder="{{ __('messages.cost_price') }}" class="form-control rounded-3 mt-2" required>
-                        <div class="invalid-feedback" id="items[${editItemCount}][cost_price]-error"></div>
-                    </div>
-                `;
-                itemsDiv.append(newItem);
-                editItemCount++;
-            };
-
             $('#edit-purchase-form').on('submit', function(e) {
                 e.preventDefault();
+                if ($('#edit-itemsBody .item-row').length === 0) {
+                    $('#edit-error-alert').html(`
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-circle"></i> {{ __('messages.please_add_at_least_one_item') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `).removeClass('d-none');
+                    return;
+                }
+
                 const id = $('#edit-id').val();
                 $.ajax({
                     url: '{{ route('purchases.update', ['purchase' => ':id']) }}'.replace(':id', id),
                     method: 'PUT',
                     data: $(this).serialize(),
                     success: function(response) {
+                        clearEditStorage();
                         $('#editPurchaseModal').modal('hide');
                         table.ajax.reload();
                         $('#alertsContainer').html(`

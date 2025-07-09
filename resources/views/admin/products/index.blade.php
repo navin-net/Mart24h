@@ -85,7 +85,7 @@
                                             <th>{{ __('messages.stock_quantity') }}</th>
                                             <th>{{ __('messages.cost_price') }}</th>
                                             <th>{{ __('messages.selling_price') }}</th>
-                                            <th>{{ __('messages.actions') }}</th>
+                                            <th class="text-center">{{ __('messages.actions') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>

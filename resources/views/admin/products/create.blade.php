@@ -2,7 +2,7 @@
 @section('title', __('messages.add_products'))
 @section('content')
     <div class="container-fluid">
-                <div class="pagetitle mb-4">
+        <div class="pagetitle mb-4">
             <h1 class="display-6 fw-bold">{{ $pageTitle }}</h1>
             <nav>
                 <ol class="breadcrumb rounded-3 p-2">
@@ -23,9 +23,6 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    {{-- <div class="card-header">
-                        <h3 class="card-title">{{ $heading }}</h3>
-                    </div> --}}
                     <div class="card-body">
                         <div id="formError" class="alert alert-danger d-none" role="alert"></div>
                         <form id="createProductForm" enctype="multipart/form-data">
@@ -67,7 +64,7 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="subcategory_id" class="form-label">{{ __('messages.subcategory') }}</label>
-                                    <select name="subcategory_id" id="subcategory_id" class="form-select"  disabled>
+                                    <select name="subcategory_id" id="subcategory_id" class="form-select">
                                         <option value="">{{ __('messages.select_subcategory') }}</option>
                                     </select>
                                     <div class="invalid-feedback" id="subcategory_id_error"></div>
@@ -91,27 +88,32 @@
                                     <div class="invalid-feedback" id="cost_price_error"></div>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="selling_price"
-                                        class="form-label">{{ __('messages.selling_price') }}</label>
+                                    <label for="selling_price" class="form-label">{{ __('messages.selling_price') }}</label>
                                     <input type="number" name="selling_price" id="selling_price" class="form-control"
                                         step="0.01" min="0" required>
                                     <div class="invalid-feedback" id="selling_price_error"></div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6 mb-3 d-none">
-                                    <label for="stock_quantity"
-                                        class="form-label">{{ __('messages.stock_quantity') }}</label>
+                                <div class="col-md-6 mb-3">
+                                    <label for="stock_quantity" class="form-label">{{ __('messages.stock_quantity') }}</label>
                                     <input type="number" name="stock_quantity" id="stock_quantity" class="form-control"
                                         min="0" value="0" required>
                                     <div class="invalid-feedback" id="stock_quantity_error"></div>
                                 </div>
-
                                 <div class="col-md-6 mb-3">
                                     <label for="image" class="form-label">{{ __('messages.image') }}</label>
                                     <input type="file" name="image" id="image" class="form-control"
                                         accept="image/jpeg,image/png,image/jpg">
                                     <div class="invalid-feedback" id="image_error"></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="image_review" class="form-label">{{ __('messages.image_review') }}</label>
+                                    <input type="file" name="image_review[]" multiple class="form-control"
+                                        accept="image/jpeg,image/png,image/jpg">
+                                    <div class="invalid-feedback" id="image_review.0_error"></div>
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -137,59 +139,55 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            // Ensure CSRF token is fresh
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
 
-            // Handle category change to fetch subcategories
             $('#category_id').on('change', function() {
                 let categoryId = $(this).val();
                 let subcategorySelect = $('#subcategory_id');
 
                 subcategorySelect.prop('disabled', true).html(
-                    '<option value="">{{ __('messages.select_subcategory') }}</option>');
+                    '<option value="">{{ __('messages.select_subcategory') }}</option>'
+                );
 
                 if (categoryId) {
                     $.ajax({
                         url: '{{ route('products.subcategories') }}',
                         type: 'GET',
-                        data: {
-                            category_id: categoryId
-                        },
+                        data: { category_id: categoryId },
                         beforeSend: function() {
                             subcategorySelect.append('<option value="">Loading...</option>');
                         },
                         success: function(data) {
                             subcategorySelect.html(
                                 '<option value="">{{ __('messages.select_subcategory') }}</option>'
-                                );
+                            );
                             if (data.length > 0) {
                                 $.each(data, function(index, subcategory) {
-                                    subcategorySelect.append('<option value="' +
-                                        subcategory.id + '">' + subcategory.name +
-                                        '</option>');
+                                    subcategorySelect.append(
+                                        `<option value="${subcategory.id}">${subcategory.name}</option>`
+                                    );
                                 });
                                 subcategorySelect.prop('disabled', false);
                             } else {
                                 subcategorySelect.append(
                                     '<option value="">{{ __('messages.no_subcategories') }}</option>'
-                                    );
+                                );
                             }
                         },
                         error: function(xhr) {
-                            console.error('Subcategory AJAX error:', xhr.status, xhr
-                                .responseText);
+                            console.error('Subcategory AJAX error:', xhr.status, xhr.responseText);
                             $('#formError').removeClass('d-none').text(
-                                '{{ __('messages.subcategory_load_error') }}');
+                                '{{ __('messages.subcategory_load_error') }}'
+                            );
                         }
                     });
                 }
             });
 
-            // Handle form submission
             $('#createProductForm').on('submit', function(e) {
                 e.preventDefault();
                 $('#formError').addClass('d-none').text('');
@@ -197,10 +195,9 @@
                 $('.form-control, .form-select').removeClass('is-invalid');
 
                 let formData = new FormData(this);
-                console.log('Form data:', Object.fromEntries(formData)); // Debug form data
-
                 let submitBtn = $('#submitBtn').prop('disabled', true).html(
-                    '<i class="bi bi-hourglass-split"></i> Saving...');
+                    '<i class="bi bi-hourglass-split"></i> Saving...'
+                );
 
                 $.ajax({
                     url: '{{ route('products.store') }}',
@@ -209,36 +206,39 @@
                     contentType: false,
                     processData: false,
                     success: function(response) {
-                        console.log('Success response:', response);
+                        $('#createProductForm')[0].reset();
+                        $('#subcategory_id').prop('disabled', true).html(
+                            '<option value="">{{ __('messages.select_subcategory') }}</option>'
+                        );
                         window.location.href = response.redirect;
                     },
                     error: function(xhr) {
                         submitBtn.prop('disabled', false).html(
-                            '<i class="bi bi-save"></i> {{ __('messages.submit') }}');
+                            '<i class="bi bi-save"></i> {{ __('messages.submit') }}'
+                        );
                         console.error('Form submission error:', xhr.status, xhr.responseText);
                         if (xhr.status === 422) {
                             let errors = xhr.responseJSON.errors;
                             $.each(errors, function(key, value) {
-                                $('#' + key + '_error').text(value[0]);
-                                $('#' + key).addClass('is-invalid');
+                                $(`#${key.replace('.', '\\.')}_error`).text(value[0]);
+                                $(`#${key.split('.')[0]}`).addClass('is-invalid');
                             });
                             $('#formError').removeClass('d-none').text(
-                                'Please correct the errors below.');
+                                'Please correct the errors below.'
+                            );
                         } else if (xhr.status === 419) {
                             $('#formError').removeClass('d-none').text(
                                 'CSRF token mismatch. Please refresh the page and try again.'
-                                );
-                        } else if (xhr.status === 401 || xhr.status === 403) {
+                            );
+                        } else if (xhr.status === 500) {
                             $('#formError').removeClass('d-none').text(
-                                '{{ __('messages.unauthorized') }}');
+                                xhr.responseJSON?.error || 'Server error occurred. Please try again later.'
+                            );
                         } else {
-                            $('#formError').removeClass('d-none').text('Server error (' + xhr
-                                .status + '). Please check the console and try again.');
+                            $('#formError').removeClass('d-none').text(
+                                `Error (${xhr.status}). Please try again later.`
+                            );
                         }
-                    },
-                    complete: function() {
-                        submitBtn.prop('disabled', false).html(
-                            '<i class="bi bi-save"></i> {{ __('messages.submit') }}');
                     }
                 });
             });

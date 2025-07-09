@@ -12,7 +12,7 @@ class ProductImage extends Model
 
     protected $fillable = [
         'product_id',
-        'image_path',
+        'image_review',
     ];
 
     // Each image belongs to one product
