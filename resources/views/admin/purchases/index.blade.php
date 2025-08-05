@@ -361,7 +361,7 @@
                         (purchase.items || []).forEach(item => {
                             itemsHtml += `
                                 <tr>
-                                    <td>${item.product?.name || 'N/A'} (SKU: ${item.product?.sku || 'N/A'})</td>
+                                    <td>${item.product?.name || 'N/A'} (code: ${item.product?.code || 'N/A'})</td>
                                     <td>${item.quantity || 0}</td>
                                     <td>${(item.cost_price || 0).toFixed(2)}</td>
                                 </tr>
@@ -476,7 +476,7 @@
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
                                         <h6 class="card-title mb-1 fw-semibold">${p.name}</h6>
-                                        <p class="card-subtitle text-muted small mb-0">SKU: ${p.sku}</p>
+                                        <p class="card-subtitle text-muted small mb-0">code: ${p.code}</p>
                                     </div>
                                     ${isSelected ? `
                                         <div class="text-end">

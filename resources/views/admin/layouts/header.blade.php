@@ -1,9 +1,8 @@
 <header class="app-header shadow-sm">
     <div class="container-fluid d-flex align-items-center justify-content-between h-100 px-3">
         <div class="d-flex align-items-center gap-3">
-
             <a href="{{ route('dashboard') }}" class="text-decoration-none">
-                <span class="fw-bold fs-4" style="color: #0ea5e9;">StockMangment</span>
+                <span class="fw-bold fs-4" style="color: #0ea5e9;">StockManagement</span>
             </a>
             <button id="sidebarToggle" class="btn btn-link p-0 text-body" type="button" aria-label="Toggle sidebar">
                 <i class="bi bi-list fs-4"></i>
@@ -11,45 +10,23 @@
         </div>
 
         <div class="d-flex align-items-center">
-            <!-- Search - Desktop Only -->
-            {{-- <div class="d-none d-md-flex align-items-center me-3 px-3 py-1 rounded search-bar desktop-only">
-                <i class="bi bi-search text-muted me-2"></i>
-                <input type="text" class="form-control form-control-sm border-0 bg-transparent" placeholder="Search...">
-                <span class="text-muted small ms-2">Ctrl K</span>
-            </div> --}}
-            <!-- POS Icon with Link -->
-            {{-- <a href="#" class="d-none d-md-flex align-items-center me-3 px-3 py-1 rounded text-primary" role="button" aria-label="POS" title="POS">
-    <i class="bi bi-stripe"></i>    </a> --}}
-            <!-- Shop Icon with Link -->
-            {{-- <a href="#" class="d-none d-md-flex align-items-center me-3 px-3 py-1 rounded text-success" role="button" aria-label="Shop" title="Shop">
-        <i class="bi bi-shop"></i>
-    </a> --}}
-
-
-            <div class="me-3">
-                <a href="{{ url('/') }}" class="btn nbt-outline-custom d-flex align-items-center">
+            <!-- Shop Link -->
+            <div class="me-3 desktop-only">
+                <a href="{{ url('/') }}" class="btn btn-outline-custom d-flex align-items-center">
                     <i class="bi bi-shop me-2"></i>
-                    <!-- {{ __('messages.shop') }} -->
-
+                    {{ __('messages.shop') }}
                 </a>
             </div>
+
             <!-- Theme Toggle -->
-            <div class="theme-toggle me-3" id="themeToggle" role="button" aria-label="Toggle theme">
-                <i class="bi bi-sun-fill fs-5"></i>
-            </div>
-
-            <!-- Product Alert Dropdown -->
-
-
-
 
 
             <!-- Language Dropdown - Desktop Only -->
             <div class="dropdown me-3 desktop-only">
-                <button class="btn nbt-outline-custom  d-flex align-items-center" type="button"
+                <button class="btn btn-outline-custom d-flex align-items-center" type="button"
                     data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="{{ app()->getLocale() == 'en' ? asset('flag/gb-eng.jpg') : asset('flag/kh.jpg') }}"
-                        alt="Lang" width="20" height="14">
+                        alt="Language Flag" width="20" height="14">
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li>
@@ -70,8 +47,10 @@
                     </li>
                 </ul>
             </div>
+
+            <!-- Product Alert Dropdown -->
             <div class="dropdown me-3">
-                <button class="btn btn-outline-danger position-relative" id="cartIcon" data-bs-toggle="dropdown"
+                <button class="btn btn-outline-danger position-relative desktop-only" id="cartIcon" data-bs-toggle="dropdown"
                     aria-expanded="false">
                     <i class="bi bi-exclamation-triangle-fill"></i>
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
@@ -83,25 +62,26 @@
                 <div class="dropdown-menu dropdown-menu-end p-2" style="width: 300px;" id="alertContainer">
                     <h6 class="dropdown-header text-danger">
                         <div id="alertList">
-                            {{-- <div class="text-muted small">No alerts</div> --}}
+                            <div class="text-muted small">No alerts</div>
                         </div>
                     </h6>
                     <hr class="dropdown-divider">
-
                     <a class="dropdown-item text-center" href="{{ url('/products') }}">
-                        {{ __('messages.see_all') }}</a>
+                        {{ __('messages.see_all') }}
+                    </a>
                 </div>
             </div>
+
+            <!-- POS Button - Desktop Only -->
             <div class="me-3 desktop-only">
                 <a href="{{ url('/pos') }}" class="btn btn-success d-flex align-items-center">
                     <i class="bi bi-grid me-2"></i>
                     {{ __('messages.pos') }}
                 </a>
             </div>
-
-
-
-
+            <div class="btn btn-outline-custom theme-toggle me-3 " id="themeToggle" role="button" aria-label="Toggle theme">
+                <i class="bi bi-sun-fill fs-5"></i>
+            </div>
             <!-- User Dropdown - Desktop Only -->
             <div class="dropdown desktop-only">
                 <button class="btn btn-outline-custom dropdown-toggle d-flex align-items-center" type="button"
@@ -110,7 +90,6 @@
                         ? asset('storage/' . Auth::user()->profile->image)
                         : asset('assets/img/profile-img.jpg') }}"
                         alt="Profile" class="rounded-circle me-2" width="40" height="40">
-
                     <span>{{ Auth::user()->name }}</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end shadow">

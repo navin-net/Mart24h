@@ -87,7 +87,7 @@
             font-weight: 600;
             margin-left: 10px;
         }
-   .color-option {
+        .color-option {
             width: 30px;
             height: 30px;
             border-radius: 50%;
@@ -167,21 +167,43 @@
             
             <div class="row">
                 <!-- Product Gallery -->
-            <div class="col-md-6 product-gallery">
-                <div class="gallery-main">
-                    <img src="{{ $product->main_image }}" id="mainImage" alt="{{ $product->thumbnails[0]->alt_text ?? $product->name }}">
-                </div>
+                <div class="col-md-6 product-gallery">
+                    <div class="gallery-main">
+                        <img 
+                            src="{{ $product->main_image }}" 
+                            id="mainImage" 
+                            alt="{{ $product->thumbnails[0]->alt_text ?? $product->name }}"
+                            data-controller="product-image"
+                            data-product-image-main="{{ $product->main_image }}"
+                        >
+                    </div>
 
-                <div class="gallery-thumbs">
-                    @foreach($product->thumbnails as $index => $thumb)
-                        <div class="gallery-thumb {{ $index === 0 ? 'active' : '' }}" data-src="{{ $thumb->image }}">
-                            <img src="{{ $thumb->thumbnail }}" alt="{{ $thumb->alt_text }}">
-                        </div>
-                    @endforeach
+                    <div class="gallery-thumbs" data-controller="product-thumbs">
+                        @foreach($product->thumbnails as $index => $thumb)
+                            <div 
+                                class="gallery-thumb {{ $index === 0 ? 'active' : '' }}" 
+                                data-src="{{ $thumb->image }}"
+                                data-controller="product-thumb"
+                                data-product-thumb-index="{{ $index }}"
+                                data-product-thumb-image="{{ $thumb->image }}"
+                            >
+                                <img src="{{ $thumb->thumbnail }}" alt="{{ $thumb->alt_text }}">
+                            </div>
+                        @endforeach
+                        {{-- Show main image as first thumb if not already included --}}
+                        @if(!isset($product->thumbnails[0]) || $product->thumbnails[0]->image !== $product->main_image)
+                            <div 
+                                class="gallery-thumb active" 
+                                data-src="{{ $product->main_image }}"
+                                data-controller="product-thumb"
+                                data-product-thumb-index="main"
+                                data-product-thumb-image="{{ $product->main_image }}"
+                            >
+                                <img src="{{ $product->main_image }}" alt="{{ $product->name }}">
+                            </div>
+                        @endif
+                    </div>
                 </div>
-            </div>
-
-                
                 <!-- Product Info -->
                 <div class="col-md-6 product-info">
                     <h1 class="mb-2">{{ $product->name }}</h1>
@@ -203,15 +225,18 @@
                                 <path d="M5.354 5.119 7.538.792A.516.516 0 0 1 8 .5c.183 0 .366.097.465.292l2.184 4.327 4.898.696A.537.537 0 0 1 16 6.32a.548.548 0 0 1-.17.445l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256a.52.52 0 0 1-.146.05c-.342.06-.668-.254-.6-.642l.83-4.73L.173 6.765a.55.55 0 0 1-.172-.403.58.58 0 0 1 .085-.302.513.513 0 0 1 .37-.245l4.898-.696zM8 12.027a.5.5 0 0 1 .232.056l3.686 1.894-.694-3.957a.565.565 0 0 1 .162-.505l2.907-2.77-4.052-.576a.525.525 0 0 1-.393-.288L8.001 2.223 8 2.226v9.8z"/>
                             </svg>
                         </div>
-                        <span>4.8 (128 reviews)</span>
+                        <span>{{ $product->rating }} ({{$product->reviews}} reviews)</span>
                     </div>
                     <div class="mb-4">
-                        <span class="product-price">$149.99</span>
-                        <span class="product-original-price ms-2">$199.99</span>
+                        <span class="product-price">${{$product->old_price}}</span>
+                        <span class="product-original-price ms-2">${{$product->price}}</span>
                         <span class="product-discount">25% OFF</span>
                     </div>
-                    <p class="mb-4">The Smart Watch Pro is the perfect companion for your active lifestyle. With advanced health monitoring, notifications, and a sleek design, it's the ultimate smartwatch for tech enthusiasts.</p>
-                    
+                    <p class="mb-4">{{ $product->description }}</p>
+                    <div class="mb-4">
+                        <span class="badge {{ $product->badge_class }}">{{ $product->badge }}</span>
+                        <span class="ms-2 text-muted">{{ $product->availability }}</span>
+                    </div>  
                     <!-- Color Options -->
                     <div class="mb-4">
                         <h6 class="mb-2">Color</h6>
@@ -331,7 +356,7 @@
                         <div class="col-md-8 p-3">
 
                             <h4>Product Description</h4>
-                            <p>The Smart Watch Pro is designed for those who want to stay connected and track their health without compromising on style. This premium smartwatch combines cutting-edge technology with elegant design to deliver an exceptional user experience.</p>
+                            <p>{{ $product->description }}</p>
                             
                             <h5 class="mt-4">Advanced Health Monitoring</h5>
                             <p>Keep track of your health metrics with precision. The Smart Watch Pro monitors your heart rate, blood oxygen levels, sleep patterns, and stress levels. It also tracks your daily activity, including steps, distance, calories burned, and floors climbed.</p>
@@ -812,75 +837,4 @@
         </div>
     </section>
 @endsection
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/product.css') }}">
-@push('scripts')
-    <script>
-        // Image Gallery
-        document.querySelectorAll('.gallery-thumb').forEach(thumb => {
-            thumb.addEventListener('click', function() {
-                // Update main image
-                const mainImage = document.getElementById('mainImage');
-                mainImage.src = this.getAttribute('data-src');
-                
-                // Update active thumb
-                document.querySelectorAll('.gallery-thumb').forEach(t => {
-                    t.classList.remove('active');
-                });
-                this.classList.add('active');
-            });
-        });
-
-        // Color Selection
-        document.querySelectorAll('.color-option').forEach(option => {
-            option.addEventListener('click', function() {
-                // Update active color
-                document.querySelectorAll('.color-option').forEach(o => {
-                    o.classList.remove('active');
-                });
-                this.classList.add('active');
-                
-                // Update selected color text
-                document.getElementById('selectedColor').textContent = this.getAttribute('data-color');
-            });
-        });
-
-        // Quantity Selector
-        document.querySelectorAll('.quantity-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const quantitySpan = this.parentElement.querySelector('span');
-                let quantity = parseInt(quantitySpan.textContent);
-                if (this.classList.contains('increment-quantity')) {
-                    quantity++;
-                } else if (this.classList.contains('decrement-quantity') && quantity > 1) {
-                    quantity--;
-                }
-                quantitySpan.textContent = quantity;
-            });
-        });
-
-        // Add to Cart Button (shows alert, replace with AJAX as needed)
-        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const productInfo = this.closest('.product-info');
-                let quantity = 1;
-                let color = '';
-                if (productInfo) {
-                    const quantitySpan = productInfo.querySelector('.cart-item-quantity span');
-                    if (quantitySpan) quantity = quantitySpan.textContent;
-                    const colorOption = productInfo.querySelector('.color-option.active');
-                    if (colorOption) color = colorOption.getAttribute('data-color');
-                }
-                alert('Added to cart!\nQuantity: ' + quantity + '\nColor: ' + color);
-                // Replace alert with AJAX call to add to cart if needed
-            });
-        });
-
-        // Initialize tooltips (Bootstrap 5)
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
-    </script>
-@endpush
 

@@ -256,7 +256,7 @@
                         (sale.items || []).forEach(item => {
                             itemsHtml += `
                                 <tr>
-                                    <td>${item.product?.name || 'N/A'} (SKU: ${item.product?.sku || 'N/A'})</td>
+                                    <td>${item.product?.name || 'N/A'} (code: ${item.product?.code || 'N/A'})</td>
                                     <td>${item.quantity || 0}</td>
                                     <td>${(item.sale_price || 0).toFixed(2)}</td>
                                 </tr>
@@ -300,7 +300,7 @@
                                     <label class="form-label fw-medium">{{ __('messages.product') }} <span class="text-danger">*</span></label>
                                     <select name="items[${index}][product_id]" class="form-control rounded-3" required>
                                         <option value="">{{ __('messages.select_product') }}</option>
-                                        ${products.map(p => `<option value="${p.id}" ${item.product_id == p.id ? 'selected' : ''}>${p.name} (SKU: ${p.sku})</option>`).join('')}
+                                        ${products.map(p => `<option value="${p.id}" ${item.product_id == p.id ? 'selected' : ''}>${p.name} (code: ${p.code})</option>`).join('')}
                                     </select>
                                     <div class="invalid-feedback" id="items[${index}][product_id]-error"></div>
                                     <label class="form-label fw-medium mt-2">{{ __('messages.quantity') }} <span class="text-danger">*</span></label>
@@ -334,7 +334,7 @@
                         <label class="form-label fw-medium">{{ __('messages.product') }} <span class="text-danger">*</span></label>
                         <select name="items[${editItemCount}][product_id]" class="form-control rounded-3" required>
                             <option value="">{{ __('messages.select_product') }}</option>
-                            ${products.map(p => `<option value="${p.id}">${p.name} (SKU: ${p.sku})</option>`).join('')}
+                            ${products.map(p => `<option value="${p.id}">${p.name} (code: ${p.code})</option>`).join('')}
                         </select>
                         <div class="invalid-feedback" id="items[${editItemCount}][product_id]-error"></div>
                         <label class="form-label fw-medium mt-2">{{ __('messages.quantity') }} <span class="text-danger">*</span></label>

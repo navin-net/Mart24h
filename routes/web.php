@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\SalesController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\PosController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ProfileController;
@@ -17,8 +18,6 @@ use App\Http\Controllers\Shop\MainController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
-
-
 
 
 
@@ -44,15 +43,21 @@ Route::get('testing', function () {
     return view('testing');
 });
 
-Route::get('pos',function(){
-    return view('pos');
-});
+
+
+Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
+Route::get('/pos/search', [PosController::class, 'search'])->name('pos.search');
+Route::get('/pos/filter', [PosController::class, 'filter'])->name('pos.filter');
+Route::post('/pos/process-payment', [PosController::class, 'processPayment'])->name('pos.process-payment');
+Route::get('/pos/customer-display', [PosController::class, 'customerDisplay'])->name('admin.customer-display');
 
 Route::get('/', [MainController::class, 'index']);
 // web.php
 Route::get('shop/products', [MainController::class, 'products'])->name('shop.products');
 Route::get('/product-detail/{id}', [MainController::class, 'productDetail'])->name('shop.productDetail');
 Route::get('shop/about', [MainController::class, 'about'])->name('shop.about');
+Route::get('shop/checkout',[MainController::class,'checkout'])->name('shop.checkout');
+Route::get('shop/cart', [MainController::class, 'cart'])->name('shop.cart');
 Route::get('shop/contact', [MainController::class, 'contact'])->name('shop.contact');
 Route::get('shop/new-arrivals',[MainController::class,'new_arrivals'])->name('shop.new-arrivals');
 Route::get('/product-alerts', [AuthController::class, 'getAlerts']);
@@ -88,11 +93,16 @@ Route::middleware('auth')->group(function () {
     Route::post('brands/bulkDelete', [BrandController::class, 'bulkDelete'])->name('brands.bulkDelete');
     Route::resource('/qualitys', QualitysController::class)->parameters(['qualitys' => 'qualitys'])->except(['show']);
     Route::delete('/qualitys/bulk-delete', [QualitysController::class, 'bulkDelete'])->name('qualitys.bulkDelete');
+    # categories
     Route::resource('categories', CategoriesController::class)->except(['show']);
     Route::post('/categories/bulk-delete', [CategoriesController::class, 'bulkDelete'])->name('categories.bulkDelete');
+    Route::get('/categories/sub_category', [CategoriesController::class, 'sub_category'])->name('categories.sub_category');
+    Route::post('/categories/sub_category/store', [CategoriesController::class, 'store_sub_category'])->name('categories.sub_category.store');
+    Route::get('/categories/sub_category/{id}/edit', [CategoriesController::class, 'edit_sub_category'])->name('categories.sub_category.edit');
+    Route::post('/categories/sub_category/{id}/update', [CategoriesController::class, 'update_sub_category'])->name('categories.sub_category.update');
+    Route::delete('/categories/sub_category/{id}/delete', [CategoriesController::class, 'delete_sub_category'])->name('categories.sub_category.delete');
+    Route::post('/categories/sub_category/bulk-delete', [CategoriesController::class, 'bulkDeleteSubCategories'])->name('categories.sub_category.bulkDelete');
 
-
-    Route::resource('/subcategories', SubCategoryController::class)->except(['show']);
 
 
     Route::resource('/sales', SalesController::class)->except(['show']);
@@ -104,8 +114,12 @@ Route::middleware('auth')->group(function () {
 
     ///Settings
     Route::resource('/settings', SettingsController::class)->except(['show']);
-    Route::resource('/banner', BannerController::class)->except(['show']);
-    Route::post('/banner/bulk-delete', [BannerController::class, 'bulkDelete'])->name('banners.bulkDelete');
+    Route::get('settings/banners', [SettingsController::class, 'banners'])->name('settings.banners');
+    Route::post('/banner/ajax-update-all', [SettingsController::class, 'ajaxUpdateAll'])->name('banners.ajaxUpdateAll');
+    Route::post('/settings/update', [SettingsController::class, 'ajaxUpdate'])->name('settings.update');
+
+
+
 });
 
 

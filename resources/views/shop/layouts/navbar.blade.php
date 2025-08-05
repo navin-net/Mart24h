@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white py-3 sticky-top">
     <div class="container">
-        <a class="navbar-brand" href="{{ url('/') }}">ShopEase</a>
+        <a class="navbar-brand" href="{{ url('/') }}">{{ $shopDetail->name }}</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -18,25 +18,25 @@
                         <div class="row">
                             <div class="col-4">
                                 <a class="dropdown-item" href="{{ route('shop.products') }}">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/2603/2603910.png" alt="Categories" class="dropdown-item-img">
-                                    All Product
+                                    <img src="https://cdn-icons-png.flaticon.com/512/2603/2603910.png" alt="Products" class="dropdown-item-img">
+                                    Products
                                 </a>
                             </div>
                             <div class="col-4">
                                 <a class="dropdown-item" href="#">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/2603/2603910.png" alt="Categories" class="dropdown-item-img">
+                                    <img src="{{ asset('shop/image/two.jpg') }}" alt="Categories" class="dropdown-item-img">
                                     Categories
                                 </a>
                             </div>
                             <div class="col-4">
                                 <a class="dropdown-item" href="#">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/2603/2603910.png" alt="Featured" class="dropdown-item-img">
+                                    <img src="{{ asset('shop/image/three.jpg') }}" alt="Featured" class="dropdown-item-img">
                                     Featured
                                 </a>
                             </div>
                             <div class="col-4">
                                 <a class="dropdown-item" href="#">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/2603/2603910.png" alt="Special Offers" class="dropdown-item-img">
+                                    <img  src="{{ asset('shop/image/one.jpg') }}" alt="Special Offers" class="dropdown-item-img">
                                     Special Offers
                                 </a>
                             </div>
@@ -58,6 +58,29 @@
             </ul>
 
             <div class="d-flex align-items-center">
+<div class="dropdown me-3">
+    <a class="nav-link dropdown-toggle text-dark fw-bold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="user-select:none;">
+        {{ strtoupper(app()->getLocale()) }}
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+        <li>
+            <a class="dropdown-item {{ app()->getLocale() == 'en' ? 'active fw-bold' : '' }}" href="{{ route('language.switch', 'en') }}">
+                English
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item {{ app()->getLocale() == 'fr' ? 'active fw-bold' : '' }}" href="{{ route('language.switch', 'fr') }}">
+                Français
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item {{ app()->getLocale() == 'km' ? 'active fw-bold' : '' }}" href="{{ route('language.switch', 'km') }}">
+                ភាសាខ្មែរ
+            </a>
+        </li>
+    </ul>
+</div>
+
                 <div class="me-3">
                     <a href="#" class="text-dark"><i class="fas fa-search"></i></a>
                 </div>

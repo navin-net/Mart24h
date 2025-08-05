@@ -154,6 +154,11 @@ return [
     'after_6_month' => 'ក្រោយ 6 ខែ',
     'total_purchases' => 'ការទិញសរុប',
     'qualitys' => 'គុណភាព',
+    'banners' => 'បដា',
+    'ip_address' => 'អាសយដ្ឋាន IP',
+    'new_arrivals'  => 'ផលិតផលថ្មី',
+    'generate' => 'បង្កើត',
+    'sub_categories' => 'ប្រភេទរង',
     'total_quantity' => 'បរិមាណសរុប'
 
 

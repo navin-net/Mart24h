@@ -11,30 +11,31 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
-    {
-Schema::create('products', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('sku')->unique();
-            $table->text('description')->nullable();
-            $table->integer('stock_quantity')->default(0);
-            $table->decimal('cost_price', 10, 2);
-            $table->decimal('selling_price', 10, 2);
-            $table->string('image')->nullable();
-            $table->foreignId('brand_id')->constrained()->onDelete('cascade');
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->foreignId('subcategory_id')->nullable()->constrained('sub_categories')->onDelete('set null');
-            $table->foreignId('quality_id')->constrained()->onDelete('cascade');
-            $table->timestamps();
-        });
-    Schema::table('products', function (Blueprint $table) {
-    if (!Schema::hasColumn('products', 'stock_quantity')) {
+public function up()
+{
+    Schema::create('products', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('sku')->unique();
+        $table->text('description')->nullable();
         $table->integer('stock_quantity')->default(0);
-    }
-});
+        $table->decimal('cost_price', 10, 2);
+        $table->decimal('selling_price', 10, 2);
+        $table->string('image')->nullable();
+        $table->integer('color')->nullable();
+        $table->date('expiry_date')->nullable();
 
-    }
+        // First define the columns
+        $table->unsignedBigInteger('brand_id');
+        $table->unsignedBigInteger('category_id');
+        $table->unsignedBigInteger('subcategory_id')->nullable();
+        $table->unsignedBigInteger('quality_id');
+        $table->timestamps();
+        // Then define the foreign keys
+    });
+}
+
+
 
     /**
      * Reverse the migrations.

@@ -33,11 +33,17 @@
                                     <input type="text" name="name" id="name" class="form-control" required>
                                     <div class="invalid-feedback" id="name_error"></div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="sku" class="form-label">{{ __('messages.sku') }}</label>
-                                    <input type="text" name="sku" id="sku" class="form-control" required>
-                                    <div class="invalid-feedback" id="sku_error"></div>
+                            <div class="col-md-6 mb-3">
+                                <label for="code" class="form-label">{{ __('messages.code') }}</label>
+                                <div class="input-group">
+                                    <input type="text" name="code" id="code" class="form-control" readonly>
+                                    <button type="button" class="btn btn-outline-secondary" id="generateCodeBtn">
+                                        <i class="bi bi-shuffle"></i> {{ __('messages.generate') }}
+                                    </button>
                                 </div>
+                                <div class="invalid-feedback" id="code_error"></div>
+                            </div>
+
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -95,20 +101,18 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <!-- <div class="col-md-6 mb-3">
                                     <label for="stock_quantity" class="form-label">{{ __('messages.stock_quantity') }}</label>
                                     <input type="number" name="stock_quantity" id="stock_quantity" class="form-control"
                                         min="0" value="0" required>
                                     <div class="invalid-feedback" id="stock_quantity_error"></div>
-                                </div>
+                                </div> -->
                                 <div class="col-md-6 mb-3">
                                     <label for="image" class="form-label">{{ __('messages.image') }}</label>
                                     <input type="file" name="image" id="image" class="form-control"
                                         accept="image/jpeg,image/png,image/jpg">
                                     <div class="invalid-feedback" id="image_error"></div>
                                 </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="image_review" class="form-label">{{ __('messages.image_review') }}</label>
                                     <input type="file" name="image_review[]" multiple class="form-control"
@@ -116,11 +120,13 @@
                                     <div class="invalid-feedback" id="image_review.0_error"></div>
                                 </div>
                             </div>
+
                             <div class="mb-3">
                                 <label for="description" class="form-label">{{ __('messages.description') }}</label>
                                 <textarea name="description" id="description" class="form-control" rows="5"></textarea>
                                 <div class="invalid-feedback" id="description_error"></div>
                             </div>
+
                             <div class="mb-3">
                                 <button type="submit" class="btn btn-primary" id="submitBtn">
                                     <i class="bi bi-save"></i> {{ __('messages.submit') }}
@@ -138,6 +144,12 @@
 @endsection
 @push('scripts')
     <script>
+
+        function generateRandomCode() {
+            let prefix = 'P';
+            let randomNumber = Math.floor(Math.random() * 10000000); // 0 to 9999999
+            return prefix + String(randomNumber).padStart(7, '0');
+        }
         $(document).ready(function() {
             $.ajaxSetup({
                 headers: {
@@ -241,6 +253,12 @@
                         }
                     }
                 });
+            });
+
+            $('#code').val(generateRandomCode());
+
+            $('#generateCodeBtn').on('click', function () {
+                $('#code').val(generateRandomCode());
             });
         });
     </script>

@@ -1,5 +1,5 @@
 @extends('shop.layouts.app')
-@section('title', 'New Arrivals')
+@section('title', $shopDetail->name . ' - ' . __('messages.new_arrivals'))
 @section('content')
 @push('style')
 <style>

@@ -57,26 +57,23 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    // Handle user login
     public function login(Request $request)
     {
         $request->validate([
             'login' => 'required|string',
-            'password' => 'required',
+            'password' => 'required|string',
         ]);
 
         $key = 'login|' . $request->ip();
 
         if (RateLimiter::tooManyAttempts($key, 3)) {
             $seconds = RateLimiter::availableIn($key);
-
             return back()->withErrors([
-                'login' => 'Too many login attempts. Please try again in ' . gmdate('i:s', $seconds) . ' minutes.',
+                'login' => 'Too many login attempts. Try again in ' . gmdate('i:s', $seconds) . ' minutes.',
             ])->withInput($request->only('login'));
         }
 
         $loginInput = $request->input('login');
-
         $field = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
 
         $credentials = [
@@ -84,16 +81,24 @@ class AuthController extends Controller
             'password' => $request->input('password'),
         ];
 
-        if (Auth::attempt($credentials)) {
-            if (Auth::user()->role_id != 1) {
+        $remember = $request->has('remember');
+
+        if (Auth::attempt($credentials, $remember)) {
+            $user = Auth::user();
+
+            if ($user->role_id != 1) {
                 Auth::logout();
                 return back()->withErrors([
                     'login' => 'Your account does not have permission to log in.',
                 ])->withInput($request->only('login'));
             }
 
+            $user->ip_address = $request->ip();
+            $user->save();
+
             RateLimiter::clear($key);
             $request->session()->regenerate();
+
             return redirect()->route('dashboard');
         }
 
@@ -105,6 +110,7 @@ class AuthController extends Controller
     }
 
 
+
     // Handle logout
     public function logout(Request $request)
     {
@@ -112,8 +118,9 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login')->with('status', 'You have been logged out.');
     }
+
 
     // Dashboard view - both user and admin
     public function dashboard()
@@ -168,12 +175,15 @@ class AuthController extends Controller
 
         // Optional: Low stock alerts (products with quantity < 5)
         $lowStockProducts = Products::where('stock_quantity', '<', 0)->orderBy('stock_quantity')->take(5)->get();
+        $currentUser = auth()->user();
+        $ipFromDB = $currentUser->ip_address;
 
 
         return view('admin.dashboard.main', [
             'brandCount' => $brandCount,
             'productCount' => $productCount,
             'salesCount' => $salesCount,
+            'ipFromDB' => $ipFromDB,
             'purchasesCount' => $purchasesCount,
             'salesLabels' => $labels,
             'purchasesData' => $purchasesData,

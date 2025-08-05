@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Categories;
+use App\Models\SubCategory;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Routing\Controller;
@@ -44,8 +48,6 @@ class CategoriesController extends Controller
             ]
         ]);
     }
-
-
 
     public function store(Request $request)
     {
@@ -98,4 +100,88 @@ class CategoriesController extends Controller
 
         return response()->json(['success' => 'Selected categories deleted successfully.']);
     }
+
+    public function sub_category(Request $request)
+    {
+        $categories = Categories::all();
+
+        if ($request->ajax()) {
+            $data = SubCategory::select([
+                'sub_categories.id',
+                'sub_categories.name as sub_category_name',
+                'categories.name as category_name',
+            ])
+            ->leftJoin('categories', 'sub_categories.category_id', '=', 'categories.id');
+
+            return DataTables::of($data)
+                ->addColumn('action', function ($row) {
+                    return '
+                        <div class="dropdown">
+                            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                Actions
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item editSubCategory" href="javascript:void(0);" data-id="' . $row->id . '">Edit</a></li>
+                                <li><a class="dropdown-item deleteSubCategory" href="javascript:void(0);" data-id="' . $row->id . '">Delete</a></li>
+                            </ul>
+                        </div>';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('admin.sub_category.index', compact('categories'));
+    }
+
+    public function store_sub_category(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|max:50',
+            'category_id' => 'required|exists:categories,id',
+        ]);
+
+        SubCategory::create($request->only('name', 'category_id'));
+
+        return response()->json(['success' => 'Subcategory created successfully.']);
+    }
+
+    public function edit_sub_category($id)
+    {
+        $subCategory = SubCategory::findOrFail($id);
+        return response()->json(['subCategory' => $subCategory]);
+    }
+
+    public function update_sub_category(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|max:50',
+            'category_id' => 'required|exists:categories,id',
+        ]);
+
+        $subCategory = SubCategory::findOrFail($id);
+        $subCategory->update($request->only('name', 'category_id'));
+
+        return response()->json(['success' => 'Subcategory updated successfully.']);
+    }
+
+    public function delete_sub_category($id)
+    {
+        $subCategory = SubCategory::findOrFail($id);
+        $subCategory->delete();
+
+        return response()->json(['success' => 'Subcategory deleted successfully.']);
+    }
+
+    public function bulkDeleteSubCategories(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:sub_categories,id',
+        ]);
+
+        SubCategory::whereIn('id', $request->ids)->delete();
+
+        return response()->json(['success' => 'Selected subcategories deleted.']);
+    }
+
 }

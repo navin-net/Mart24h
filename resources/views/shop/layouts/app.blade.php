@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ShopEase - Modern E-commerce Store</title>
-    <!-- Bootstrap 5.3 CSS -->
-    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
+    <title>@yield('title', 'Stock Management')</title>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
@@ -24,9 +22,9 @@
     padding: 3rem 0;
     margin-bottom: 2rem;
     animation: fadeIn 0.8s ease-out;
-}
-   </style>
-   @stack('style')
+    }
+    </style>
+    @stack('style')
 </head>
 
 <body>
@@ -272,12 +270,122 @@
                 }
             });
         });
+        document.addEventListener('DOMContentLoaded', function () {
+            // Price range slider
+            // const priceRange = document.getElementById('priceRange');
+            // const maxPriceDisplay = document.getElementById('maxPrice');
+            // priceRange.addEventListener('input', function () {
+            //     maxPriceDisplay.textContent = '$' + parseInt(this.value).toLocaleString();
+            // });
 
+            // Color filter toggle
+            window.toggleColorFilter = function (element, color) {
+                const container = document.getElementById('selected-colors');
+                const isSelected = element.classList.contains('selected');
+                
+                if (isSelected) {
+                    // Remove selection
+                    element.classList.remove('selected');
+                    const input = container.querySelector(`input[data-color="${color}"]`);
+                    if (input) input.remove();
+                } else {
+                    // Add selection
+                    element.classList.add('selected');
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'color[]';
+                    input.value = color;
+                    input.setAttribute('data-color', color);
+                    container.appendChild(input);
+                }
+                
+                // Submit form to apply filter
+                document.getElementById('filterForm').submit();
+            };
+
+            // Add to cart
+            window.addToCart = function (product) {
+                console.log('Add to cart:', product);
+                // Implement actual cart logic here
+            };
+
+            // Toggle favorite
+            window.toggleFavorite = function (id) {
+                const icon = document.getElementById(`fav-${id}`);
+                icon.classList.toggle('far');
+                icon.classList.toggle('fas');
+            };
+        });
         // Uncomment if AOS is enabled
         AOS.init({
             duration: 800,
             easing: 'ease-in-out',
             once: true
+        });
+        // Image Gallery
+        document.querySelectorAll('.gallery-thumb').forEach(thumb => {
+            thumb.addEventListener('click', function() {
+                // Update main image
+                const mainImage = document.getElementById('mainImage');
+                mainImage.src = this.getAttribute('data-src');
+                
+                // Update active thumb
+                document.querySelectorAll('.gallery-thumb').forEach(t => {
+                    t.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+
+        // Color Selection
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Update active color
+                document.querySelectorAll('.color-option').forEach(o => {
+                    o.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Update selected color text
+                document.getElementById('selectedColor').textContent = this.getAttribute('data-color');
+            });
+        });
+
+        // Quantity Selector
+        document.querySelectorAll('.quantity-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const quantitySpan = this.parentElement.querySelector('span');
+                let quantity = parseInt(quantitySpan.textContent);
+                if (this.classList.contains('increment-quantity')) {
+                    quantity++;
+                } else if (this.classList.contains('decrement-quantity') && quantity > 1) {
+                    quantity--;
+                }
+                quantitySpan.textContent = quantity;
+            });
+        });
+
+        // Add to Cart Button (shows alert, replace with AJAX as needed)
+        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const productInfo = this.closest('.product-info');
+                let quantity = 1;
+                let color = '';
+                if (productInfo) {
+                    const quantitySpan = productInfo.querySelector('.cart-item-quantity span');
+                    if (quantitySpan) quantity = quantitySpan.textContent;
+                    const colorOption = productInfo.querySelector('.color-option.active');
+                    if (colorOption) color = colorOption.getAttribute('data-color');
+                }
+                alert('Added to cart!\nQuantity: ' + quantity + '\nColor: ' + color);
+                // Replace alert with AJAX call to add to cart if needed
+            });
+        });
+
+        // Initialize tooltips (Bootstrap 5)
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
         });
     </script>
 

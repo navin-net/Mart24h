@@ -183,5 +183,12 @@ return [
     'print'         => 'Printer',
     'qualitys'      => 'Qualitys',
     'edit_purchase' => 'Edit Purchase',
+    'banners'       => 'Banners',
+    'shop_info' => 'Shop Info',
+    'shop_info_updated' => 'Shop Info Updated Successfully',
+    'new_arrivals'  => 'New Arrivals',
+    'ip_address'    => 'IP Address',
+    'sub_categories'  => 'Sub Categories',
+    'generate'      => 'Generate',
     'product_cannot_be_deleted_has_sales' =>  'Product Cannot Be Deleted Has Sales'
 ];

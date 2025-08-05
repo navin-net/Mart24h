@@ -22,7 +22,7 @@ class SalesController extends Controller
             ['label' => __('messages.dashboard'), 'url' => route('dashboard'), 'active' => false],
             ['label' => __('messages.sales'), 'url' => '', 'active' => true]
         ];
-        $products = Products::select('id', 'name', 'sku')->get();
+        $products = Products::select('id', 'name', 'code')->get();
         return view('admin.sales.index', compact('pageTitle', 'breadcrumbs', 'products'));
     }
 
@@ -49,7 +49,7 @@ class SalesController extends Controller
 
     public function create()
     {
-        $products = Products::select('id', 'name', 'sku', 'stock_quantity', 'selling_price')->get();
+        $products = Products::select('id', 'name', 'code', 'stock_quantity', 'selling_price')->get();
         return view('admin.sales.create', compact('products'));
     }
 
@@ -74,6 +74,7 @@ class SalesController extends Controller
                 'customer_id' => null,
                 'total_amount' => $request->total_amount,
                 'status' => $request->status,
+                'reference' => 'SALE-' . strtoupper(uniqid()),
                 'date' => $request->date,
             ]);
 
@@ -105,7 +106,7 @@ public function show($id)
     public function edit($id)
     {
         $sale = Sale::with('items.product')->findOrFail($id);
-        $products = Products::select('id', 'name', 'sku', 'stock_quantity', 'selling_price')->get();
+        $products = Products::select('id', 'name', 'code', 'stock_quantity', 'selling_price')->get();
         return view('admin.sales.edit', compact('sale', 'products'));
     }
 

@@ -10,68 +10,85 @@ use Yajra\DataTables\Facades\DataTables;
 
 class BannerController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function index()
     {
-        if ($request->ajax()) {
-            $data = Banner::latest()->get();
-            return datatables()->of($data)
-                ->addColumn('image', fn($row) => $row->image ? '<img src="' . asset('storage/' . $row->image) . '" width="80"/>' : 'No image')
-                ->addColumn('action', fn($row) => view('admin.settings.banner.partials.actions', compact('row'))->render())
-                ->rawColumns(['image', 'action'])
-                ->make(true);
+        // Ensure we always return 4 banners
+        $banners = Banner::latest()->take(4)->get();
+
+        // Auto-create missing
+        $count = $banners->count();
+        for ($i = 0; $i < 4 - $count; $i++) {
+            $banners->push(new Banner([
+                'id' => $i,
+                'title' => '',
+                'image' => '',
+                'status' => 1,
+                'link' => '',
+            ]));
         }
-
-        $pageTitle = 'Banners';
-        $breadcrumbs = [['label' => 'Dashboard', 'url' => route('dashboard'), 'active' => false], ['label' => 'Banners', 'url' => '', 'active' => true]];
-        return view('admin.settings.banner.index', compact('pageTitle', 'breadcrumbs'));
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'image' => 'nullable|image|max:2048'
+        return view('admin.settings.banner.index', [
+            'pageTitle' => __('messages.banners'),
+            'heading' => __('messages.banners'),
+            'banners' => $banners,
+            'breadcrumbs' => [
+                ['label' => __('messages.dashboard'), 'url' => route('dashboard'), 'active' => false],
+                ['label' => __('messages.banners'), 'url' => route('banner.index'), 'active' => false],
+                ['label' => __('messages.create'), 'url' => '', 'active' => true],
+            ]
         ]);
 
-        $data = $request->only('title', 'description');
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('banners', 'public');
+    }
+
+
+public function ajaxUpdateAll(Request $request)
+{
+    $banners = $request->input('banners');
+    $responses = [];
+
+    foreach ($banners as $index => $data) {
+        $rules = [
+            'title' => 'required|string|max:255',
+            'status' => 'required|boolean',
+            'link' => 'nullable|url',
+        ];
+
+        $validator = Validator::make($data, $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => "Validation failed on row #{$index}",
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        Banner::create($data);
-        return response()->json(['message' => 'Banner created successfully.']);
-    }
+        $banner = isset($data['id']) && $data['id']
+            ? Banner::find($data['id'])
+            : new Banner();
 
-    public function edit(Banner $banner)
-    {
-        return response()->json(['banner' => $banner]);
-    }
+        $banner->fill($data);
 
-    public function update(Request $request, Banner $banner)
-    {
-        $request->validate([
-            'title' => 'required',
-            'image' => 'nullable|image|max:2048'
-        ]);
-
-        $data = $request->only('title', 'description');
-        if ($request->hasFile('image')) {
-            if ($banner->image && Storage::disk('public')->exists($banner->image)) {
-                Storage::disk('public')->delete($banner->image);
-            }
-            $data['image'] = $request->file('image')->store('banners', 'public');
+        if ($request->hasFile("banners.{$index}.image")) {
+            $file = $request->file("banners.{$index}.image");
+            $path = $file->store('banners', 'public');
+            $banner->image = $path;
         }
 
-        $banner->update($data);
-        return response()->json(['message' => 'Banner updated successfully.']);
+        $banner->save();
+        $responses[] = $banner->id;
     }
 
-    public function destroy(Banner $banner)
-    {
-        if ($banner->image && Storage::disk('public')->exists($banner->image)) {
-            Storage::disk('public')->delete($banner->image);
-        }
-        $banner->delete();
-        return response()->json(['message' => 'Banner deleted successfully.']);
-    }
+    return response()->json([
+        'success' => true,
+        'message' => 'All banners updated!',
+        'ids' => $responses
+    ]);
+}
+
+
 }

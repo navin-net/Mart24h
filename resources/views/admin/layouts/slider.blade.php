@@ -1,3 +1,4 @@
+
 <aside class="sidebar">
     <div class="sidebar-user">
         <div class="d-flex align-items-center mb-3">
@@ -104,9 +105,13 @@
 
         <div class="settings-heading">{{ __('messages.settings') }}</div>
         <div class="mb-2">
-            <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('brands', 'categories', 'qualitys') ? 'active' : '' }}"
+            @php
+                $activeSettings = request()->is('brands', 'categories', 'qualitys', 'categories/sub_category');
+            @endphp
+
+            <a class="nav-link d-flex align-items-center justify-content-between {{ $activeSettings ? 'active' : '' }}"
                 data-bs-toggle="collapse" href="#settings-nav"
-                aria-expanded="{{ request()->is('brands', 'categories', 'qualitys') ? 'true' : 'false' }}"
+                aria-expanded="{{ $activeSettings ? 'true' : 'false' }}"
                 aria-controls="settings-nav">
                 <div>
                     <i class="bi bi-gear"></i>
@@ -114,7 +119,8 @@
                 </div>
                 <i class="bi bi-chevron-down"></i>
             </a>
-            <div id="settings-nav" class="collapse {{ request()->is('brands', 'categories', 'qualitys') ? 'show' : '' }} ps-4 mt-1">
+
+            <div id="settings-nav" class="collapse {{ $activeSettings ? 'show' : '' }} ps-4 mt-1">
                 <a href="{{ url('/brands') }}"
                     class="nav-link d-flex align-items-center {{ request()->is('brands') ? 'active' : '' }}">
                     <i class="bi bi-tags"></i>
@@ -130,8 +136,14 @@
                     <i class="bi bi-box"></i>
                     <span>{{ __('messages.categories') }}</span>
                 </a>
+                <a href="{{ url('/categories/sub_category') }}"
+                    class="nav-link d-flex align-items-center {{ request()->is('categories/sub_category') ? 'active' : '' }}">
+                    <i class="bi bi-box"></i>
+                    <span>{{ __('messages.sub_categories') }}</span>
+                </a>
             </div>
         </div>
+
 
         <div class="settings-heading">{{ __('messages.shop') }}</div>
         <div class="mb-2">
@@ -144,11 +156,21 @@
                 </div>
                 <i class="bi bi-chevron-down"></i>
             </a>
-            <div id="shop-nav-slider" class="collapse {{ request()->is('banner') ? 'show' : '' }} ps-4 mt-1">
-                <a href="{{ url('/banner') }}"
-                    class="nav-link d-flex align-items-center {{ request()->is('banner') ? 'active' : '' }}">
+            <div id="shop-nav-slider" class="collapse {{ request()->is('settings', 'settings/banners') ? 'show' : '' }} ps-4 mt-1">
+                <a href="{{ url('/settings') }}"
+                    class="nav-link d-flex align-items-center {{ request()->is('settings') ? 'active' : '' }}">
+                    <i class="bi bi-box"></i>
+                    <span>{{ __('messages.shop_settings') }}</span>
+                </a>
+                <a href="{{ url('settings/banners') }}"
+                    class="nav-link d-flex align-items-center {{ request()->is('settings/banners') ? 'active' : '' }}">
                     <i class="bi bi-tags"></i>
                     <span>{{ __('messages.banner') }}</span>
+                </a>
+                <a href="{{ url('settings/shop_settings/add') }}"
+                    class="nav-link d-flex align-items-center {{ request()->is('settings/shop_settings/add') ? 'active' : '' }}">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>{{ __('messages.add_shop_settings') }}</span>
                 </a>
             </div>
         </div>

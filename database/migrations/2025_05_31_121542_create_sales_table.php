@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-      Schema::create('sales', function (Blueprint $table) {
+    Schema::create('sales', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('customer_id')->nullable();
             $table->decimal('total_amount', 10, 2);

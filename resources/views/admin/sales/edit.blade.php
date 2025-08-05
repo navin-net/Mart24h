@@ -172,7 +172,7 @@ $(document).ready(function () {
             let html = '';
             matches.forEach(p => {
                 html += `<div class="suggestion-item px-3 py-2 cursor-pointer" data-id="${p.id}" data-name="${p.name}" data-price="${p.selling_price}" data-stock="${p.stock_quantity}">
-                    ${p.name} (SKU: ${p.sku}, Stock: ${p.stock_quantity})
+                    ${p.name} (code: ${p.code}, Stock: ${p.stock_quantity})
                 </div>`;
             });
             suggestionsDiv.html(html).show();
@@ -188,7 +188,7 @@ $(document).ready(function () {
             if ($(`#itemsBody [name^="items["][name$="[product_id]"][value="${id}"]`).length > 0) {
                 $('#alertsContainer').html(`
                     <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        The product "${name}" (SKU: ${$(this).data('sku')}) is already included in this sale. Please edit the existing item instead.
+                        The product "${name}" (code: ${$(this).data('code')}) is already included in this sale. Please edit the existing item instead.
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 `);

@@ -17,7 +17,7 @@ class Products extends Model
 
     protected $fillable = [
         'name',
-        'sku',
+        'code',
         'description',
         'stock_quantity',
         'expiry_date',
@@ -29,7 +29,7 @@ class Products extends Model
         'subcategory_id',
         'quality_id',
     ];
-   public function brand()
+    public function brand()
     {
         return $this->belongsTo(Brand::class);
     }
@@ -49,10 +49,11 @@ class Products extends Model
         return $this->belongsTo(Qualitys::class);
     }
 
-    public function images()
-    {
-        return $this->hasMany(ProductImage::class);
-    }
+public function images()
+{
+    return $this->hasMany(ProductImage::class, 'product_id');
+}
+
 
 
 }

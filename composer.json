@@ -14,6 +14,7 @@
         "yajra/laravel-datatables-oracle": "^10.11"
     },
     "require-dev": {
+        "enlightn/security-checker": "^1.11",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.0.1",

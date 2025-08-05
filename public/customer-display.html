@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Display - POS System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #f8f9fa; font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; }
+        .customer-container { height: 100vh; display: flex; flex-direction: column; padding: 20px; }
+        .customer-content { flex: 1; display: flex; background: white; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+        .order-section { flex: 1; padding: 0; display: flex; flex-direction: column; }
+        .items-table { width: 100%; border-collapse: collapse; font-size: 1rem; }
+        .items-table th, .items-table td { padding: 12px 15px; border-bottom: 1px solid #ddd; }
+        .items-table th { background: #fff; font-weight: 600; text-align: left; }
+        .summary-section { margin-top: auto; padding: 20px; border-top: 2px solid #ddd; }
+        .summary-row { display: flex; justify-content: space-between; padding: 8px 0; }
+        .total-payable { background: #333; color: white; padding: 15px 20px; margin: 10px -20px -20px -20px; display: flex; justify-content: space-between; font-weight: bold; }
+        .welcome-screen, .payment-processing, .payment-success { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; }
+        .welcome-screen.active, .payment-processing.active, .payment-success.active { display: flex; }
+        .promotional-section { flex: 1; padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-left: 1px solid #ddd; }
+        .test-mode { position: absolute; top: 10px; left: 10px; background: orange; color: white; padding: 5px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="customer-container">
+        <div class="customer-content">
+            <div class="order-section">
+                <div class="welcome-screen active" id="welcomeScreen">
+                    <h2>Welcome!</h2>
+                    <p>Your items will appear here as they are scanned</p>
+                </div>
+                <div id="orderTable" style="display: none; flex-direction: column; height: 100%;">
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsTableBody"></tbody>
+                    </table>
+                    <div class="summary-section">
+                        <div class="summary-row"><span>Items</span><span id="itemsTotal">0</span></div>
+                        <div class="summary-row"><span>Total</span><span id="summarySubtotal">0.00</span></div>
+                        <div class="summary-row"><span>Tax (8%)</span><span id="summaryTax">0.00</span></div>
+                        <div class="total-payable"><span>Total Payable</span><span id="totalPayable">0.00</span></div>
+                    </div>
+                </div>
+                <div class="payment-processing" id="paymentProcessing">
+                    <div class="processing-icon">⏳</div>
+                    <div class="processing-text">Processing Payment...</div>
+                    <div class="processing-details" id="paymentDetails"></div>
+                </div>
+                <div class="payment-success" id="paymentSuccess">
+                    <div class="success-icon">✅</div>
+                    <div class="success-text">Payment Successful!</div>
+                    <div class="success-details" id="successDetails"></div>
+                </div>
+            </div>
+            <div class="promotional-section">
+                <div class="promo-content">
+                    <h2>POS System</h2>
+                    <p id="promoMessage">Thank you for choosing our store!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="test-mode" id="testMode" style="display: none;"><i class="bi bi-gear"></i> TEST MODE</div>
+    <script>
+        let currentCart = [];
+        let promoMessages = ["Thank you for choosing our store!", "Fresh products daily!", "Ask about our loyalty program!"];
+        let currentPromoIndex = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            startPromoRotation();
+            checkConnection();
+            setInterval(checkConnection, 1000);
+            window.addEventListener('storage', handleStorageChange);
+            window.addEventListener('message', handleMessage);
+            setInterval(sendHeartbeat, 2000);
+            loadInitialData();
+        });
+
+        function startPromoRotation() {
+            setInterval(() => {
+                if (currentCart.length === 0) {
+                    currentPromoIndex = (currentPromoIndex + 1) % promoMessages.length;
+                    document.getElementById('promoMessage').textContent = promoMessages[currentPromoIndex];
+                }
+            }, 3000);
+        }
+
+        function sendHeartbeat() {
+            try {
+                localStorage.setItem('customerDisplayHeartbeat', Date.now().toString());
+            } catch (e) {
+                console.error('Error sending heartbeat:', e);
+            }
+        }
+
+        function checkConnection() {
+            const lastUpdate = localStorage.getItem('posCustomerData');
+            if (lastUpdate) {
+                try {
+                    const data = JSON.parse(lastUpdate);
+                    setConnectionStatus(Date.now() - data.timestamp < 10000);
+                } catch (e) {
+                    setConnectionStatus(false);
+                }
+            } else {
+                setConnectionStatus(false);
+            }
+        }
+
+        function setConnectionStatus(connected) {
+            const dot = document.getElementById('connectionDot') || document.createElement('span');
+            dot.id = 'connectionDot';
+            dot.className = `status-dot ${connected ? '' : 'disconnected'}`;
+            const text = document.getElementById('connectionText') || document.createElement('span');
+            text.id = 'connectionText';
+            text.textContent = connected ? 'Connected' : 'Disconnected';
+        }
+
+        function loadInitialData() {
+            const savedData = localStorage.getItem('posCustomerData');
+            if (savedData) {
+                try {
+                    handleDataUpdate(JSON.parse(savedData));
+                } catch (e) {
+                    console.error('Error loading initial data:', e);
+                }
+            }
+        }
+
+        function handleStorageChange(e) {
+            if (e.key === 'posCustomerData' && e.newValue) {
+                try {
+                    handleDataUpdate(JSON.parse(e.newValue));
+                } catch (e) {
+                    console.error('Error handling storage change:', e);
+                }
+            }
+        }
+
+        function handleMessage(e) {
+            if (e.data && e.data.cart !== undefined) {
+                handleDataUpdate(e.data);
+            }
+        }
+
+        function handleDataUpdate(data) {
+            switch (data.action) {
+                case 'test':
+                    document.getElementById('testMode').style.display = 'block';
+                    setTimeout(() => document.getElementById('testMode').style.display = 'none', 2000);
+                    updateDisplay(data.cart);
+                    break;
+                case 'reset':
+                    resetDisplay();
+                    break;
+                case 'payment_processing':
+                    showPaymentProcessing(data.paymentMethod, data.total);
+                    break;
+                case 'payment_success':
+                    showPaymentSuccess(data.transaction);
+                    break;
+                default:
+                    updateDisplay(data.cart);
+                    break;
+            }
+        }
+
+        function resetDisplay() {
+            currentCart = [];
+            showWelcomeScreen();
+        }
+
+        function updateDisplay(cart) {
+            currentCart = cart;
+            if (cart.length === 0) {
+                showWelcomeScreen();
+            } else {
+                document.getElementById('welcomeScreen').classList.remove('active');
+                document.getElementById('orderTable').style.display = 'flex';
+                document.getElementById('paymentProcessing').classList.remove('active');
+                document.getElementById('paymentSuccess').classList.remove('active');
+                renderItemsTable(cart);
+                updateCartSummary(cart);
+            }
+        }
+
+        function showWelcomeScreen() {
+            document.getElementById('welcomeScreen').classList.add('active');
+            document.getElementById('orderTable').style.display = 'none';
+            document.getElementById('paymentProcessing').classList.remove('active');
+            document.getElementById('paymentSuccess').classList.remove('active');
+        }
+
+        function renderItemsTable(products) {
+            document.getElementById('itemsTableBody').innerHTML = products.map(item => `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>$${parseFloat(item.price).toFixed(2)}</td>
+                    <td>${item.quantity}</td>
+                    <td>$${(item.price * item.quantity).toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateCartSummary(cart) {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.08;
+            const total = subtotal + tax;
+            const itemsCount = cart.reduce((count, item) => count + item.quantity, 0);
+            document.getElementById('itemsTotal').textContent = itemsCount;
+            document.getElementById('summarySubtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('summaryTax').textContent = tax.toFixed(2);
+            document.getElementById('totalPayable').textContent = total.toFixed(2);
+        }
+
+        function showPaymentProcessing(method, amount) {
+            document.getElementById('welcomeScreen').classList.remove('active');
+            document.getElementById('orderTable').style.display = 'none';
+            document.getElementById('paymentProcessing').classList.add('active');
+            document.getElementById('paymentSuccess').classList.remove('active');
+            document.getElementById('paymentDetails').innerHTML = `
+                Processing ${method.toUpperCase()} payment<br>
+                Amount: $${parseFloat(amount).toFixed(2)}
+            `;
+        }
+
+        function showPaymentSuccess(transaction) {
+            document.getElementById('welcomeScreen').classList.remove('active');
+            document.getElementById('orderTable').style.display = 'none';
+            document.getElementById('paymentProcessing').classList.remove('active');
+            document.getElementById('paymentSuccess').classList.add('active');
+            document.getElementById('successDetails').innerHTML = `
+                Order #${transaction.id}<br>
+                Total: $${parseFloat(transaction.total).toFixed(2)}<br>
+                Payment: ${transaction.paymentMethod.toUpperCase()}
+            `;
+            setTimeout(showWelcomeScreen, 5000);
+        }
+    </script>
+</body>
+</html>

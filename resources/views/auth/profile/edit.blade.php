@@ -2,9 +2,7 @@
 
 @section('title', __('messages.my_account'))
 
-@section('content')
 @push('style')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -154,11 +152,14 @@
             font-size: 1.2rem;
             cursor: pointer;
             transition: color 0.2s ease, transform 0.2s ease;
+            user-select: none;
         }
 
-        .password-toggle:hover {
+        .password-toggle:hover,
+        .password-toggle:focus {
             color: #3a86ff;
             transform: scale(1.1);
+            outline: none;
         }
 
         /* Hidden File Input */
@@ -208,10 +209,10 @@
         <div class="row">
             <div class="col-lg-3 mb-4">
                 <div class="dashboard-sidebar p-4 text-center">
-                    <div class="avatar-wrapper">
+                    <div class="avatar-wrapper" tabindex="0" role="button" aria-label="Click to upload new avatar">
                         <img src="{{ optional($user->profile)->image ? asset('storage/' . optional($user->profile)->image) : asset('storage/profiles/noimage.png') }}"
-                             alt="Avatar" class="user-avatar mb-3" id="avatar-preview" tabindex="0"
-                             aria-label="Click to upload new avatar" aria-describedby="avatar-error" style="height: 300px; width: 250px;">
+                             alt="Avatar" class="user-avatar mb-3" id="avatar-preview"
+                             aria-describedby="avatar-error" style="height: 300px; width: 250px;">
                         <div class="avatar-overlay"></div>
                         <input type="file" name="image" id="image" class="file-input-hidden" accept="image/*" hidden>
                     </div>
@@ -271,10 +272,8 @@
                         <div class="mb-3">
                             <label class="form-label">Current Password</label>
                             <div class="password-wrapper">
-                                <input type="password" name="old_password" class="form-control password-input"
-                                       aria-label="Current password, toggle visibility with icon">
-                                <i class="bi bi-eye-slash password-toggle" data-target="old_password"
-                                   aria-label="Show password"></i>
+                                <input type="password" name="old_password" class="form-control password-input" aria-label="Current password, toggle visibility with icon" autocomplete="current-password">
+                                <!-- <i class="bi bi-eye-slash password-toggle" data-target="old_password" aria-label="Show password" role="button" tabindex="0" aria-pressed="false"></i> -->
                             </div>
                             @error('old_password')
                                 <div class="text-danger mt-1">{{ $message }}</div>
@@ -284,9 +283,8 @@
                             <label class="form-label">New Password</label>
                             <div class="password-wrapper">
                                 <input type="password" name="new_password" class="form-control password-input"
-                                       aria-label="New password, toggle visibility with icon">
-                                <i class="bi bi-eye-slash password-toggle" data-target="new_password"
-                                   aria-label="Show password"></i>
+                                    aria-label="New password, toggle visibility with icon" autocomplete="new-password">
+                                <!-- <i class="bi bi-eye-slash password-toggle" data-target="new_password" aria-label="Show password" role="button" tabindex="0" aria-pressed="false"></i> -->
                             </div>
                             @error('new_password')
                                 <div class="text-danger mt-1">{{ $message }}</div>
@@ -296,9 +294,8 @@
                             <label class="form-label">Confirm New Password</label>
                             <div class="password-wrapper">
                                 <input type="password" name="new_password_confirmation" class="form-control password-input"
-                                       aria-label="Confirm new password, toggle visibility with icon">
-                                <i class="bi bi-eye-slash password-toggle" data-target="new_password_confirmation"
-                                   aria-label="Show password"></i>
+                                    aria-label="Confirm new password, toggle visibility with icon" autocomplete="new-password">
+                                <!-- <i class="bi bi-eye-slash password-toggle" data-target="new_password_confirmation" aria-label="Show password" role="button" tabindex="0" aria-pressed="false"></i> -->
                             </div>
                         </div>
                     </div>
@@ -319,16 +316,25 @@
         // Password Toggle
         document.querySelectorAll('.password-toggle').forEach(toggle => {
             toggle.addEventListener('click', function () {
-                const targetId = this.getAttribute('data-target');
-                const input = document.querySelector(`input[name="${targetId}"]`);
+                const targetName = this.getAttribute('data-target');
+                const input = document.querySelector(`input[name="${targetName}"]`);
                 const wrapper = this.closest('.password-wrapper');
                 const isPassword = input.type === 'password';
+
                 input.type = isPassword ? 'text' : 'password';
-                wrapper.classList.toggle('visible', !isPassword); // Toggle 'visible' based on whether it BECOMES visible
+                wrapper.classList.toggle('visible', !isPassword);
                 this.classList.toggle('bi-eye-slash', isPassword);
                 this.classList.toggle('bi-eye', !isPassword);
                 this.setAttribute('aria-label', isPassword ? 'Show password' : 'Hide password');
-                this.setAttribute('aria-pressed', !isPassword);
+                this.setAttribute('aria-pressed', String(!isPassword));
+            });
+
+            // Keyboard accessibility: toggle on Enter or Space
+            toggle.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.click();
+                }
             });
         });
 
@@ -338,17 +344,18 @@
         const fileInput = document.getElementById('image');
         const errorDiv = document.getElementById('avatar-error');
         const defaultAvatar = "{{ optional($user->profile)->image ? asset('storage/' . optional($user->profile)->image) : asset('storage/profiles/noimage.png') }}";
-        const maxFileSize = 2 * 1024 * 1024; // 2MB in bytes
+        const maxFileSize = 2 * 1024 * 1024; // 2MB
 
         avatarWrapper.addEventListener('click', () => fileInput.click());
-        avatarPreview.addEventListener('keypress', (e) => {
+        avatarWrapper.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
                 fileInput.click();
             }
         });
 
-        fileInput.addEventListener('change', function (e) {
-            const file = e.target.files[0];
+        fileInput.addEventListener('change', function () {
+            const file = this.files[0];
             errorDiv.textContent = '';
             errorDiv.classList.remove('active');
 
@@ -358,12 +365,11 @@
                 return;
             }
 
-            // Validate file type and size
             if (!file.type.startsWith('image/')) {
                 errorDiv.textContent = 'Please select an image file (e.g., JPG, PNG).';
                 errorDiv.classList.add('active');
                 avatarPreview.src = defaultAvatar;
-                fileInput.value = ''; // Clear input
+                this.value = '';
                 return;
             }
 
@@ -371,13 +377,12 @@
                 errorDiv.textContent = 'Image file is too large. Maximum size is 2MB.';
                 errorDiv.classList.add('active');
                 avatarPreview.src = defaultAvatar;
-                fileInput.value = ''; // Clear input
+                this.value = '';
                 return;
             }
 
-            // Display preview
             const reader = new FileReader();
-            reader.onload = function (e) {
+            reader.onload = e => {
                 avatarPreview.src = e.target.result;
                 avatarPreview.style.opacity = '1';
             };

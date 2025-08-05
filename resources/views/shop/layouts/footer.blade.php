@@ -3,13 +3,13 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-                    <h3 class="footer-title">ShopEase</h3>
-                    <p>Your one-stop shop for all your fashion needs. We provide high-quality products at affordable prices.</p>
+                    <h3 class="footer-title">{{ $shopDetail->name }}</h3>
+                    <p>{!! $shopDetail->description !!}</p>
                     <div class="social-icons mt-4">
-                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-pinterest"></i></a>
+                        <a href="{{ $shopDetail->facebook }}"  target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="{{ $shopDetail->x }}" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="{{ $shopDetail->instagram }}" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="{{ $shopDetail->youtube }}" target="_blank" class="social-icon"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
@@ -36,10 +36,10 @@
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h3 class="footer-title">Contact Info</h3>
-                    <p><i class="fas fa-map-marker-alt me-2"></i> 123 Street, New York, USA</p>
-                    <p><i class="fas fa-phone-alt me-2"></i> +1 234 567 8900</p>
-                    <p><i class="fas fa-envelope me-2"></i> info@shopease.com</p>
-                    <p><i class="fas fa-clock me-2"></i> Mon-Fri: 9AM to 5PM</p>
+                    <p><i class="fas fa-map-marker-alt me-2"></i> {{ $shopDetail->address }}</p>
+                    <p><i class="fas fa-phone-alt me-2"></i><a href="tel:{{ $shopDetail->phone }}">{{ $shopDetail->phone }}</a></p>
+                    <p><i class="fas fa-envelope me-2"></i><a href="mailto:{{ $shopDetail->email }}">{{ $shopDetail->email }}</a></p>
+                    <p><i class="fas fa-clock me-2"></i> Mon-Fri: {{ $shopDetail->open_shop_time }} to {{ $shopDetail->close_shop }}</p>
                 </div>
             </div>
             <div class="row copyright text-center">
@@ -113,8 +113,8 @@
                 <h4 class="cart-total-title">Total:</h4>
                 <h4 class="cart-total-price">$269.97</h4>
             </div>
-            <a href="#" class="btn btn-primary-custom w-100 mb-3">Checkout</a>
-            <a href="#" class="btn btn-outline-primary-custom w-100">View Cart</a>
+            <a href="{{ route('shop.checkout') }}" class="btn btn-primary-custom w-100 mb-3">Checkout</a>
+            <a href="{{ route('shop.cart') }}" class="btn btn-outline-primary-custom w-100">View Cart</a>
         </div>
     </div>
 

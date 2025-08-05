@@ -20,7 +20,7 @@
                 </div>
                 <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
                     <div class="about-img-container">
-                        <img src="https://images.unsplash.com/photo-1556740738-6b4a6d8b8b83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Our Story">
+                        <img src="https://images.twinkl.co.uk/tw1n/image/private/t_630/u/ux/child-writing-twinkl-drawing_ver_1.jpg" alt="Our Story">
                     </div>
                 </div>
             </div>
@@ -36,7 +36,7 @@
                 </div>
                 <div class="col-lg-6 order-lg-1" data-aos="fade-up" data-aos-delay="200">
                     <div class="about-img-container">
-                        <img src="https://images.unsplash.com/photo-1516321318423-7d6c536f8852?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Our Mission">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsAfcooj5rpCUmX-EfQDkuqj7WNQRjp3_dJlZvv0RZ_BV54eN4rBNboGBp3-XkM4lw8Rs&usqp=CAU" alt="Our Mission">
                     </div>
                 </div>
             </div>

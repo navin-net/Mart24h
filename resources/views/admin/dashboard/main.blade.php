@@ -4,12 +4,16 @@
 
 @section('content')
     <!-- Dashboard Header -->
-    <div class="mb-4">
-        <div class="section-title">{{ __('messages.dashboard') }}</div>
-        <h1 class="display-6 fw-bold mb-3">{{ __('messages.stock_management_system') }}</h1>
-        <p class="text-muted mb-4">{{ __('messages.dashboard_welcome') }}</p>
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="section-title text-start">{{ __('messages.dashboard') }}</div>
+            <h1 class="display-6 fw-bold mb-3 text-start">{{ __('messages.stock_management_system') }}</h1>
+            <p class="text-muted mb-4 text-start">{{ __('messages.dashboard_welcome') }}</p>
+        </div>
+        <div class="col-md-6 text-md-end text-start">
+            <div class="section-title">{{ __('messages.ip_address') }}: {{$ipFromDB}}</div>
+        </div>
     </div>
-
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}

@@ -36,7 +36,7 @@ class PurchasesController extends Controller
                 ->make(true);
         }
 
-        $products = Products::select('id', 'name', 'sku')->get();
+        $products = Products::select('id', 'name', 'code')->get();
 
         return view('admin.purchases.index', [
             'pageTitle' => __('messages.purchases_list'),
@@ -51,7 +51,7 @@ class PurchasesController extends Controller
 
     public function create()
     {
-        $products = Products::select('id', 'name', 'sku', 'stock_quantity', 'cost_price')->get();
+        $products = Products::select('id', 'name', 'code', 'stock_quantity', 'cost_price')->get();
 
         return view('admin.purchases.create', [
             'products' => $products,
@@ -150,7 +150,7 @@ class PurchasesController extends Controller
     public function edit($id)
     {
         $purchase = Purchase::with('items.product')->findOrFail($id);
-        $products = Products::select('id', 'name', 'sku')->get();
+        $products = Products::select('id', 'name', 'code')->get();
 
         return response()->json([
             'purchase' => $purchase,

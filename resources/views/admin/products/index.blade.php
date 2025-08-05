@@ -77,7 +77,7 @@
                                             <th><input type="checkbox" id="selectAll"></th>
                                             <th>{{ __('messages.image') }}</th>
                                             <th>{{ __('messages.name') }}</th>
-                                            <th>{{ __('messages.sku') }}</th>
+                                            <th>{{ __('messages.code') }}</th>
                                             <th>{{ __('messages.brand') }}</th>
                                             <th>{{ __('messages.category') }}</th>
                                             <th>{{ __('messages.subcategory') }}</th>
@@ -160,9 +160,9 @@
                                     <div class="invalid-feedback" id="edit_name_error"></div>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="edit_sku" class="form-label">{{ __('messages.sku') }}</label>
-                                    <input type="text" name="sku" id="edit_sku" class="form-control" required>
-                                    <div class="invalid-feedback" id="edit_sku_error"></div>
+                                    <label for="edit_code" class="form-label">{{ __('messages.code') }}</label>
+                                    <input type="text" name="code" id="edit_code" class="form-control" required>
+                                    <div class="invalid-feedback" id="edit_code_error"></div>
                                 </div>
                             </div>
                             <div class="row">
@@ -253,6 +253,8 @@
 
 @push('scripts')
     <script>
+            // const imageBaseUrl = "{{ asset('upload/image') }}";
+
         $(document).ready(function() {
             let table = $('#productsTable').DataTable({
                 dom: 'lBfrtip',
@@ -275,26 +277,26 @@
                         searchable: false,
                         orderable: false
                     },
-                    {
-                        data: 'image',
-                        name: 'image',
-                        render: function(data) {
-                            const imagePath = data ? '{{ asset('') }}' + data :
-                                '{{ asset('upload/image/noimage.png') }}';
-                            return `<a href="#" class="image-popup" data-bs-toggle="modal" data-bs-target="#imageModal" data-image="${imagePath}">
-                                <img src="${imagePath}" width="50" class="img-thumbnail brand-image-thumbnail">
-                            </a>`;
-                        }
+{
+    data: 'image',
+    name: 'image',
+    render: function(data) {
+        let imageUrl =  (data ? data : 'noimage.png');
+        return `
+            <a href="#" class="image-popup" data-bs-toggle="modal" data-bs-target="#imageModal" data-image="${imageUrl}">
+                <img src="${imageUrl}" width="50" class="img-thumbnail brand-image-thumbnail">
+            </a>`;
+    }
+},
 
 
-                    },
                     {
                         data: 'name',
                         name: 'name'
                     },
                     {
-                        data: 'sku',
-                        name: 'sku'
+                        data: 'code',
+                        name: 'code'
                     },
                     {
                         data: 'brand_name',
@@ -381,7 +383,7 @@
                     success: function(response) {
                         $('#edit_id').val(response.product.id);
                         $('#edit_name').val(response.product.name);
-                        $('#edit_sku').val(response.product.sku);
+                        $('#edit_code').val(response.product.code);
                         $('#edit_cost_price').val(response.product.cost_price);
                         $('#edit_selling_price').val(response.product.selling_price);
                         $('#edit_stock_quantity').val(response.product.stock_quantity);

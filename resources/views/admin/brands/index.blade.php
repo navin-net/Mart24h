@@ -241,6 +241,7 @@
 
 @push('scripts')
     <script>
+    const imageBaseUrl = "{{ asset('upload/image') }}";
         $(document).ready(function() {
             var table = $('#brandsTable').DataTable({
                 dom: 'lBfrtip',
@@ -268,18 +269,15 @@
                         name: 'code'
                     },
                     {
-                        data: 'image',
-                        name: 'image',
-                        render: function(data) {
-                            if (data) {
-                                return `<a href="#" class="image-popup" data-bs-toggle="modal" data-bs-target="#imageModal" data-image="/upload/image/${data}">
-                            <img src="/upload/image/${data}" width="50" class="img-thumbnail brand-image-thumbnail">
-                        </a>`;
-                            }
-                            return `<a href="#" class="image-popup" data-bs-toggle="modal" data-bs-target="#imageModal" data-image="/upload/image/noimage.png">
-                        <img src="/upload/image/noimage.png" width="50" class="img-thumbnail brand-image-thumbnail">
-                    </a>`;
-                        }
+                    data: 'image',
+                    name: 'image',
+                    render: function(data) {
+                        let imageUrl = imageBaseUrl + '/' + (data ? data : 'noimage.png');
+                        return `
+                            <a href="#" class="image-popup" data-bs-toggle="modal" data-bs-target="#imageModal" data-image="${imageUrl}">
+                                <img src="${imageUrl}" width="50" class="img-thumbnail brand-image-thumbnail">
+                            </a>`;
+                    }
                     },
                     {
                         data: 'name',

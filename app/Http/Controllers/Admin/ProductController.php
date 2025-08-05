@@ -14,7 +14,6 @@ use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
 {
-
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -23,7 +22,7 @@ class ProductController extends Controller
                     'products.id',
                     'products.image',
                     'products.name',
-                    'products.sku',
+                    'products.code',
                     'products.stock_quantity',
                     'products.cost_price',
                     'products.selling_price',
@@ -62,22 +61,23 @@ class ProductController extends Controller
         }
 
         return view('admin.products.index', [
-            'pageTitle' => __('messages.products_list'),
-            'heading' => __('messages.products_list'),
-            'description' => __('messages.dashboard_welcome'),
-            'breadcrumbs' => [
+            'pageTitle'    => __('messages.products_list'),
+            'heading'      => __('messages.products_list'),
+            'description'  => __('messages.dashboard_welcome'),
+            'breadcrumbs'  => [
                 ['label' => __('messages.dashboard'), 'url' => route('dashboard'), 'active' => false],
                 ['label' => __('messages.products'), 'url' => '', 'active' => true],
             ]
         ]);
     }
+
     public function getData()
     {
         $data = DB::table('products')
             ->select(
                 'products.id',
                 'products.name',
-                'products.sku',
+                'products.code',
                 'products.stock_quantity',
                 'products.cost_price',
                 'products.selling_price',
@@ -97,16 +97,16 @@ class ProductController extends Controller
 
     public function create()
     {
-        $brands = DB::table('brands')->select('id', 'name')->get();
+        $brands     = DB::table('brands')->select('id', 'name')->get();
         $categories = DB::table('categories')->select('id', 'name')->get();
-        $qualities = DB::table('qualitys')->select('id', 'name')->get();
+        $qualities  = DB::table('qualitys')->select('id', 'name')->get();
 
         return view('admin.products.create', [
-            'pageTitle' => __('messages.add_products'),
-            'heading' => __('messages.add_products'),
-            'brands' => $brands,
-            'categories' => $categories,
-            'qualities' => $qualities,
+            'pageTitle'   => __('messages.add_products'),
+            'heading'     => __('messages.add_products'),
+            'brands'      => $brands,
+            'categories'  => $categories,
+            'qualities'   => $qualities,
             'breadcrumbs' => [
                 ['label' => __('messages.dashboard'), 'url' => route('dashboard'), 'active' => false],
                 ['label' => __('messages.products'), 'url' => route('products.index'), 'active' => false],
@@ -119,10 +119,10 @@ class ProductController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:191',
-                'sku' => 'required|string|max:191|unique:products,sku',
-                'brand_id' => 'required|exists:brands,id',
-                'category_id' => 'required|exists:categories,id',
+                'name'           => 'required|string|max:191',
+                'code'            => 'required|string|max:191|unique:products,code',
+                'brand_id'       => 'required|exists:brands,id',
+                'category_id'    => 'required|exists:categories,id',
                 'subcategory_id' => [
                     'nullable',
                     'exists:sub_categories,id',
@@ -138,12 +138,12 @@ class ProductController extends Controller
                         }
                     },
                 ],
-                'quality_id' => 'required|exists:qualitys,id', // Match table name from create()
-                'cost_price' => 'required|numeric|min:0',
-                'selling_price' => 'required|numeric|min:0',
-                'stock_quantity' => 'required|integer|min:0',
-                'description' => 'nullable|string',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'quality_id'     => 'required|exists:qualitys,id',
+                'cost_price'     => 'required|numeric|min:0',
+                'selling_price'  => 'required|numeric|min:0',
+                // 'stock_quantity' => 'required|integer|min:0',
+                'description'    => 'nullable|string',
+                'image'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
                 'image_review.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             ]);
 
@@ -153,21 +153,27 @@ class ProductController extends Controller
 
             $data = $request->except('image', 'image_review');
 
-            // Handle main image upload
-            if ($request->hasFile('image')) {
-                $data['image'] = $request->file('image')->store('images', 'public');
+            // Upload main product image
+            if ($image = $request->file('image')) {
+                $destinationPath = public_path('upload/image/');
+                $imageName = date('YmdHis') . '.' . $image->getClientOriginalExtension();
+                $image->move($destinationPath, $imageName);
+                $data['image'] = 'upload/image/' . $imageName;
             }
 
-            // Create the product
+            // Create product record
             $product = Products::create($data);
 
-            // Handle review images
+            // Upload review images
             if ($request->hasFile('image_review')) {
                 foreach ($request->file('image_review') as $reviewImage) {
-                    $path = $reviewImage->store('images', 'public');
+                    $destinationPath = public_path('upload/image/');
+                    $reviewImageName = uniqid() . '.' . $reviewImage->getClientOriginalExtension();
+                    $reviewImage->move($destinationPath, $reviewImageName);
+
                     ProductImage::create([
-                        'product_id' => $product->id,
-                        'image_review' => $path,
+                        'product_id'   => $product->id,
+                        'image_review' => 'upload/image/' . $reviewImageName,
                     ]);
                 }
             }
@@ -175,13 +181,14 @@ class ProductController extends Controller
             session()->flash('success', __('messages.product_created'));
 
             return response()->json([
-                'message' => __('messages.product_created'),
+                'message'  => __('messages.product_created'),
                 'redirect' => route('products.index')
             ], 201);
+
         } catch (\Exception $e) {
             Log::error('Product creation failed: ' . $e->getMessage(), [
                 'request' => $request->all(),
-                'trace' => $e->getTraceAsString()
+                'trace'   => $e->getTraceAsString()
             ]);
             return response()->json(['error' => 'Server error occurred. Please try again.'], 500);
         }
@@ -189,21 +196,21 @@ class ProductController extends Controller
 
     public function edit($id)
     {
-        $product = Products::with(['brand', 'category', 'subCategory', 'quality'])->findOrFail($id);
-        $brands = DB::table('brands')->select('id', 'name')->get();
-        $categories = DB::table('categories')->select('id', 'name')->get();
-        $qualities = DB::table('qualitys')->select('id', 'name')->get();
+        $product      = Products::with(['brand', 'category', 'subCategory', 'quality'])->findOrFail($id);
+        $brands       = DB::table('brands')->select('id', 'name')->get();
+        $categories   = DB::table('categories')->select('id', 'name')->get();
+        $qualities    = DB::table('qualitys')->select('id', 'name')->get();
         $subcategories = DB::table('sub_categories')
             ->select('id', 'name')
             ->where('category_id', $product->category_id)
             ->get();
 
         return response()->json([
-            'product' => $product,
-            'brands' => $brands,
-            'categories' => $categories,
-            'subcategories' => $subcategories,
-            'qualities' => $qualities
+            'product'      => $product,
+            'brands'       => $brands,
+            'categories'   => $categories,
+            'subcategories'=> $subcategories,
+            'qualities'    => $qualities
         ]);
     }
 
@@ -215,35 +222,23 @@ class ProductController extends Controller
                 'brands.name as brand_name',
                 'categories.name as category_name',
                 'sub_categories.name as subcategory_name',
-                // 'product_images.image_review',
+                'product_images.image_review',
                 'qualitys.name as quality_name'
             )
-            // ->leftJoin('product_images', 'products.id', '=', 'product_images.product_id')
+            ->leftJoin('product_images', 'products.id', '=', 'product_images.product_id')
             ->leftJoin('brands', 'products.brand_id', '=', 'brands.id')
             ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
             ->leftJoin('sub_categories', 'products.subcategory_id', '=', 'sub_categories.id')
             ->leftJoin('qualitys', 'products.quality_id', '=', 'qualitys.id')
             ->where('products.id', $id)
             ->first();
-        
-        $images = DB::table('product_images')
-        ->where('product_id', $id)
-        ->pluck('image_review'); 
-        // pp($product,$images);
 
-        // return view('admin.products.show', [
-        //     'pageTitle' => __('messages.product_details'),
-        //     'heading' => __('messages.product_details'),
-        //     'product' => $product,
-        //     'image_review' => $images,
-        //     'breadcrumbs' => [
-        //         ['label' => __('messages.dashboard'), 'url' => route('dashboard'), 'active' => false],
-        //         ['label' => __('messages.products'), 'url' => route('products.index'), 'active' => false],
-        //         ['label' => __('messages.create'), 'url' => '', 'active' => true],
-        //     ]
-        // ]);
+        $images = DB::table('product_images')
+            ->where('product_id', $id)
+            ->pluck('image_review');
+        // pp($product);
         return response()->json([
-            'product' => $product,
+            'product'      => $product,
             'image_review' => $images
         ]);
     }
@@ -253,12 +248,10 @@ class ProductController extends Controller
         $product = Products::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:191',
-            'sku' => 'required|string|max:191|unique:products,sku,' . $id,
-            // 'brand_id' => 'required|exists:brands,id',
-            'category_id' => 'required|exists:categories,id',
+            'name'           => 'required|string|max:191',
+            'code'            => 'required|string|max:191|unique:products,code,' . $id,
+            'category_id'    => 'required|exists:categories,id',
             'subcategory_id' => [
-                // 'required',
                 'exists:sub_categories,id',
                 function ($attribute, $value, $fail) use ($request) {
                     $subCategory = DB::table('sub_categories')
@@ -270,12 +263,11 @@ class ProductController extends Controller
                     }
                 },
             ],
-            'quality_id' => 'required|exists:qualitys,id',
-            'cost_price' => 'required|numeric|min:0',
-            'selling_price' => 'required|numeric|min:0',
-            // 'stock_quantity' => 'required|integer|min:0',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'quality_id'     => 'required|exists:qualitys,id',
+            'cost_price'     => 'required|numeric|min:0',
+            'selling_price'  => 'required|numeric|min:0',
+            'description'    => 'nullable|string',
+            'image'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -285,21 +277,24 @@ class ProductController extends Controller
         $data = $request->except('image');
 
         if ($image = $request->file('image')) {
-            if ($product->image && file_exists(public_path($product->image))) {
-                if (is_writable(public_path($product->image))) {
-                    unlink(public_path($product->image));
-                }
+            // Delete old image if exists
+            $oldImagePath = public_path($product->image);
+            if ($product->image && file_exists($oldImagePath)) {
+                @unlink($oldImagePath);
             }
+
+            // Prepare destination path
             $destinationPath = public_path('upload/image/');
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0755, true);
             }
-            if (!is_writable($destinationPath)) {
-                return response()->json(['error' => __('messages.server_error')], 500);
-            }
-            $profileImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
-            $image->move($destinationPath, $profileImage);
-            $data['image'] = 'upload/image/' . $profileImage; // Store full path
+
+            // Save new image file
+            $newImageName = date('YmdHis') . '.' . $image->getClientOriginalExtension();
+            $image->move($destinationPath, $newImageName);
+
+            // Store relative path to DB
+            $data['image'] = 'upload/image/' . $newImageName;
         }
 
         $product->update($data);
@@ -307,7 +302,7 @@ class ProductController extends Controller
         session()->flash('success', __('messages.product_updated'));
 
         return response()->json([
-            'message' => __('messages.product_updated'),
+            'message'  => __('messages.product_updated'),
             'redirect' => route('products.index')
         ], 200);
     }
@@ -340,14 +335,13 @@ class ProductController extends Controller
         ], 200);
     }
 
-
-
     public function getSubCategories(Request $request)
     {
         $subCategories = DB::table('sub_categories')
             ->select('id', 'name')
             ->where('category_id', $request->category_id)
             ->get();
+
         return response()->json($subCategories);
     }
 }

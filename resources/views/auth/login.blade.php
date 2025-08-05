@@ -87,8 +87,9 @@
 
                 <div class="flex items-center justify-between text-sm">
                     <div class="flex items-center">
-                        <input type="checkbox" name="remember" id="remember" class="form-checkbox h-4 w-4 text-yellow-400 transition duration-150 ease-in-out bg-gray-900 border-gray-700 rounded focus:ring-yellow-400" {{ old('remember') ? 'checked' : '' }}>
-                        <label for="remember" class="ml-2 block text-gray-300">Remember me</label>
+                    <label>
+                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> Remember me
+                    </label>
                     </div>
                     @if (Route::has('password.request'))
                         <a class="font-medium text-yellow-400 hover:text-yellow-300" href="{{ route('password.request') }}">Forgot password?</a>

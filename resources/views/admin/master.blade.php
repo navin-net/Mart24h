@@ -1,25 +1,34 @@
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}" data-bs-theme="dark">
-
+<html lang="{{ app()->getLocale() }}" data-bs-theme="auto">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <title>@yield('title', 'Stock Management')</title>
-
-    <!-- Bootstrap 5.3 CSS -->
     <link href="{{ asset('assets1/bootstrap.min.css') }}" rel="stylesheet">
-    <!-- Bootstrap Icons -->
+    
+    <!-- @php
+        $loadBootstrapForPos = in_array(Route::currentRouteName(), [
+            'pos.index',
+            'pos.search',
+            'pos.filter',
+            'pos.process-payment',
+            'admin.customer-display'
+        ]);
+    @endphp
+    
+    @if ($loadBootstrapForPos)
+        @vite(['resources/js/app.js'])
+    @endif -->
+        
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Bootstrap 5.3 CSS -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
-    <!-- DataTables CSS (Bootstrap 5 style) -->
     <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.7/dist/sweetalert2.min.css" rel="stylesheet">
+    
     <style>
         :root {
             --sidebar-width: 260px;
@@ -37,6 +46,9 @@
             --text-color: #1e293b;
             --text-muted: #64748b;
             --hover-bg: rgba(0, 0, 0, 0.05);
+            --editor-bg: #ffffff;
+            --editor-text: #1e293b;
+            --editor-border: #d1d5db;
         }
 
         [data-bs-theme="dark"] {
@@ -48,8 +60,70 @@
             --text-color: #e2e8f0;
             --text-muted: #94a3b8;
             --hover-bg: rgba(255, 255, 255, 0.05);
+            --editor-bg: #1e293b;
+            --editor-text: #e2e8f0;
+            --editor-border: #374151;
         }
 
+        /* CKEditor5 Custom Styling */
+        .ck.ck-editor {
+            border: 1px solid var(--editor-border) !important;
+            border-radius: 0.375rem !important;
+        }
+
+        .ck.ck-editor__main > .ck-editor__editable {
+            background-color: var(--editor-bg) !important;
+            color: var(--editor-text) !important;
+            border: none !important;
+            min-height: 200px !important;
+            padding: 1rem !important;
+        }
+
+        .ck.ck-editor__main > .ck-editor__editable:focus {
+            border: none !important;
+            box-shadow: 0 0 0 2px var(--primary-color) !important;
+            outline: none !important;
+        }
+
+        .ck.ck-toolbar {
+            background-color: var(--card-bg) !important;
+            border-bottom: 1px solid var(--editor-border) !important;
+            border-top: none !important;
+            border-left: none !important;
+            border-right: none !important;
+        }
+
+        .ck.ck-toolbar .ck-toolbar__items {
+            flex-wrap: wrap;
+        }
+
+        .ck.ck-button {
+            color: var(--text-color) !important;
+        }
+
+        .ck.ck-button:hover {
+            background-color: var(--hover-bg) !important;
+        }
+
+        .ck.ck-button.ck-on {
+            background-color: var(--primary-color) !important;
+            color: white !important;
+        }
+
+        .ck.ck-dropdown__panel {
+            background-color: var(--card-bg) !important;
+            border: 1px solid var(--border-color) !important;
+        }
+
+        .ck.ck-list__item .ck-button {
+            color: var(--text-color) !important;
+        }
+
+        .ck.ck-list__item .ck-button:hover {
+            background-color: var(--hover-bg) !important;
+        }
+
+        /* Rest of your existing styles... */
         body {
             min-height: 100vh;
             display: flex;
@@ -92,7 +166,6 @@
 
         .main-content {
             margin-left: 0;
-            /* Always full width */
             margin-top: var(--header-height);
             transition: margin-left var(--transition-speed) ease;
             flex: 1;
@@ -100,8 +173,6 @@
             min-height: calc(100vh - var(--header-height));
             padding: 1.5rem;
         }
-
-
 
         .nav-link {
             color: var(--text-color);
@@ -114,9 +185,7 @@
         .nav-link:hover {
             background-color: var(--hover-bg);
             transform: translateX(5px);
-            /* Hover effect - slight movement */
             color: var(--primary-color);
-            /* Hover effect - color change */
         }
 
         .nav-link.active {
@@ -130,12 +199,10 @@
             text-align: center;
             margin-right: 10px;
             transition: transform 0.2s;
-            /* Hover effect for icons */
         }
 
         .nav-link:hover i {
             transform: scale(1.2);
-            /* Hover effect - icon grows */
         }
 
         .settings-heading {
@@ -148,9 +215,6 @@
             margin-bottom: 0.5rem;
         }
 
-
-
-
         .card {
             border-radius: 8px;
             background-color: var(--card-bg);
@@ -161,7 +225,6 @@
 
         .card:hover {
             transform: translateY(-5px);
-            /* Hover effect - card rises */
             box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
         }
 
@@ -185,7 +248,6 @@
         .theme-toggle:hover {
             background-color: var(--hover-bg);
             transform: rotate(15deg);
-            /* Hover effect - slight rotation */
         }
 
         .btn-outline-custom {
@@ -198,7 +260,6 @@
         .btn-outline-custom:hover {
             background-color: var(--hover-bg);
             transform: translateY(-2px);
-            /* Hover effect - button rises */
         }
 
         .section-title {
@@ -223,7 +284,6 @@
         .dropdown-item:hover {
             background-color: var(--hover-bg);
             transform: translateX(5px);
-            /* Hover effect - slight movement */
         }
 
         .search-bar {
@@ -253,7 +313,6 @@
 
         .card:hover .stat-card-icon {
             transform: scale(1.1) rotate(10deg);
-            /* Hover effect - icon grows and rotates */
         }
 
         .sidebar-user {
@@ -263,7 +322,6 @@
             display: none;
         }
 
-        /* Overlay for sidebar on mobile */
         .sidebar-overlay {
             position: fixed;
             top: 0;
@@ -320,55 +378,35 @@
         }
 
         @media (max-width: 992px) {
-
             .main-content {
                 padding: 1rem;
             }
-
             .sidebar-user {
                 display: flex;
                 flex-direction: column;
             }
-
             .desktop-only {
                 display: none !important;
             }
-
             .app-header {
                 height: 56px;
             }
-
             .main-content {
                 margin-top: 56px;
             }
-
             .sidebar {
                 top: 56px;
             }
-
-
-
-
-
-
             .card {
                 margin-bottom: 1rem;
             }
-
             .card-body {
                 padding: 1rem;
             }
-
             h1.display-6 {
                 font-size: 1.75rem;
             }
-
-
-
-
-
         }
-
 
         .back-to-top {
             position: fixed;
@@ -398,20 +436,20 @@
 
 <body data-bs-spy="scroll">
     <div class="sidebar-overlay"></div>
-
+    
     <!-- Header -->
     @include('admin.layouts.header')
-
+    
     <!-- Sidebar -->
     @include('admin.layouts.slider')
-
+    
     <!-- Main Content -->
     <main class="main-content">
         <div class="container-fluid p-0">
             @yield('content')
         </div>
     </main>
-
+    
     <!-- Back to Top -->
     <button type="button"
         class="btn btn-primary back-to-top rounded-circle shadow d-flex align-items-center justify-content-center"
@@ -420,16 +458,12 @@
         <i class="bi bi-arrow-up fs-5"></i>
     </button>
 
-
-    <!-- Bootstrap 5.3 JS -->
+    @yield('scripts')
+    
+    <!-- Scripts -->
     <script src="{{ asset('assets1/bootstrap.bundle.min.js') }}"></script>
-
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-
-    <!-- DataTables Buttons -->
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -437,18 +471,113 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.0/classic/ckeditor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script>
+        // Global CKEditor instance
+        let editorInstance = null;
+
+        // CKEditor5 Initialization with proper theme handling
+        document.addEventListener('DOMContentLoaded', function () {
+            const descriptionElement = document.querySelector('#description');
+            
+            if (descriptionElement) {
+                ClassicEditor
+                    .create(descriptionElement, {
+                        toolbar: {
+                            items: [
+                                'heading', '|',
+                                'bold', 'italic', 'underline', '|',
+                                'link', 'bulletedList', 'numberedList', '|',
+                                'outdent', 'indent', '|',
+                                'blockQuote', 'insertTable', '|',
+                                'undo', 'redo'
+                            ]
+                        },
+                        language: 'en',
+                        table: {
+                            contentToolbar: [
+                                'tableColumn',
+                                'tableRow',
+                                'mergeTableCells'
+                            ]
+                        }
+                    })
+                    .then(editor => {
+                        editorInstance = editor;
+                        window.descriptionEditor = editor;
+                        
+                        // Apply initial theme
+                        applyEditorTheme();
+                        
+                        // Set up theme observer
+                        const observer = new MutationObserver((mutations) => {
+                            mutations.forEach((mutation) => {
+                                if (mutation.type === 'attributes' && mutation.attributeName === 'data-bs-theme') {
+                                    applyEditorTheme();
+                                }
+                            });
+                        });
+                        
+                        observer.observe(document.documentElement, {
+                            attributes: true,
+                            attributeFilter: ['data-bs-theme']
+                        });
+                    })
+                    .catch(error => {
+                        console.error('CKEditor initialization error:', error);
+                    });
+            }
+        });
+
+        // Function to apply theme to CKEditor
+        function applyEditorTheme() {
+            if (!editorInstance) return;
+            
+            const theme = document.documentElement.getAttribute('data-bs-theme');
+            const editorElement = editorInstance.ui.view.element;
+            
+            // Force update CSS custom properties
+            const rootStyles = getComputedStyle(document.documentElement);
+            
+            if (editorElement) {
+                // Update editor container
+                editorElement.style.setProperty('--editor-bg', rootStyles.getPropertyValue('--editor-bg'));
+                editorElement.style.setProperty('--editor-text', rootStyles.getPropertyValue('--editor-text'));
+                editorElement.style.setProperty('--editor-border', rootStyles.getPropertyValue('--editor-border'));
+                editorElement.style.setProperty('--card-bg', rootStyles.getPropertyValue('--card-bg'));
+                editorElement.style.setProperty('--text-color', rootStyles.getPropertyValue('--text-color'));
+                editorElement.style.setProperty('--hover-bg', rootStyles.getPropertyValue('--hover-bg'));
+                editorElement.style.setProperty('--primary-color', rootStyles.getPropertyValue('--primary-color'));
+                editorElement.style.setProperty('--border-color', rootStyles.getPropertyValue('--border-color'));
+                
+                // Force repaint
+                editorElement.style.display = 'none';
+                editorElement.offsetHeight; // Trigger reflow
+                editorElement.style.display = '';
+            }
+        }
+
+        // Sidebar collapse handling
         document.querySelectorAll('.sidebar .nav-link[data-bs-toggle="collapse"]').forEach(link => {
             link.addEventListener('click', function(e) {
                 e.stopPropagation();
             });
         });
+
+        // Date input initialization
         document.addEventListener('DOMContentLoaded', function() {
             const now = new Date();
             const offset = now.getTimezoneOffset() * 60000;
             const localISOTime = new Date(now - offset).toISOString().slice(0, 16);
-            // document.getElementById('date').value = localISOTime;
+            const dateInput = document.getElementById('date');
+            if (dateInput) {
+                dateInput.value = localISOTime;
+            }
         });
+
+        // Theme and sidebar management
         document.addEventListener('DOMContentLoaded', () => {
             const themeToggle = document.getElementById('themeToggle');
             const html = document.documentElement;
@@ -460,9 +589,16 @@
             function setTheme(theme) {
                 html.setAttribute('data-bs-theme', theme);
                 localStorage.setItem('theme', theme);
-                themeToggle.innerHTML = theme === 'dark' ?
-                    '<i class="bi bi-sun-fill fs-5"></i>' :
-                    '<i class="bi bi-moon-stars-fill fs-5"></i>';
+                if (themeToggle) {
+                    themeToggle.innerHTML = theme === 'dark' ?
+                        '<i class="bi bi-sun-fill fs-5"></i>' :
+                        '<i class="bi bi-moon-stars-fill fs-5"></i>';
+                }
+                
+                // Apply theme to CKEditor after a short delay
+                setTimeout(() => {
+                    applyEditorTheme();
+                }, 100);
             }
 
             const savedTheme = localStorage.getItem('theme');
@@ -473,9 +609,8 @@
                 setTheme(currentTheme === 'dark' ? 'light' : 'dark');
             });
 
-            // --- Sidebar State Persistence ---
+            // Sidebar state persistence
             const savedSidebarState = localStorage.getItem('sidebar-visible');
-
             if (savedSidebarState === 'true') {
                 body.classList.add('sidebar-visible');
             } else {
@@ -502,7 +637,6 @@
                 });
             });
 
-
             const collapseLinks = document.querySelectorAll('.sidebar .nav-link[data-bs-toggle="collapse"]');
             collapseLinks.forEach(link => {
                 link.addEventListener('click', () => {
@@ -513,56 +647,52 @@
                 });
             });
         });
+
+        // Product alerts
         document.addEventListener('DOMContentLoaded', () => {
             const alertList = document.getElementById('alertList');
             const cartBadge = document.getElementById('cartBadge');
-
-            fetch('/product-alerts')
-                .then(res => res.json())
-                .then(products => {
-                    alertList.innerHTML = ''; // clear old alerts
-
-                    if (!products.length) {
-                        alertList.innerHTML = '<div class="text-center small">Null</div>';
+            
+            if (alertList && cartBadge) {
+                fetch('/product-alerts')
+                    .then(res => res.json())
+                    .then(products => {
+                        alertList.innerHTML = '';
+                        if (!products.length) {
+                            alertList.innerHTML = '<div class="text-center small">Null</div>';
+                            cartBadge.style.display = 'none';
+                            return;
+                        }
+                        cartBadge.style.display = 'inline-block';
+                        cartBadge.textContent = products.length;
+                        products.forEach(product => {
+                            const alertItem = document.createElement('a');
+                            alertItem.href = `/products/show/${product.id}`;
+                            alertItem.className = 'dropdown-item d-flex justify-content-between align-items-center';
+                            alertItem.textContent = product.name;
+                            const badge = document.createElement('span');
+                            badge.className = 'badge bg-danger rounded-pill';
+                            badge.textContent = `Stock: ${product.stock_quantity}`;
+                            alertItem.appendChild(badge);
+                            alertList.appendChild(alertItem);
+                        });
+                    })
+                    .catch(err => {
+                        console.error('Failed to fetch product alerts:', err);
+                        alertList.innerHTML = '<div class="text-danger small">Error loading alerts</div>';
                         cartBadge.style.display = 'none';
-                        return;
-                    }
-
-                    cartBadge.style.display = 'inline-block';
-                    cartBadge.textContent = products.length;
-
-                    products.forEach(product => {
-                        // Create clickable alert item linking to product detail page
-                        const alertItem = document.createElement('a');
-                        alertItem.href = `/products/show/${product.id}`;
-                        // {{ route('products.index') }}/' + id + '/edit'
-                        alertItem.className =
-                            'dropdown-item d-flex justify-content-between align-items-center';
-                        alertItem.textContent = product.name;
-
-                        const badge = document.createElement('span');
-                        badge.className = 'badge bg-danger rounded-pill';
-                        badge.textContent = `Stock: ${product.stock_quantity}`;
-
-                        alertItem.appendChild(badge);
-                        alertList.appendChild(alertItem);
                     });
-                })
-                .catch(err => {
-                    console.error('Failed to fetch product alerts:', err);
-                    alertList.innerHTML = '<div class="text-danger small">Error loading alerts</div>';
-                    cartBadge.style.display = 'none';
-                });
+            }
         });
 
+        // Back to top functionality
         document.addEventListener('DOMContentLoaded', function() {
             const backToTopBtn = document.getElementById('backToTopBtn');
+            if (!backToTopBtn) return;
+            
             const scrollThreshold = 300;
-
-            // Initialize Bootstrap tooltip
             const tooltip = new bootstrap.Tooltip(backToTopBtn);
 
-            // Show/hide button based on scroll position
             function toggleBackToTopButton() {
                 if (window.pageYOffset > scrollThreshold) {
                     backToTopBtn.classList.add('show');
@@ -571,22 +701,17 @@
                 }
             }
 
-            // Smooth scroll to top
             function scrollToTop() {
                 window.scrollTo({
                     top: 0,
                     behavior: 'smooth'
                 });
-
-                // Hide tooltip after click
                 tooltip.hide();
             }
 
-            // Event listeners
             window.addEventListener('scroll', toggleBackToTopButton);
             backToTopBtn.addEventListener('click', scrollToTop);
 
-            // Keyboard accessibility
             backToTopBtn.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
@@ -595,10 +720,7 @@
             });
         });
     </script>
-
-
-
+    
     @stack('scripts')
 </body>
-
 </html>

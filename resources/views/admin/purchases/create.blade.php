@@ -198,7 +198,7 @@ $(document).ready(function() {
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <h6 class="card-title mb-1 fw-semibold">${p.name}</h6>
-                                <p class="card-subtitle text-muted small mb-0">SKU: ${p.sku}</p>
+                                <p class="card-subtitle text-muted small mb-0">code: ${p.code}</p>
                             </div>
                             ${isSelected ? `
                                 <div class="text-end">
