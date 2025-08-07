@@ -86,7 +86,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $user = Auth::user();
 
-            if ($user->role_id != 1) {
+        if ($user->role_id != 1 && $user->role_id != 3){
                 Auth::logout();
                 return back()->withErrors([
                     'login' => 'Your account does not have permission to log in.',

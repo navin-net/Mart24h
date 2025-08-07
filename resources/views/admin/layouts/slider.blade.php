@@ -36,7 +36,6 @@
                 </li>
             </ul>
         </div>
-<!--  -->
         <div class="input-group mb-3">
             <span class="input-group-text bg-transparent border-end-0">
                 <i class="bi bi-search"></i>
@@ -74,7 +73,7 @@
                 <span>{{ __('messages.create') }}</span>
             </a>
         </div>
-      <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('sales*') ? 'active' : '' }}"
+            <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('sales*') ? 'active' : '' }}"
             data-bs-toggle="collapse" href="#shop-nav-sales"
             aria-expanded="{{ request()->is('sales*') ? 'true' : 'false' }}" aria-controls="shop-nav-sales">
             <div>
@@ -84,7 +83,7 @@
             <i class="bi bi-chevron-down"></i>
         </a>
         <div id="shop-nav-sales" class="collapse {{ request()->is('sales*') ? 'show' : '' }} ps-4 mt-1">
-         <a href="{{ url('/sales') }}"
+            <a href="{{ url('/sales') }}"
                 class="nav-link d-flex align-items-center {{ request()->is('sales') ? 'active' : '' }}">
                 <i class="bi bi-tags"></i>
                 <span>{{ __('messages.list_sales') }}</span>
@@ -102,7 +101,46 @@
             <i class="bi bi-cart4"></i>
             <span>{{ __('messages.purchases') }}</span>
         </a>
+        @php
+            $isUserNavActive = request()->is('users*') || request()->is('billers*');
+        @endphp
 
+        <div class="mb-2">
+            <a class="nav-link d-flex align-items-center justify-content-between {{ $isUserNavActive ? 'active' : '' }}"
+                data-bs-toggle="collapse" href="#user-nav"
+                aria-expanded="{{ $isUserNavActive ? 'true' : 'false' }}"
+                aria-controls="user-nav">
+                <div>
+                    <i class="bi bi-people"></i>
+                    <span>{{ __('messages.users') }}</span>
+                </div>
+                <i class="bi bi-chevron-down"></i>
+            </a>
+            <div id="user-nav" class="collapse {{ $isUserNavActive ? 'show' : '' }} ps-4 mt-1">
+                <a href="{{ url('/users') }}"
+                    class="nav-link d-flex align-items-center {{ request()->is('users') ? 'active' : '' }}">
+                    <i class="bi bi-person"></i>
+                    <span>{{ __('messages.list_users') }}</span>
+                </a>
+                <a href="{{ url('/users/create') }}"
+                    class="nav-link d-flex align-items-center {{ request()->is('users/create') ? 'active' : '' }}">
+                    <i class="bi bi-person-plus"></i>
+                    <span>{{ __('messages.add_user') }}</span>
+                </a>
+                <a href="{{ url('/billers') }}"
+                    class="nav-link d-flex align-items-center {{ request()->is('billers') ? 'active' : '' }}">
+                    <i class="bi bi-person"></i>
+                    <span>{{ __('messages.list_billers') }}</span>
+                </a>
+                <a href="{{ url('/billers/create') }}"
+                    class="nav-link d-flex align-items-center {{ request()->is('billers/create') ? 'active' : '' }}">
+                    <i class="bi bi-person-plus"></i>
+                    <span>{{ __('messages.add_billers') }}</span>
+                </a>
+            </div>
+        </div>
+
+        @if(Auth::user()->role_id == 1)
         <div class="settings-heading">{{ __('messages.settings') }}</div>
         <div class="mb-2">
             @php
@@ -143,7 +181,6 @@
                 </a>
             </div>
         </div>
-
 
         <div class="settings-heading">{{ __('messages.shop') }}</div>
         <div class="mb-2">
@@ -205,6 +242,8 @@
                 <span>{{ __('messages.logout') }}</span>
             </a>
         </div>
+        @endif
+
     </div>
 </aside>
 

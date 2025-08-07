@@ -159,6 +159,14 @@ return [
     'new_arrivals'  => 'ផលិតផលថ្មី',
     'generate' => 'បង្កើត',
     'sub_categories' => 'ប្រភេទរង',
+    'list_users' => 'បញ្ជីអ្នកប្រើប្រាស់',
+    'add_user' => 'បន្ថែមអ្នកប្រើប្រាស់',
+    'list_billers' => 'បញ្ជីអ្នកវិភាគ',
+    'add_biller' => 'បន្ថែមអ្នកវិភាគ',
+    'biller' => 'អ្នកវិភាគ',
+    'users' => 'អ្នកប្រើប្រាស់',
+    'create_biller' => 'បង្កើតអ្នកវិភាគ',
+    'biller_created_successfully' => 'អ្នកវិភាគបានបង្កើតដោយជោគជ័យ',
     'total_quantity' => 'បរិមាណសរុប'
 
 

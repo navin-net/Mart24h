@@ -317,9 +317,9 @@
             if (cart.length === 0) {
                 cartItems.html('<div class="text-center text-muted py-5"><i class="bi bi-cart-x display-4"></i><p class="mt-2">No items in cart</p></div>');
                 $('#cartCount').text(0);
-                $('#subtotal').text('$0.00');
-                $('#tax').text('$0.00');
-                $('#total').text('$0.00');
+                // $('#subtotal').text('$0.00');
+                // $('#tax').text('$0.00');
+                // $('#total').text('$0.00');
                 return;
             }
 
@@ -342,7 +342,7 @@
                 `);
             });
 
-            const tax = subtotal * 0.08;
+            const tax = subtotal * 0.01;
             const total = subtotal + tax;
 
             $('#cartCount').text(cart.length);
@@ -564,6 +564,21 @@
             });
         }
 
+        // Debounce utility (keep as is)
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func(...args), wait);
+            };
+        }
+
+        // Customer display functions (placeholders)
+        function handleCustomerDisplayOpen() { /* Implement WebSocket or API connection */ }
+        function testCustomerDisplay() {
+            $('#displayStatus').removeClass('disconnected').addClass('connected');
+            $('#displayStatusText').text('Connected');
+        }
         function reset() {
             location.reload();
         }

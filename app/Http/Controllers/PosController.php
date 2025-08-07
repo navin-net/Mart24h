@@ -139,7 +139,6 @@ public function processPayment(Request $request)
         $paymentMethod = $request->payment_method;
         $subtotal = 0;
 
-        // Calculate subtotal
         foreach ($cart as $item) {
             $product = Products::findOrFail($item['id']);
             if ($product->stock_quantity < $item['quantity']) {
@@ -151,17 +150,15 @@ public function processPayment(Request $request)
         $tax = $subtotal * 0.08;
         $total = $subtotal + $tax;
 
-        // Create Sale record with a reference
         $sale = Sale::create([
             'customer_id' => null,
             'total_amount' => $total,
             'status' => 'completed',
             'payment_method' => $paymentMethod,
             'date' => now(),
-            'reference' => 'SALE-' . time(), // Generate a unique reference
+            'reference' => 'SALE-' . time(),
         ]);
 
-        // Create SaleItem records
         foreach ($cart as $item) {
             $product = Products::findOrFail($item['id']);
             SaleItem::create([
@@ -173,7 +170,6 @@ public function processPayment(Request $request)
             $product->decrement('stock_quantity', $item['quantity']);
         }
 
-        // Create Payment record
         Payment::create([
             'sale_id' => $sale->id,
             'method' => $paymentMethod,
@@ -182,7 +178,6 @@ public function processPayment(Request $request)
             'reference' => 'POS-' . $sale->id . '-' . time(),
         ]);
 
-        // Generate receipt
         $receipt = view('admin.partials.receipt', [
             'cart' => $cart,
             'subtotal' => $subtotal,
@@ -193,6 +188,9 @@ public function processPayment(Request $request)
         ])->render();
 
         DB::commit();
+
+        // Broadcast empty cart after successful payment
+        broadcast(new CartUpdated([], 0, 0, 0))->toOthers();
 
         return response()->json([
             'success' => true,

@@ -190,5 +190,12 @@ return [
     'ip_address'    => 'IP Address',
     'sub_categories'  => 'Sub Categories',
     'generate'      => 'Generate',
+    'users' => 'Users',
+    'list_users' => 'List Users',
+    'add_user' => 'Add User',
+    'list_billers' => 'List Billers',
+    'add_billers' => 'Add Biller',
+    'create_biller ' => 'Create Biller',
+    'biller' => 'Biller',
     'product_cannot_be_deleted_has_sales' =>  'Product Cannot Be Deleted Has Sales'
 ];

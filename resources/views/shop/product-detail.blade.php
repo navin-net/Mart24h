@@ -1,6 +1,6 @@
 @extends('shop.layouts.app')
 
-@section('title', 'sasasa')
+@section('title', $product->name)
 @section('content')
 
 @push('style')

@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\SalesController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\BillerController;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LanguageController;
@@ -102,16 +103,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/categories/sub_category/{id}/update', [CategoriesController::class, 'update_sub_category'])->name('categories.sub_category.update');
     Route::delete('/categories/sub_category/{id}/delete', [CategoriesController::class, 'delete_sub_category'])->name('categories.sub_category.delete');
     Route::post('/categories/sub_category/bulk-delete', [CategoriesController::class, 'bulkDeleteSubCategories'])->name('categories.sub_category.bulkDelete');
-
-
-
     Route::resource('/sales', SalesController::class)->except(['show']);
     // Route::get('/sales/show/{id}', [SalesController::class, 'show'])->name('sales.show');
     Route::get('/sales/getData', [SalesController::class, 'getData'])->name('sales.getData');
     Route::post('/sales/bulk-delete', [SalesController::class, 'bulkDelete'])->name('sales.bulkDelete');
     Route::get('/sales/export', [SalesController::class, 'export'])->name('sales.export');
     Route::get('/sales/detail/{id}', [SalesController::class, 'show'])->name('sales.show');
-
     ///Settings
     Route::resource('/settings', SettingsController::class)->except(['show']);
     Route::get('settings/banners', [SettingsController::class, 'banners'])->name('settings.banners');
@@ -119,6 +116,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/settings/update', [SettingsController::class, 'ajaxUpdate'])->name('settings.update');
 
 
+    Route::resource('/users', UserController::class)->except(['show']);
+    Route::resource('/billers', BillerController::class)->except(['show']);
 
 });
 
