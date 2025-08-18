@@ -6,7 +6,7 @@
     });
 
     $(document).ready(function() {
-        var table = $('#categoriesTable').DataTable({
+    var table = $('#categoriesTable').DataTable({
     dom: 'lBfrtip', // Ensure 'l' is included for the length menu
     pageLength: 10, // Default rows per page
     lengthMenu: [

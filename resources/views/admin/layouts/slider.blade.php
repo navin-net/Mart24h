@@ -47,7 +47,7 @@
     <div class="p-3">
         <a href="{{ url('/dashboard') }}"
             class="nav-link d-flex align-items-center {{ request()->is('dashboard') ? 'active' : '' }}">
-            <i class="bi bi-grid"></i>
+            <i class="bi bi-speedometer"></i>            
             <span>{{ __('messages.dashboard') }}</span>
         </a>
 
@@ -64,16 +64,16 @@
         <div id="shop-nav-products" class="collapse {{ request()->is('products*') ? 'show' : '' }} ps-4 mt-1">
             <a href="{{ url('/products') }}"
                 class="nav-link d-flex align-items-center {{ request()->is('products') ? 'active' : '' }}">
-                <i class="bi bi-tags"></i>
+                <i class="bi bi-list"></i>
                 <span>{{ __('messages.list_products') }}</span>
             </a>
             <a href="{{ url('/products/create') }}"
                 class="nav-link d-flex align-items-center {{ request()->is('products/create') ? 'active' : '' }}">
-                <i class="bi bi-create"></i>
+                <i class="bi bi-plus-circle"></i>
                 <span>{{ __('messages.create') }}</span>
             </a>
         </div>
-            <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('sales*') ? 'active' : '' }}"
+        <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('sales*') ? 'active' : '' }}"
             data-bs-toggle="collapse" href="#shop-nav-sales"
             aria-expanded="{{ request()->is('sales*') ? 'true' : 'false' }}" aria-controls="shop-nav-sales">
             <div>
@@ -85,7 +85,7 @@
         <div id="shop-nav-sales" class="collapse {{ request()->is('sales*') ? 'show' : '' }} ps-4 mt-1">
             <a href="{{ url('/sales') }}"
                 class="nav-link d-flex align-items-center {{ request()->is('sales') ? 'active' : '' }}">
-                <i class="bi bi-tags"></i>
+                <i class="bi bi-list"></i>
                 <span>{{ __('messages.list_sales') }}</span>
             </a>
             <a href="{{ url('/sales/create') }}"
@@ -140,13 +140,13 @@
             </div>
         </div>
 
-        @if(Auth::user()->role_id == 1)
-        <div class="settings-heading">{{ __('messages.settings') }}</div>
+        @if(Auth::user()->group_id == 1)
+        <!-- <div class="settings-heading">{{ __('messages.settings') }}</div> -->
         <div class="mb-2">
             @php
-                $activeSettings = request()->is('brands', 'categories', 'qualitys', 'categories/sub_category');
+                $activeSettings = request()->is('brands', 'categories', 'qualitys', 'categories/sub_category','units');
             @endphp
-
+            
             <a class="nav-link d-flex align-items-center justify-content-between {{ $activeSettings ? 'active' : '' }}"
                 data-bs-toggle="collapse" href="#settings-nav"
                 aria-expanded="{{ $activeSettings ? 'true' : 'false' }}"
@@ -171,13 +171,36 @@
                 </a>
                 <a href="{{ url('/categories') }}"
                     class="nav-link d-flex align-items-center {{ request()->is('categories') ? 'active' : '' }}">
-                    <i class="bi bi-box"></i>
+                    <i class="bi bi-bookmark-fill"></i>
                     <span>{{ __('messages.categories') }}</span>
                 </a>
                 <a href="{{ url('/categories/sub_category') }}"
                     class="nav-link d-flex align-items-center {{ request()->is('categories/sub_category') ? 'active' : '' }}">
-                    <i class="bi bi-box"></i>
+                    <i class="bi bi-bookmarks-fill"></i>
                     <span>{{ __('messages.sub_categories') }}</span>
+                </a>
+                <a href="{{ url('/units') }}"
+                    class="nav-link d-flex align-items-center {{ request()->is('units') ? 'active' : '' }}">
+                    <i class="bi bi-unity"></i>
+                    <span>{{ __('messages.units') }}</span>
+                </a>
+            </div>
+        </div>
+        <div class="mb-2">
+            <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('slider') ? 'active' : '' }}"
+                data-bs-toggle="collapse" href="#report-nav-slider"
+                aria-expanded="{{ request()->is('slider') ? 'true' : 'false' }}" aria-controls="report-nav-slider">
+                <div>
+                    <i class="bi bi-blockquote-left"></i>
+                    <span>{{ __('messages.report_list') }}</span>
+                </div>
+                <i class="bi bi-chevron-down"></i>
+            </a>
+            <div id="report-nav-slider" class="collapse {{ request()->is('reports', 'reports/sales') ? 'show' : '' }} ps-4 mt-1">
+                <a href="{{ url('/reports') }}"
+                    class="nav-link d-flex align-items-center {{ request()->is('reports') ? 'active' : '' }}">
+                    <i class="bi bi-bag-dash-fill"></i>
+                    <span>{{ __('messages.report_sales') }}</span>
                 </a>
             </div>
         </div>
@@ -204,13 +227,10 @@
                     <i class="bi bi-tags"></i>
                     <span>{{ __('messages.banner') }}</span>
                 </a>
-                <a href="{{ url('settings/shop_settings/add') }}"
-                    class="nav-link d-flex align-items-center {{ request()->is('settings/shop_settings/add') ? 'active' : '' }}">
-                    <i class="bi bi-plus-circle"></i>
-                    <span>{{ __('messages.add_shop_settings') }}</span>
-                </a>
             </div>
         </div>
+
+
 
         <a href="{{ url('/documentation') }}"
             class="nav-link d-flex align-items-center {{ request()->is('documentation') ? 'active' : '' }}">

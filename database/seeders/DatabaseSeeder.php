@@ -21,8 +21,8 @@ class DatabaseSeeder extends Seeder
         for ($i = 1; $i <= 3; $i++) {
             // Randomly select a product name
             $name = $productNames[array_rand($productNames)];
-            // Generate a unique SKU
-            $sku = 'P' . str_pad($i, 3, '0', STR_PAD_LEFT);
+            // Generate a unique code
+            $code = 'P' . str_pad($i, 3, '0', STR_PAD_LEFT);
             // Random stock, cost, and selling price
             $stock = rand(20, 200);
             $costPrice = round(rand(300, 1000) + (rand(0, 99) / 100), 2); // $300.00 - $1000.99
@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
 
             Products::create([
                 'name' => $name,
-                'sku' => $sku,
+                'code' => $code,
                 'description' => "High-performance $name with advanced features.",
                 'stock_quantity' => $stock,
                 'cost_price' => $costPrice,

@@ -167,6 +167,16 @@ return [
     'users' => 'អ្នកប្រើប្រាស់',
     'create_biller' => 'បង្កើតអ្នកវិភាគ',
     'biller_created_successfully' => 'អ្នកវិភាគបានបង្កើតដោយជោគជ័យ',
+    'units_list'   => 'បញ្ជីឯកតា',
+    'report_list'  => 'បញ្ជីរបាយការណ៍',
+    'confirm_add_product' => 'បញ្ជាក់ការបន្ថែមផលិតផល',
+    'products_detail' => 'ព័ត៌មានលម្អិតផលិតផល',
+    'report_sales' => 'របាយការណ៍លក់',
+    'reports_list'  => 'បញ្ជីរបាយការណ៍',
+    'reports'  => 'របាយការណ៍',
+    'billers_list' => 'បញ្ជីអ្នកវិភាគ',
+
+    'You cannot delete your own account while logged in.' => 'អ្នកមិនអាចលុបគណនីរបស់ខ្លួននៅពេលចូលប្រើបានទេ។',
     'total_quantity' => 'បរិមាណសរុប'
 
 

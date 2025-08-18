@@ -446,7 +446,10 @@
     <!-- Main Content -->
     <main class="main-content">
         <div class="container-fluid p-0">
-            @yield('content')
+        <div class="col-md-12 text-md-end text-start">
+            <div class="section-title">{{ __('messages.ip_address') }}: {{$ipFromDB}}</div>
+        </div>
+        @yield('content')
         </div>
     </main>
     

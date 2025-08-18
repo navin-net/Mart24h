@@ -15,20 +15,14 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('roles')->insert([
+        DB::table('groups')->insert([
             [
                 'id' => 1,
                 'name' => 'admin',
-                'description' => 'Administrator role',
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
                 'id' => 2,
                 'name' => 'user',
-                'description' => 'Standard user role',
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
         ]);
     }

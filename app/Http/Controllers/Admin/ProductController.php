@@ -29,13 +29,14 @@ class ProductController extends Controller
                     'brands.name as brand_name',
                     'categories.name as category_name',
                     'sub_categories.name as subcategory_name',
+                    'units.name as unit_name',
                     'qualitys.name as quality_name'
                 )
                 ->leftJoin('brands', 'products.brand_id', '=', 'brands.id')
                 ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
                 ->leftJoin('sub_categories', 'products.subcategory_id', '=', 'sub_categories.id')
-                ->leftJoin('qualitys', 'products.quality_id', '=', 'qualitys.id');
-
+                ->leftJoin('qualitys', 'products.quality_id', '=', 'qualitys.id')
+                ->leftJoin('units', 'products.unit_id', '=', 'units.id');
             return DataTables::of($data)
                 ->addColumn('action', function ($row) {
                     return view('admin.products.partials.actions', compact('row'))->render();
@@ -100,13 +101,14 @@ class ProductController extends Controller
         $brands     = DB::table('brands')->select('id', 'name')->get();
         $categories = DB::table('categories')->select('id', 'name')->get();
         $qualities  = DB::table('qualitys')->select('id', 'name')->get();
-
+        $units      = DB::table('units')->select('id', 'name')->get();
         return view('admin.products.create', [
             'pageTitle'   => __('messages.add_products'),
             'heading'     => __('messages.add_products'),
             'brands'      => $brands,
             'categories'  => $categories,
             'qualities'   => $qualities,
+            'units'      => $units,
             'breadcrumbs' => [
                 ['label' => __('messages.dashboard'), 'url' => route('dashboard'), 'active' => false],
                 ['label' => __('messages.products'), 'url' => route('products.index'), 'active' => false],
@@ -143,6 +145,8 @@ class ProductController extends Controller
                 'selling_price'  => 'required|numeric|min:0',
                 // 'stock_quantity' => 'required|integer|min:0',
                 'description'    => 'nullable|string',
+                'second_name'    => 'nullable|string|max:191',
+                'unit_id'       => 'required|exists:units,id',
                 'image'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
                 'image_review.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             ]);
@@ -200,6 +204,7 @@ class ProductController extends Controller
         $brands       = DB::table('brands')->select('id', 'name')->get();
         $categories   = DB::table('categories')->select('id', 'name')->get();
         $qualities    = DB::table('qualitys')->select('id', 'name')->get();
+        $units       = DB::table('units')->select('id', 'name')->get();
         $subcategories = DB::table('sub_categories')
             ->select('id', 'name')
             ->where('category_id', $product->category_id)
@@ -208,6 +213,7 @@ class ProductController extends Controller
         return response()->json([
             'product'      => $product,
             'brands'       => $brands,
+            'units'       => $units,
             'categories'   => $categories,
             'subcategories'=> $subcategories,
             'qualities'    => $qualities
@@ -236,12 +242,21 @@ class ProductController extends Controller
         $images = DB::table('product_images')
             ->where('product_id', $id)
             ->pluck('image_review');
-        // pp($product);
-        return response()->json([
+        // return response()->json(['product' => $product,'images'  => $images]);
+        return view('admin.products.products_detail', [
             'product'      => $product,
-            'image_review' => $images
+            'images'       => $images,
+            'pageTitle'    => __('messages.products_detail'),
+            'heading'      => __('messages.products_detail'),
+            'description'  => __('messages.dashboard_welcome'),
+            'breadcrumbs'  => [
+                ['label' => __('messages.dashboard'), 'url' => route('dashboard'), 'active' => false],
+                ['label' => __('messages.products_detail'), 'url' => '', 'active' => true],
+            ]
         ]);
     }
+
+
 
     public function update(Request $request, $id)
     {
@@ -267,6 +282,8 @@ class ProductController extends Controller
             'cost_price'     => 'required|numeric|min:0',
             'selling_price'  => 'required|numeric|min:0',
             'description'    => 'nullable|string',
+            'second_name'    => 'nullable|string|max:191',
+            'unit_id'       => 'required|exists:units,id',
             'image'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 

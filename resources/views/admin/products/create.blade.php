@@ -36,16 +36,18 @@
                             <div class="col-md-6 mb-3">
                                 <label for="code" class="form-label">{{ __('messages.code') }}</label>
                                 <div class="input-group">
-                                    <input type="text" name="code" id="code" class="form-control" readonly>
+                                    <input type="text" name="code" id="code" class="form-control" >
                                     <button type="button" class="btn btn-outline-secondary" id="generateCodeBtn">
                                         <i class="bi bi-shuffle"></i> {{ __('messages.generate') }}
                                     </button>
                                 </div>
                                 <div class="invalid-feedback" id="code_error"></div>
                             </div>
-
-                            </div>
-                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="second_name" class="form-label">{{ __('messages.second_name') }}</label>
+                                    <input type="text" name="second_name" id="second_name" class="form-control" required>
+                                    <div class="invalid-feedback" id="second_name_error"></div>
+                                </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="brand_id" class="form-label">{{ __('messages.brand') }}</label>
                                     <select name="brand_id" id="brand_id" class="form-select" required>
@@ -66,8 +68,6 @@
                                     </select>
                                     <div class="invalid-feedback" id="category_id_error"></div>
                                 </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="subcategory_id" class="form-label">{{ __('messages.subcategory') }}</label>
                                     <select name="subcategory_id" id="subcategory_id" class="form-select">
@@ -85,8 +85,16 @@
                                     </select>
                                     <div class="invalid-feedback" id="quality_id_error"></div>
                                 </div>
-                            </div>
-                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="unit_id" class="form-label">{{ __('messages.unit') }}</label>
+                                    <select name="unit_id" id="unit_id" class="form-select" required>
+                                        <option value="">{{ __('messages.select_unit') }}</option>
+                                        @foreach ($units as $unit)
+                                            <option value="{{ $unit->id }}">{{ $unit->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="invalid-feedback" id="unit_id_error"></div>
+                                </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="cost_price" class="form-label">{{ __('messages.cost_price') }}</label>
                                     <input type="number" name="cost_price" id="cost_price" class="form-control"
@@ -99,8 +107,6 @@
                                         step="0.01" min="0" required>
                                     <div class="invalid-feedback" id="selling_price_error"></div>
                                 </div>
-                            </div>
-                            <div class="row">
                                 <!-- <div class="col-md-6 mb-3">
                                     <label for="stock_quantity" class="form-label">{{ __('messages.stock_quantity') }}</label>
                                     <input type="number" name="stock_quantity" id="stock_quantity" class="form-control"
@@ -144,11 +150,18 @@
 @endsection
 @push('scripts')
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const nameInput = document.getElementById("name");
+            const secondNameInput = document.getElementById("second_name");
 
+            nameInput.addEventListener("input", function () {
+                secondNameInput.value = nameInput.value.toLowerCase();
+            });
+        });
         function generateRandomCode() {
-            let prefix = 'P';
-            let randomNumber = Math.floor(Math.random() * 10000000); // 0 to 9999999
-            return prefix + String(randomNumber).padStart(7, '0');
+            let prefix = 'P0';
+            let randomNumber = Math.floor(Math.random() * 100000); // 0 to 9999999
+            return prefix + String(randomNumber).padStart(5, '0');
         }
         $(document).ready(function() {
             $.ajaxSetup({

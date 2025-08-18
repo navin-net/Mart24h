@@ -232,7 +232,7 @@
                         <span class="product-original-price ms-2">${{$product->price}}</span>
                         <span class="product-discount">25% OFF</span>
                     </div>
-                    <p class="mb-4">{{ $product->description }}</p>
+                    <p class="mb-4">{!! $product->description !!}</p>
                     <div class="mb-4">
                         <span class="badge {{ $product->badge_class }}">{{ $product->badge }}</span>
                         <span class="ms-2 text-muted">{{ $product->availability }}</span>

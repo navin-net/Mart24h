@@ -197,5 +197,17 @@ return [
     'add_billers' => 'Add Biller',
     'create_biller ' => 'Create Biller',
     'biller' => 'Biller',
+    'confirm_password' => 'Confirm Password',
+    'add_purchase' => 'Add Purchase',
+    'units_list'   => 'List Units',
+    'report_list'  => 'List Reports',
+    'products_detail' => 'Product Detail',
+    'report_sales'  => 'Sales Reports',
+    'confirm_add_product' => 'Confirm Add Product',
+    'reports_list'  => 'List Reports',
+    'reports'  => 'Reports',
+    'billers_list' => 'List Billers',
+
+    'You cannot delete your own account while logged in.' =>   'You cannot delete your own account while logged in.',
     'product_cannot_be_deleted_has_sales' =>  'Product Cannot Be Deleted Has Sales'
 ];

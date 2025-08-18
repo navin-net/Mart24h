@@ -75,14 +75,14 @@
                 {{-- Role --}}
                 <div>
                     <label class="block text-sm mb-1">Roles</label>
-                    <select name="role_id" required
+                    <select name="group_id" required
                         class="w-full px-4 py-2 rounded bg-gray-900 bg-opacity-50 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
                         <option value="">-- Select Role --</option>
-                        @foreach ($roles as $role)
-                            <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>{{ $role->name }}</option>
+                        @foreach ($groups as $role)
+                            <option value="{{ $role->id }}" {{ old('group_id') == $role->id ? 'selected' : '' }}>{{ $role->name }}</option>
                         @endforeach
                     </select>
-                    @error('role_id')
+                    @error('group_id')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>

@@ -6,11 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\Products;
+use App\Exports\SalesExport;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\SalesExport;
 use Yajra\DataTables\Facades\DataTables;
 
 class SalesController extends Controller
@@ -28,7 +29,8 @@ class SalesController extends Controller
 
     public function getData(Request $request)
     {
-        $query = Sale::withCount('items')->withSum('items', 'quantity');
+        $query = Sale::withCount('items')->withSum('items', 'quantity')
+            ->orderBy('date', 'desc');
         return DataTables::of($query)
             ->addColumn('action', function ($sale) {
                 return '

@@ -23,6 +23,8 @@ class Products extends Model
         'expiry_date',
         'cost_price',
         'selling_price',
+        'second_name',
+        'unit_id',
         'image', // main image (optional if you use gallery)
         'brand_id',
         'category_id',

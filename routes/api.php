@@ -20,3 +20,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/product-alerts', [AuthController::class, 'getAlerts']);
+Route::get('/groups', [AuthController::class,'getGroups']);
+Route::get('/groups/{id}', [AuthController::class, 'show']);

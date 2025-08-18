@@ -29,7 +29,7 @@
                         <div class="card-body p-4">
                             <div class="row align-items-center mb-4">
                                 <div class="col-md-6">
-                                    <h5 class="card-title mb-0 fw-semibold">{{ __('messages.brands_list') }}</h5>
+                                    <!-- <h5 class="card-title mb-0 fw-semibold">{{ __('messages.brands_list') }}</h5> -->
                                 </div>
                                 <div class="col-md-6 text-end">
                                     <div class="dropdown">

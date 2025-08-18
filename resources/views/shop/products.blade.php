@@ -53,15 +53,12 @@
                         <div class="filter-group mb-4">
                             <h6 class="filter-group-title fw-semibold">Price Range</h6>
                             <div class="price-slider">
-                                <input type="range" class="form-range" min="0" max="2000" step="10"
-                                       name="max_price" id="priceRange"
-                                       value="{{ request()->input('max_price', 2000) }}"
-                                       onmouseup="document.getElementById('filterForm').submit();"
-                                       onchange="document.getElementById('filterForm').submit();">
+                                <input type="range" class="form-range" min="0" max="15000" step="10"
+                                name="max_price" id="priceRange" value="{{ request()->input('max_price', 15000) }}" onmouseup="document.getElementById('filterForm').submit();" onchange="document.getElementById('filterForm').submit();">
                                 <div class="d-flex justify-content-between mt-2 small text-muted">
                                     <span>$0</span>
-                                    <span id="maxPrice">${{ number_format(request()->input('max_price', 2000), 0) }}</span>
-                                    <span>$2000</span>
+                                    <span id="maxPrice">${{ number_format(request()->input('max_price',15000), 0) }}</span>
+                                    <span>$15000</span>
                                 </div>
                             </div>
                         </div>
@@ -108,8 +105,7 @@
                             <div class="filter-check">
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="rating" value="0" id="ratingAll"
-                                           {{ !request()->has('rating') || request()->input('rating') == '0' ? 'checked' : '' }}
-                                           onchange="document.getElementById('filterForm').submit();">
+                                        {{ !request()->has('rating') || request()->input('rating') == '0' ? 'checked' : '' }} onchange="document.getElementById('filterForm').submit();">
                                     <label class="form-check-label" for="ratingAll">Show All</label>
                                 </div>
                             </div>
@@ -117,8 +113,7 @@
                                 <div class="filter-check">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="rating" value="{{ $i }}" id="rating{{ $i }}"
-                                               {{ request()->input('rating') == $i ? 'checked' : '' }}
-                                               onchange="document.getElementById('filterForm').submit();">
+                                            {{ request()->input('rating') == $i ? 'checked' : '' }} onchange="document.getElementById('filterForm').submit();">
                                         <label class="form-check-label" for="rating{{ $i }}">
                                             @for ($j = 1; $j <= 5; $j++)
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -139,16 +134,14 @@
                             <div class="filter-check">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="availability[]" value="in_stock" id="inStock"
-                                           {{ in_array('in_stock', request()->input('availability', [])) ? 'checked' : '' }}
-                                           onchange="document.getElementById('filterForm').submit();">
+                                        {{ in_array('in_stock', request()->input('availability', [])) ? 'checked' : '' }} onchange="document.getElementById('filterForm').submit();">
                                     <label class="form-check-label" for="inStock">In Stock</label>
                                 </div>
                             </div>
                             <div class="filter-check">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="availability[]" value="out_of_stock" id="outOfStock"
-                                           {{ in_array('out_of_stock', request()->input('availability', [])) ? 'checked' : '' }}
-                                           onchange="document.getElementById('filterForm').submit();">
+                                        {{ in_array('out_of_stock', request()->input('availability', [])) ? 'checked' : '' }}onchange="document.getElementById('filterForm').submit();">
                                     <label class="form-check-label" for="outOfStock">Out of Stock</label>
                                 </div>
                             </div>

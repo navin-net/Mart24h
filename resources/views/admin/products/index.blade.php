@@ -27,7 +27,7 @@
                         <div class="card-body p-4">
                             <div class="row align-items-center mb-4">
                                 <div class="col-md-6">
-                                    <h5 class="card-title mb-0 fw-semibold">{{ $heading }}</h5>
+                                    <h5 class="card-title mb-0 fw-semibold"></h5>
                                 </div>
                                 <div class="col-md-6 text-end">
                                     <div class="dropdown">
@@ -181,8 +181,13 @@
                                     </select>
                                     <div class="invalid-feedback" id="edit_category_id_error"></div>
                                 </div>
-                            </div>
-                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit_unit_id" class="form-label">{{ __('messages.unit') }}</label>
+                                    <select name="unit_id" id="edit_unit_id" class="form-select" required>
+                                        <option value="">{{ __('messages.select_unit') }}</option>
+                                    </select>
+                                    <div class="invalid-feedback" id="edit_unit_id_error"></div>
+                                </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="edit_subcategory_id"
                                         class="form-label">{{ __('messages.subcategory') }}</label>
@@ -389,6 +394,13 @@
                         $('#edit_stock_quantity').val(response.product.stock_quantity);
                         $('#edit_description').val(response.product.description);
 
+                        $('#edit_unit_id').html(
+                            '<option value="">{{ __('messages.select_unit') }}</option>');
+                        $.each(response.units, function(index, unit) {
+                            $('#edit_unit_id').append('<option value="' + unit.id +
+                                '">' + unit.name + '</option>');
+                        });
+                        $('#edit_unit_id').val(response.product.unit_id);
                         $('#edit_brand_id').html(
                             '<option value="">{{ __('messages.select_brand') }}</option>');
                         $.each(response.brands, function(index, brand) {

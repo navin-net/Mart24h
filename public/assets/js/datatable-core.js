@@ -6,7 +6,7 @@
 class DataTableCore {
     constructor() {
         this.defaultConfig = {
-            dom: 'lBfrtip',
+            // dom: 'lBfrtip',
             pageLength: 10,
             lengthMenu: [
                 [10, 20, 30, 50, -1],

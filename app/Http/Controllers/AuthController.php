@@ -21,8 +21,8 @@ class AuthController extends Controller
     // Show the registration form
     public function showRegisterForm()
     {
-        $roles = DB::table('roles')->select('id', 'name')->get();
-        return view('auth.register', compact('roles'));
+        $groups = DB::table('groups')->select('id', 'name')->get();
+        return view('auth.register', compact('groups'));
     }
 
 
@@ -35,7 +35,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role_id' => 'required|exists:roles,id', // validate role
+            'group_id' => 'required|exists:groups,id', // validate group
 
         ]);
 
@@ -44,7 +44,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             // 'role_id' => 2, // Default role is 'user'
-            'role_id' => $request->role_id,
+            'group_id' => $request->group_id,
 
         ]);
 
@@ -86,7 +86,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $user = Auth::user();
 
-        if ($user->role_id != 1 && $user->role_id != 3){
+        if ($user->group_id != 1 && $user->group_id != 2){
                 Auth::logout();
                 return back()->withErrors([
                     'login' => 'Your account does not have permission to log in.',
@@ -202,4 +202,25 @@ class AuthController extends Controller
         // ->orWhere('expiry_date', '<', $today)
         return Products::where('stock_quantity', '<=', -1)->get(['id', 'name', 'stock_quantity']);
     }
+
+    public function getGroups(){
+
+        return DB::table('groups')
+        ->select('id', 'name')
+        ->get();
+    }
+
+    public function show($id)
+    {
+        $group = DB::table('groups')
+            ->where('id', $id)
+            ->first();
+
+        if (!$group) {
+            abort(404, 'Group not found');
+        }
+
+        return $group;
+    }
+
 }

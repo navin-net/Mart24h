@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>ROSCA — Mobile Web App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .screen { display: none; }
+        .screen.active { display: block; }
+        .bottom-nav { padding-bottom: env(safe-area-inset-bottom); }
+        .avatar { width: 48px; height: 48px; }
+        .tap { min-height: 44px; }
+    </style>
+</head>
+<body class="bg-dark text-light">
+
+<!-- Header -->
+<header class="sticky-top bg-dark bg-opacity-95 backdrop-blur border-bottom border-secondary-subtle">
+    <div class="container py-3">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+                <div class="avatar bg-primary rounded-circle d-flex align-items-center justify-content-center fw-bold">
+                    A
+                </div>
+                <div>
+                    <div class="small text-muted">My Group</div>
+                    <div class="fw-semibold h6 mb-0">Office ROSCA</div>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-light btn-sm tap" data-bs-toggle="offcanvas" data-bs-target="#groupsOffcanvas">
+                    <i class="bi bi-people"></i>
+                </button>
+                <button class="btn btn-outline-light btn-sm tap position-relative" data-bs-toggle="offcanvas" data-bs-target="#notificationsOffcanvas">
+                    <i class="bi bi-bell"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6em;">
+                        2
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="container py-3 pb-5">
+    
+    <!-- HOME SCREEN -->
+    <section id="screen-home" class="screen active">
+        <!-- Balance Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-6">
+                <div class="card bg-primary bg-opacity-10 border-primary border-opacity-25 h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted small mb-1">My Balance</div>
+                        <div class="h4 fw-bold text-primary mb-0">$450.00</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card bg-warning bg-opacity-10 border-warning border-opacity-25 h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted small mb-1">Next Due</div>
+                        <div class="h5 fw-semibold text-warning mb-0">Aug 25</div>
+                        <div class="small text-muted">$100.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Cycle -->
+        <div class="card mb-4 bg-secondary bg-opacity-10">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <div class="text-muted small">Current Cycle</div>
+                        <div class="h5 mb-0">Cycle 3 of 10</div>
+                    </div>
+                    <span class="badge bg-info">Monthly</span>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                    <div class="progress-bar bg-success" style="width: 30%"></div>
+                </div>
+                <div class="small text-muted">30% Complete</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary tap d-flex align-items-center justify-content-center gap-2" data-bs-toggle="modal" data-bs-target="#payModal">
+                        <i class="bi bi-cash-coin"></i>
+                        Pay Contribution
+                    </button>
+                    <button class="btn btn-outline-light tap d-flex align-items-center justify-content-center gap-2" data-bs-toggle="modal" data-bs-target="#inviteModal">
+                        <i class="bi bi-person-add"></i>
+                        Invite Members
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cycle Status -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">This Cycle Status</h6>
+                <span class="badge bg-success">On Track</span>
+            </div>
+            <div class="list-group list-group-flush">
+                <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-person-circle text-muted"></i>
+                        Your payment
+                    </div>
+                    <span class="badge bg-warning">Pending</span>
+                </div>
+                <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-people text-muted"></i>
+                        Members paid
+                    </div>
+                    <span class="badge bg-success">6/10</span>
+                </div>
+                <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-piggy-bank text-muted"></i>
+                        Pot amount
+                    </div>
+                    <span class="badge bg-primary">$600.00</span>
+                </div>
+                <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-person-circle text-muted"></i>
+                        Your payment
+                    </div>
+                    <span class="badge bg-warning">Pending</span>
+                </div>
+                <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-people text-muted"></i>
+                        Members paid
+                    </div>
+                    <span class="badge bg-success">6/10</span>
+                </div>
+                <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-piggy-bank text-muted"></i>
+                        Pot amount
+                    </div>
+                    <span class="badge bg-primary">$600.00</span>
+                </div>
+            </div>
+        </div>
+        <div style="height:50px;">
+            
+        </div>
+    </section>
+
+    <!-- PAYMENTS SCREEN -->
+    <section id="screen-pay" class="screen">
+        <div class="card mb-4 bg-danger bg-opacity-10 border-danger border-opacity-25">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small">Amount Due</div>
+                        <div class="h3 fw-bold text-danger mb-0">$100.00</div>
+                        <div class="small text-muted">Due: Aug 25, 2025</div>
+                    </div>
+                    <button class="btn btn-danger tap" data-bs-toggle="modal" data-bs-target="#payModal">
+                        Pay Now
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Payment History</h6>
+            </div>
+            <div class="list-group list-group-flush">
+                <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">Jul 25, 2025</div>
+                        <div class="small text-muted">Cycle 2 Payment</div>
+                    </div>
+                    <span class="badge bg-success">Paid $100</span>
+                </div>
+                <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">Jun 25, 2025</div>
+                        <div class="small text-muted">Cycle 1 Payment</div>
+                    </div>
+                    <span class="badge bg-success">Paid $100</span>
+                </div>
+                <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">May 25, 2025</div>
+                        <div class="small text-muted">Initial Payment</div>
+                    </div>
+                    <span class="badge bg-success">Paid $100</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AUCTION SCREEN -->
+    <section id="screen-auction" class="screen">
+        <div class="card mb-4 bg-info bg-opacity-10 border-info border-opacity-25">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <div class="text-muted small">Your Current Bid</div>
+                        <div class="h3 fw-bold text-info mb-0">$20.00</div>
+                    </div>
+                    <button class="btn btn-info tap" data-bs-toggle="modal" data-bs-target="#bidModal">
+                        Edit Bid
+                    </button>
+                </div>
+                <div class="alert alert-info mb-0">
+                    <small><i class="bi bi-info-circle me-1"></i>Highest discount wins this cycle. Net payout = Pot − Winning Discount.</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Live Bids</h6>
+                <span class="badge bg-secondary">3 bidders</span>
+            </div>
+            <div class="list-group list-group-flush">
+                <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar bg-success rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                            S
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Sothy</div>
+                            <div class="small text-muted">Leading bid</div>
+                        </div>
+                    </div>
+                    <span class="badge bg-success">$25</span>
+                </div>
+                <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar bg-secondary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                            D
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Dara</div>
+                            <div class="small text-muted">2nd place</div>
+                        </div>
+                    </div>
+                    <span class="badge bg-secondary">$18</span>
+                </div>
+                <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar bg-secondary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                            N
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Nita</div>
+                            <div class="small text-muted">3rd place</div>
+                        </div>
+                    </div>
+                    <span class="badge bg-secondary">$15</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HISTORY SCREEN -->
+    <section id="screen-history" class="screen">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1">Payout History</h6>
+                        <div class="small text-muted">Track all cycle payouts</div>
+                    </div>
+                    <span class="badge bg-success">You received: 1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th>Cycle</th>
+                            <th>Recipient</th>
+                            <th>Pot</th>
+                            <th>Discount</th>
+                            <th>Net</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="table-success">
+                            <td><span class="badge bg-success">2</span></td>
+                            <td><strong>You</strong></td>
+                            <td>$1,000</td>
+                            <td>$40</td>
+                            <td class="fw-bold">$960</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge bg-secondary">1</span></td>
+                            <td>Nita</td>
+                            <td>$1,000</td>
+                            <td>$30</td>
+                            <td>$970</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROFILE SCREEN -->
+    <section id="screen-profile" class="screen">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar bg-primary rounded-circle d-flex align-items-center justify-content-center fw-bold">
+                        A
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="h6 mb-1">Alvin</div>
+                        <div class="small text-muted">alvin@example.com</div>
+                    </div>
+                    <button class="btn btn-outline-light btn-sm tap" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Settings</h6>
+            </div>
+            <div class="list-group list-group-flush">
+                <div class="list-group-item bg-transparent d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-bell text-muted"></i>
+                        <div>
+                            <div class="fw-semibold">Notifications</div>
+                            <div class="small text-muted">Payment reminders & results</div>
+                        </div>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" checked>
+                    </div>
+                </div>
+                <div class="list-group-item bg-transparent d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-translate text-muted"></i>
+                        <div>
+                            <div class="fw-semibold">Language</div>
+                            <div class="small text-muted">English / ភាសាខ្មែរ</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-light btn-sm tap" data-bs-toggle="modal" data-bs-target="#languageModal">
+                        Change
+                    </button>
+                </div>
+                <div class="list-group-item bg-transparent d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-question-circle text-muted"></i>
+                        <div>
+                            <div class="fw-semibold">Help & FAQs</div>
+                            <div class="small text-muted">How the circle works</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-light btn-sm tap" data-bs-toggle="modal" data-bs-target="#helpModal">
+                        Open
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid">
+            <button class="btn btn-outline-danger tap">
+                <i class="bi bi-box-arrow-right me-2"></i>
+                Leave Group
+            </button>
+        </div>
+    </section>
+
+</main>
+
+<!-- Bottom Navigation -->
+<nav class="fixed-bottom bg-dark border-top border-secondary-subtle bottom-nav">
+    <div class="container">
+        <div class="row text-center py-2">
+            <div class="col">
+                <a href="#" class="nav-link active text-decoration-none tap" data-target="#screen-home">
+                    <i class="bi bi-house-fill d-block"></i>
+                    <small>Home</small>
+                </a>
+            </div>
+            <div class="col">
+                <a href="#" class="nav-link text-decoration-none tap" data-target="#screen-pay">
+                    <i class="bi bi-cash d-block"></i>
+                    <small>Pay</small>
+                </a>
+            </div>
+            <div class="col">
+                <a href="#" class="nav-link text-decoration-none tap" data-target="#screen-auction">
+                    <i class="bi bi-trophy d-block"></i>
+                    <small>Auction</small>
+                </a>
+            </div>
+            <div class="col">
+                <a href="#" class="nav-link text-decoration-none tap" data-target="#screen-history">
+                    <i class="bi bi-clock-history d-block"></i>
+                    <small>History</small>
+                </a>
+            </div>
+            <div class="col">
+                <a href="#" class="nav-link text-decoration-none tap" data-target="#screen-profile">
+                    <i class="bi bi-person d-block"></i>
+                    <small>Profile</small>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Groups Offcanvas -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="groupsOffcanvas">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">My Groups</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="fw-semibold">Office ROSCA</div>
+                    <div class="small text-muted">10 members • Monthly</div>
+                </div>
+                <span class="badge bg-success">Active</span>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <div class="fw-semibold">Family Tong Tin</div>
+                <div class="small text-muted">8 members • Weekly</div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Notifications Offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="notificationsOffcanvas">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Notifications</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="d-flex flex-column gap-3">
+            <div class="card border-warning">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-exclamation-triangle text-warning"></i>
+                        <small class="text-muted">Today</small>
+                    </div>
+                    <div class="fw-semibold">Payment due in 8 days</div>
+                    <div class="small text-muted">Don't forget your $100 contribution</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <small class="text-muted">Aug 01</small>
+                    </div>
+                    <div class="fw-semibold">Cycle 2 payout confirmed</div>
+                    <div class="small text-muted">You received $960</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pay Modal -->
+<div class="modal fade" id="payModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Pay Contribution</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Amount</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" class="form-control" value="100" min="0" step="0.01">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Payment Method</label>
+                    <select class="form-select">
+                        <option>Cash</option>
+                        <option>Bank Transfer</option>
+                        <option>e-Wallet</option>
+                        <option>Mobile Banking</option>
+                    </select>
+                </div>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-1"></i>
+                    <small>This is a demo interface only</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Confirm Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bid Modal -->
+<div class="modal fade" id="bidModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Place Bid (Discount)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Discount Amount</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" class="form-control" value="20" min="0" step="1">
+                    </div>
+                </div>
+                <div class="alert alert-warning">
+                    <i class="bi bi-trophy me-1"></i>
+                    <small>Highest discount wins. Current leading bid: $25</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-info">Save Bid</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invite Modal -->
+<div class="modal fade" id="inviteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Invite to Group</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Invitation Link</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" value="https://example.com/join/office-rosca" readonly>
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="alert alert-info">
+                    <i class="bi bi-share me-1"></i>
+                    <small>Share this link with friends to join your ROSCA group</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Display Name</label>
+                    <input type="text" class="form-control" value="Alvin">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-control" value="+855 xx xxx xxx">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" value="alvin@example.com">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Language Modal -->
+<div class="modal fade" id="languageModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select Language</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group">
+                    <label class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-semibold">English</div>
+                            <div class="small text-muted">Default language</div>
+                        </div>
+                        <input class="form-check-input" type="radio" name="language" checked>
+                    </label>
+                    <label class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-semibold">ភាសាខ្មែរ</div>
+                            <div class="small text-muted">Khmer language</div>
+                        </div>
+                        <input class="form-check-input" type="radio" name="language">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Help Modal -->
+<div class="modal fade" id="helpModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">How ROSCA Works</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="accordion" id="helpAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#help1">
+                                What is a ROSCA?
+                            </button>
+                        </h2>
+                        <div id="help1" class="accordion-collapse collapse show" data-bs-parent="#helpAccordion">
+                            <div class="accordion-body">
+                                A Rotating Savings and Credit Association where members contribute a fixed amount each cycle and take turns receiving the pot.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#help2">
+                                How does bidding work?
+                            </button>
+                        </h2>
+                        <div id="help2" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                            <div class="accordion-body">
+                                Members bid a discount amount. The highest bidder wins the pot minus their discount. This allows urgent needs to be prioritized.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Screen navigation
+const screens = document.querySelectorAll('.screen');
+const navLinks = document.querySelectorAll('.bottom-nav .nav-link');
+
+navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetSelector = link.getAttribute('data-target');
+        
+        // Hide all screens
+        screens.forEach(screen => screen.classList.remove('active'));
+        
+        // Show target screen
+        document.querySelector(targetSelector).classList.add('active');
+        
+        // Update nav active state
+        navLinks.forEach(nav => nav.classList.remove('active'));
+        link.classList.add('active');
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+});
+
+// Toggle auction tab based on group type
+const usesAuction = true;
+if (!usesAuction) {
+    document.querySelector('[data-target="#screen-auction"]').closest('.col').style.display = 'none';
+}
+
+// Copy invite link functionality
+document.querySelector('#inviteModal .btn-outline-secondary').addEventListener('click', function() {
+    const input = this.previousElementSibling;
+    input.select();
+    document.execCommand('copy');
+    
+    // Show feedback
+    const originalIcon = this.innerHTML;
+    this.innerHTML = '<i class="bi bi-check"></i>';
+    setTimeout(() => {
+        this.innerHTML = originalIcon;
+    }, 2000);
+});
+</script>
+
+</body>
+</html>
