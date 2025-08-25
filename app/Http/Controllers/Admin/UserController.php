@@ -14,13 +14,18 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    public function index(Request $request){
-        if ($request->ajax()) {$data = User::select([
-                'users.id',
-                'users.name',
-                'users.email',
-                'groups.name as group_name'
-            ])->leftJoin('groups', 'users.group_id', '=', 'groups.id'); // Changed to leftJoin
+    public function index(Request $request)
+    {
+        if ($request->ajax()) {
+            $data = User::select([
+                    'users.id',
+                    'users.name',
+                    'users.email',
+                    'groups.name as group_name'
+                ])
+                ->leftJoin('groups', 'users.group_id', '=', 'groups.id');
+                // ->whereNull('users.company_id'); // only group_id IS NULL
+
             return DataTables::of($data)
                 ->addColumn('action', function ($row) {
                     return '
@@ -31,18 +36,18 @@ class UserController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        
+
         $groups = DB::table('groups')->select('id', 'name')->get();
         return view('admin.users.index', [
             'pageTitle' => __('messages.list_users'),
             'groups' => $groups,
             'breadcrumbs' => [
                 ['label' => __('messages.dashboard'), 'url' => '#', 'active' => false],
-                ['label' => __('messages.settings'), 'url' => '#', 'active' => false],
                 ['label' => __('messages.users'), 'url' => '', 'active' => true],
             ]
         ]);
     }
+
     public function create()
     {
         $groups     = DB::table('groups')->select('id', 'name')->get();
@@ -50,9 +55,8 @@ class UserController extends Controller
             'groups' => $groups,
             'pageTitle' => __('messages.list_users'),
             'breadcrumbs' => [
-                ['label' => __('messages.dashboard'), 'url' => '#', 'active' => false],
-                ['label' => __('messages.settings'), 'url' => '#', 'active' => false],
-                ['label' => __('messages.users'), 'url' => '', 'active' => true],
+                ['label' => __('messages.users'), 'url' => '#', 'active' => false],
+                ['label' => __('messages.add'), 'url' => '', 'active' => true],
             ]
         ]);
     }
@@ -70,6 +74,7 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'group_id' => $request->group_id,
+            'company_id' => 2, // Ensure company_id is included
             'password' => Hash::make($request->password),
         ]);
 

@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Groups;
 use App\Models\Warehouses;
-
+use App\Models\User;
 
 class Companies extends Model
 {
     use HasFactory;
+    
+    public $timestamps = false;
 
     protected $fillable = ['name', 'group_id', 'group_name', 
     'email', 'phone','city','number_of_houses','address','street',
@@ -22,6 +24,11 @@ class Companies extends Model
 
     public function warehouse(){
         return $this->belongsTo(Warehouses::class, 'warehouse_id');
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'company_id');
     }
 
 

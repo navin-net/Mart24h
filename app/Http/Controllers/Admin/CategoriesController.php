@@ -14,40 +14,45 @@ use Illuminate\Routing\Controller;
 
 class CategoriesController extends Controller
 {
-    public function index(Request $request)
-    {
-        if ($request->ajax()) {
-            $data = Categories::select(['id', 'name', 'slug']);
-            return DataTables::of($data)
-                ->addColumn('action', function ($row) {
-                    return '
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="actionDropdown' . $row->id . '" data-bs-toggle="dropdown" aria-expanded="false">
-                Actions
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="actionDropdown' . $row->id . '">
-                <li><a class="dropdown-item editCategory" href="javascript:void(0);" data-id="' . $row->id . '">Edit</a></li>
-                <li><a class="dropdown-item deleteCategory" href="javascript:void(0);" data-id="' . $row->id . '">Delete</a></li>
-                </ul>
-        </div>
-    ';
-                })
-                ->rawColumns(['action'])
-                ->make(true);
-        }
-
-
-        return view('admin.categories.index', [
-            'pageTitle' => __('messages.categories_list'),
-            'heading' => __('messages.stock_management_system'),
-            'description' => __('messages.dashboard_welcome'),
-            'breadcrumbs' => [
-                ['label' => __('messages.dashboard'), 'url' => '/admin/dashboard', 'active' => false],
-                ['label' => __('messages.settings'), 'url' => '#', 'active' => false],
-                ['label' => __('messages.categories'), 'url' => '', 'active' => true],
-            ]
-        ]);
+public function index(Request $request)
+{
+    if ($request->ajax()) {
+        $data = Categories::select(['id', 'name', 'slug']);
+        return DataTables::of($data)
+            ->addColumn('action', function ($row) {
+                return '
+                    <div class="d-flex gap-2">
+                        <button type="button" 
+                                class="btn btn-sm btn-outline-primary editCategory" 
+                                data-id="' . $row->id . '" 
+                                title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button type="button" 
+                                class="btn btn-sm btn-outline-danger deleteCategory" 
+                                data-id="' . $row->id . '" 
+                                title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                ';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
     }
+
+    return view('admin.categories.index', [
+        'pageTitle' => __('messages.categories_list'),
+        'heading' => __('messages.stock_management_system'),
+        'description' => __('messages.dashboard_welcome'),
+        'breadcrumbs' => [
+            ['label' => __('messages.dashboard'), 'url' => '/admin/dashboard', 'active' => false],
+            ['label' => __('messages.settings'), 'url' => '#', 'active' => false],
+            ['label' => __('messages.categories'), 'url' => '', 'active' => true],
+        ]
+    ]);
+}
+
 
     public function store(Request $request)
     {
@@ -107,24 +112,30 @@ class CategoriesController extends Controller
 
         if ($request->ajax()) {
             $data = SubCategory::select([
-                'sub_categories.id',
-                'sub_categories.name as sub_category_name',
-                'categories.name as category_name',
-            ])
-            ->leftJoin('categories', 'sub_categories.category_id', '=', 'categories.id');
+                    'sub_categories.id',
+                    'sub_categories.name as sub_category_name',
+                    'categories.name as category_name',
+                ])
+                ->leftJoin('categories', 'sub_categories.category_id', '=', 'categories.id');
 
             return DataTables::of($data)
                 ->addColumn('action', function ($row) {
                     return '
-                        <div class="dropdown">
-                            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                Actions
+                        <div class="d-flex gap-2">
+                            <button type="button" 
+                                    class="btn btn-sm btn-outline-primary editSubCategory" 
+                                    data-id="' . $row->id . '" 
+                                    title="Edit">
+                                <i class="bi bi-pencil"></i>
                             </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item editSubCategory" href="javascript:void(0);" data-id="' . $row->id . '">Edit</a></li>
-                                <li><a class="dropdown-item deleteSubCategory" href="javascript:void(0);" data-id="' . $row->id . '">Delete</a></li>
-                            </ul>
-                        </div>';
+                            <button type="button" 
+                                    class="btn btn-sm btn-outline-danger deleteSubCategory" 
+                                    data-id="' . $row->id . '" 
+                                    title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    ';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -132,6 +143,7 @@ class CategoriesController extends Controller
 
         return view('admin.sub_category.index', compact('categories'));
     }
+
 
     public function store_sub_category(Request $request)
     {

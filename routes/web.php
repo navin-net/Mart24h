@@ -9,6 +9,12 @@ use App\Http\Controllers\LanguageController;
 Route::view('/empty_page', 'empty_page');
 Route::view('/testing', 'testing');
 
+Route::get('/qrscanner', function () {
+    return view('scranqr');
+});
+
+
+
 // Authentication
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);

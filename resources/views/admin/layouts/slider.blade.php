@@ -101,6 +101,7 @@
             <i class="bi bi-cart4"></i>
             <span>{{ __('messages.purchases') }}</span>
         </a>
+        @if(Auth::user()->group_id == 1)
         @php
             $isUserNavActive = request()->is('users*') || request()->is('billers*');
         @endphp
@@ -140,11 +141,10 @@
             </div>
         </div>
 
-        @if(Auth::user()->group_id == 1)
         <!-- <div class="settings-heading">{{ __('messages.settings') }}</div> -->
         <div class="mb-2">
             @php
-                $activeSettings = request()->is('brands', 'categories', 'qualitys', 'categories/sub_category','units');
+                $activeSettings = request()->is('brands', 'categories', 'qualitys', 'categories/sub_category','units','warehouse');
             @endphp
             
             <a class="nav-link d-flex align-items-center justify-content-between {{ $activeSettings ? 'active' : '' }}"
@@ -163,6 +163,11 @@
                     class="nav-link d-flex align-items-center {{ request()->is('brands') ? 'active' : '' }}">
                     <i class="bi bi-tags"></i>
                     <span>{{ __('messages.brands') }}</span>
+                </a>
+                <a href="{{ url('/warehouse') }}"
+                    class="nav-link d-flex align-items-center {{ request()->is('warehouse') ? 'active' : '' }}">
+                    <i class="bi bi-house"></i>
+                    <span>{{ __('messages.warehouse') }}</span>
                 </a>
                 <a href="{{ url('/qualitys') }}"
                     class="nav-link d-flex align-items-center {{ request()->is('qualitys') ? 'active' : '' }}">
@@ -186,6 +191,8 @@
                 </a>
             </div>
         </div>
+        @endif
+
         <div class="mb-2">
             <a class="nav-link d-flex align-items-center justify-content-between {{ request()->is('slider') ? 'active' : '' }}"
                 data-bs-toggle="collapse" href="#report-nav-slider"
@@ -262,7 +269,6 @@
                 <span>{{ __('messages.logout') }}</span>
             </a>
         </div>
-        @endif
 
     </div>
 </aside>

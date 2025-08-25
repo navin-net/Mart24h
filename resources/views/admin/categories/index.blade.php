@@ -39,7 +39,7 @@
                         </div>
                         <div id="alertsContainer" class="mb-4"></div>
 
-                        <div class="table-responsive">
+                        <div class="table-responsive" style="overflow-x: auto;">
                             <table class="table table-striped table-bordered rounded-3 align-middle" id="categoriesTable">
                                 <thead class="table-primary">
                                     <tr>

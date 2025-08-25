@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\{
     SubCategoryController,
     UserController,
     BillerController,
+    WarehouseController,
     ReportController
 };
 // Route::middleware('auth')
@@ -76,10 +77,17 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/banners', [SettingsController::class, 'banners'])->name('settings.banners');
     Route::post('/banner/ajax-update-all', [SettingsController::class, 'ajaxUpdateAll'])->name('banners.ajaxUpdateAll');
     Route::post('/settings/update', [SettingsController::class, 'ajaxUpdate'])->name('settings.update');
+    Route::resource('warehouse',WarehouseController::class)->except(['show']);
+
 
     // Users & Billers
     Route::resource('users', UserController::class)->except(['show']);
     Route::resource('billers', BillerController::class)->except(['show']);
+    Route::get('/billers/{id}/users', [BillerController::class, 'listUsers'])->name('billers.users');
+    Route::get('/billers/{id}/users/add', [BillerController::class, 'addUser'])
+        ->name('billers.users.add');
+    Route::post('/billers/{id}/users/store', [BillerController::class, 'storeUser'])
+        ->name('billers.users.store');
 
     // Reports
 
@@ -87,7 +95,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/getReport', [ReportController::class, 'getReport'])->name('reports.getReport');
-
-
+    Route::get('/reports/daily', [ReportController::class, 'ReportDaily'])->name('reports.daily');
 
 });

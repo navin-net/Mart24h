@@ -67,4 +67,18 @@ class ReportController extends Controller
     }
 
 
+    public function ReportDaily()
+    {
+        return view('admin.reports.report_daily', [
+            'pageTitle' => __('messages.report_daily'),
+            'heading' => __('messages.report_management_system'),
+            'description' => __('messages.dashboard_welcome'),
+            'breadcrumbs' => [
+                ['label' => __('messages.dashboard'), 'url' => '/admin/dashboard', 'active' => false],
+                ['label' => __('messages.reports'), 'url' => '', 'active' => true],
+            ]
+        ]);
+    }
+
+
 }

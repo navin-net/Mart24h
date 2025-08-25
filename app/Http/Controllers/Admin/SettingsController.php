@@ -65,14 +65,6 @@ class SettingsController extends Controller
         return response()->json(['message' => 'Shop info updated successfully.']);
     }
 
-
-
-
-
-
-
-
-
     public function banners(){
         for ($i = 1; $i <= 4; $i++) {
             Banner::firstOrCreate(['id' => $i], [

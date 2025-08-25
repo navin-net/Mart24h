@@ -98,12 +98,13 @@ class SalesController extends Controller
             'redirect' => route('sales.index')
         ], 201);
     }
-public function show($id)
-{
-    $sale = Sale::with('items.product')->findOrFail($id);
 
-    return view('admin.sales.show', compact('sale'));
-}
+    public function show($id)
+    {
+        $sale = Sale::with('items.product')->findOrFail($id);
+
+        return view('admin.sales.show', compact('sale'));
+    }
 
     public function edit($id)
     {

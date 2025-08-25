@@ -7,6 +7,7 @@ use App\Models\Products;
 use App\Models\Purchase;
 use App\Models\Sale;
 use App\Models\User;
+use App\Models\Companies;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -129,6 +130,7 @@ class AuthController extends Controller
         $brandCount = Brand::count();
         $salesCount = Sale::count();
         $productCount = Products::count();
+        $billerCount = Companies::where('group_id', 2)->count();
 
         // Get sales totals per month (current year), grouped by month number (1-12)
         $salesMonthly = Sale::select(
@@ -183,6 +185,7 @@ class AuthController extends Controller
             'brandCount' => $brandCount,
             'productCount' => $productCount,
             'salesCount' => $salesCount,
+            'billerCount' => $billerCount,
             'ipFromDB' => $ipFromDB,
             'purchasesCount' => $purchasesCount,
             'salesLabels' => $labels,

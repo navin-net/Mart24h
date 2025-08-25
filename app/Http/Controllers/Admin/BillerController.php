@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Companies;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -30,11 +31,23 @@ class BillerController extends Controller
                     'groups.name as group_name',
                     'warehouses.name as warehouse_name'
                 )->where('companies.group_id', 2);
-
-            return DataTables::of($query)
-                ->addColumn('action', function ($row) {
-                    return ' <button class="btn btn-primary btn-sm editCompany" data-id="'.$row->id.'">Edit</button> <button class="btn btn-danger btn-sm deleteCompany" data-id="'.$row->id.'">Delete</button> ';
-                })
+                return DataTables::of($query)
+                    ->addColumn('action', function ($row) {
+                        return '
+                            <a href="'.route('billers.users.add', $row->id).'" class="btn btn-success btn-sm" title="'.__('messages.add_user').'">
+                            <i class="bi bi-person-plus"></i>
+                            </a>
+                            <a class="btn btn-info btn-sm listUser" data-id="'.$row->id.'" title="'. __('messages.list_user') .'">
+                                <i class="bi bi-people"></i>
+                            </a>
+                            <a href="'.url('billers/'.$row->id.'/edit').'" class="btn btn-primary btn-sm" title="'. __('messages.edit') .'">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a class="btn btn-danger btn-sm deleteBillerBtn" data-id="'.$row->id.'" title="'. __('messages.delete') .'">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        ';
+                    })
                 ->filterColumn('group_name', function ($query, $keyword) {
                     $query->where('groups.name', 'like', "%{$keyword}%");
                 })
@@ -47,39 +60,153 @@ class BillerController extends Controller
                 ->make(true);
         }
 
+
         return view('admin.billers.index', [
-            'pageTitle'   => __('messages.billers_list'),
-            'heading'     => __('messages.stock_management_system'),
-            'description' => __('messages.dashboard_welcome'),
+            'pageTitle' => __('messages.list_billers'),
+            // 'groups' => $groups,
             'breadcrumbs' => [
-                ['label' => __('messages.dashboard'), 'url' => '/admin/dashboard', 'active' => false],
-                ['label' => __('messages.biller'), 'url'  => false],
+                ['label' => __('messages.dashboard'), 'url' => '#', 'active' => false],
+                ['label' => __('messages.billers'), 'url' => '', 'active' => true],
             ]
         ]);
     }
 
     public function create()
     {
-        return view('admin.billers.create');
+        $companies = DB::table('companies')->select('*')->get();
+        $groups = DB::table('groups')->select('id', 'name')->get();
+        $warehouses = DB::table('warehouses')->select('id', 'name')->get();
+
+        // pp($companies);
+        return view('admin.billers.create',  [
+            'groups' => $groups,
+            'warehouse' => $warehouses,
+            'companies' => $companies,
+            'pageTitle' => __('messages.list_billers'),
+            'breadcrumbs' => [
+                ['label' => __('messages.billers'), 'url' => '#', 'active' => false],
+                ['label' => __('messages.add'), 'url' => '', 'active' => true],
+            ]
+        ]);    
     }
 
     public function store(Request $request)
     {
-        // Logic to store a new biller
+
+        $request->validate([
+            'name' => 'required|max:255',
+            'email' => 'required|email|unique:companies,email',
+            'address' => 'required|max:255',
+            'phone' => 'required|max:20',
+            'warehouse_id' => 'required|exists:warehouses,id',
+        ]);
+        Companies::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'city' => $request->city,
+            'number_of_houses' => $request->number_of_houses,
+            'street' => $request->street,
+            'address' => $request->address,
+            'phone' => $request->phone,
+            'group_id' => 2,
+            'logo' => $request->logo ? $request->logo->store('logos', 'public') : null,
+            'group_name' => 'Biller',
+            'warehouse_id' => $request->warehouse_id,
+        ]);
+
+        return redirect()->route('billers.index')->with('success', __('messages.billers_created_successfully'));
     }
 
     public function edit($id)
     {
-        // Logic to show form for editing an existing biller
+        $biller = Companies::findOrFail($id);
+        $groups = DB::table('groups')->select('id', 'name')->get();
+        $warehouses = DB::table('warehouses')->select('id', 'name')->get();
+
+        return view('admin.billers.edit', [
+            'biller' => $biller,
+            'groups' => $groups,
+            'warehouse' => $warehouses,
+            'pageTitle' => __('messages.edit_biller'),
+            'breadcrumbs' => [
+                ['label' => __('messages.dashboard'), 'url' => '#', 'active' => false],
+                ['label' => __('messages.settings'), 'url' => '#', 'active' => false],
+                ['label' => __('messages.billers'), 'url' => '', 'active' => true],
+            ]
+        ]);
     }
 
     public function update(Request $request, $id)
     {
-        // Logic to update an existing biller
+        $request->validate([
+            'name' => 'required|max:255',
+            // 'email' => 'required|email|unique:companies,email,'.$id,
+            'address' => 'required|max:255',
+            'phone' => 'required|max:20',
+            'warehouse_id' => 'required|exists:warehouses,id',
+        ]);
+
+        $biller = Companies::findOrFail($id);
+        $biller->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'address' => $request->address,
+            'phone' => $request->phone,
+            'city' => $request->city,
+            'number_of_houses' => $request->number_of_houses,
+            'street' => $request->street,
+            'logo' => $request->logo ? $request->logo->store('logos', 'public') : null,
+            'note' => $request->note,
+            'warehouse_id' => $request->warehouse_id,
+        ]);
+
+        return redirect()->route('billers.index')->with('success', __('messages.biller_updated_successfully'));
     }
+
+    public function listUsers($id)
+    {
+        $biller = Companies::with('users')->findOrFail($id);
+        return view('admin.billers.partials.user_list', compact('biller'));
+    }
+
+    public function addUser($id)
+    {
+        $biller = Companies::findOrFail($id);
+        return view('admin.billers.partials.add_user', compact('biller'));
+    }
+
+    public function storeUser(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $biller = Companies::findOrFail($id);
+        $user = $biller->users()->create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'company_id' => $biller->id,
+            'group_id' => 2,
+            'password' => bcrypt($request->password),
+        ]);
+
+        return redirect()
+            ->route('billers.index')
+            ->with('success', __('messages.user_added_successfully'));
+    }
+
+
+
+
+
 
     public function destroy($id)
     {
-        // Logic to delete a biller
+        $biller = Companies::findOrFail($id);
+        $biller->delete();
+
+        return response()->json(['success' => __('messages.selected_billers_deleted_successfully')]);
     }
 }

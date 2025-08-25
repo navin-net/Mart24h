@@ -30,6 +30,7 @@
                                     <h5 class="card-title mb-0 fw-semibold"></h5>
                                 </div>
                                 <div class="col-md-6 text-end">
+                                    @if(Auth::user()->group_id == 1)
                                     <div class="dropdown">
                                         <button class="btn btn-primary btn-sm dropdown-toggle rounded-3" type="button"
                                             id="actionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -37,6 +38,7 @@
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3"
                                             aria-labelledby="actionDropdown">
+
                                             <li><a class="dropdown-item" href="{{ __('products/create') }}"
                                                     id="addProductBtn">
                                                     <i class="bi bi-plus-circle me-2"></i>{{ __('messages.add') }}</a>
@@ -50,6 +52,8 @@
                                             </li>
                                         </ul>
                                     </div>
+                                    @endif
+
                                 </div>
                             </div>
 
