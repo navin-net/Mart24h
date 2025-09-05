@@ -9,6 +9,7 @@ use App\Models\Categories;
 use App\Models\Brand;
 use App\Models\Shop;
 use Illuminate\Support\Facades\View; // ✅ Add this line
+use Illuminate\Support\Facades\DB; // 👈 add this
 
 class MainController extends Controller
 {
@@ -126,7 +127,7 @@ class MainController extends Controller
                 $query->orderBy('id', 'desc');
         }
 
-        $products = $query->paginate(10)->withQueryString();
+        $products = $query->paginate(12)->withQueryString();
 
         // Transform products
         $products->getCollection()->transform(function ($product) {
@@ -146,7 +147,9 @@ class MainController extends Controller
         });
 
         $categories = Categories::pluck('name', 'name');
-        $colors = Products::distinct()->pluck('color')->filter()->values();
+        // $colors = Products::distinct()->pluck('color')->filter()->values();
+        $colors = DB::table('colors')->pluck('slug')->filter()->values();
+
         $brands = Brand::select('id', 'name', 'image')->get();
 
         return view('shop.products', compact('products', 'categories', 'colors', 'brands'));

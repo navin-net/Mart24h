@@ -13,6 +13,12 @@
     <i class="bi bi-eye me-2"></i> {{ __('messages.show') }}
   </a>
   </li>
+    <li>
+  <a class="dropdown-item" href="{{ url('products/show/' . $row->id) }}">
+    <i class="bi bi-eye me-2"></i> {{ __('messages.show') }}
+  </a>
+  </li>
+  
     <li><hr class="dropdown-divider"></li>
   <li>
   <button class="dropdown-item delete-product text-danger" data-id="{{ $row->id }}" type="button">

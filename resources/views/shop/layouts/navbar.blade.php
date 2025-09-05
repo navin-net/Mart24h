@@ -58,7 +58,7 @@
             </ul>
 
             <div class="d-flex align-items-center">
-<div class="dropdown me-3">
+<!-- <div class="dropdown me-3">
     <a class="nav-link dropdown-toggle text-dark fw-bold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="user-select:none;">
         {{ strtoupper(app()->getLocale()) }}
     </a>
@@ -79,7 +79,7 @@
             </a>
         </li>
     </ul>
-</div>
+</div> -->
 
                 <div class="me-3">
                     <a href="#" class="text-dark"><i class="fas fa-search"></i></a>

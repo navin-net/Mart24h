@@ -23,6 +23,30 @@
     margin-bottom: 2rem;
     animation: fadeIn 0.8s ease-out;
     }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 3.5rem;
+            height: 3.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(1rem);
+            transition: all 0.3s ease-in-out;
+            z-index: 1050;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-0.25rem);
+        }
+
     </style>
     @stack('style')
 </head>
@@ -34,6 +58,13 @@
 
     @include('shop.layouts.footer')
 
+
+    <button type="button"
+        class="btn btn-primary back-to-top rounded-circle shadow d-flex align-items-center justify-content-center"
+        id="backToTopBtn" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Back to top"
+        aria-label="Back to top">
+        <i class="fa-solid fa-up-long"></i>
+    </button>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -387,6 +418,40 @@
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
         });
+        document.addEventListener('DOMContentLoaded', function() {
+            const backToTopBtn = document.getElementById('backToTopBtn');
+            if (!backToTopBtn) return;
+            
+            const scrollThreshold = 300;
+            const tooltip = new bootstrap.Tooltip(backToTopBtn);
+
+            function toggleBackToTopButton() {
+                if (window.pageYOffset > scrollThreshold) {
+                    backToTopBtn.classList.add('show');
+                } else {
+                    backToTopBtn.classList.remove('show');
+                }
+            }
+
+            function scrollToTop() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+                tooltip.hide();
+            }
+
+            window.addEventListener('scroll', toggleBackToTopButton);
+            backToTopBtn.addEventListener('click', scrollToTop);
+
+            backToTopBtn.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    scrollToTop();
+                }
+            });
+        });
+
     </script>
 
 </body>

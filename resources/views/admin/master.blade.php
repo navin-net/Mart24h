@@ -5,7 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    @php
+        $shopInfo = \App\Models\Shop::first();
+    @endphp
+    @if($shopInfo && $shopInfo->logo_shop)
+        <link rel="icon" href="{{ asset('storage/' . $shopInfo->logo_shop) }}" type="image/x-icon">
+    @else
+        <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    @endif
+    <!-- <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon"> -->
     <title>@yield('title', 'Stock Management')</title>
     <link href="{{ asset('assets1/bootstrap.min.css') }}" rel="stylesheet">
     

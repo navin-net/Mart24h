@@ -65,89 +65,136 @@ class SettingsController extends Controller
         return response()->json(['message' => 'Shop info updated successfully.']);
     }
 
-    public function banners(){
-        for ($i = 1; $i <= 4; $i++) {
-            Banner::firstOrCreate(['id' => $i], [
-                'title' => '',
-                'status' => 1,
-                'link' => '',
-                'image' => null,
-            ]);
-        }
-        $banners = Banner::whereIn('id', [1, 2, 3, 4])->orderBy('id')->get();
-        return view('admin.settings.banners', compact('banners'))->with([
-            'pageTitle' => 'Banners',
-            'breadcrumbs' => [
-                ['label' => 'Dashboard', 'url' => route('dashboard'), 'active' => false],
-                ['label' => 'Banners', 'url' => route('settings.banners'), 'active' => true],
-            ],
-        ]);
+    // public function banners(){
+    //     for ($i = 1; $i <= 3; $i++) {
+    //         Banner::firstOrCreate(['id' => $i], [
+    //             'title' => '',
+    //             'status' => 1,
+    //             'link' => '',
+    //             'image' => null,
+    //         ]);
+    //     }
+    //     $banners = Banner::whereIn('id', [1, 2, 3])->orderBy('id')->get();
+    //     return view('admin.settings.banners', compact('banners'))->with([
+    //         'pageTitle' => 'Banners',
+    //         'breadcrumbs' => [
+    //             ['label' => 'Dashboard', 'url' => route('dashboard'), 'active' => false],
+    //             ['label' => 'Banners', 'url' => route('settings.banners'), 'active' => true],
+    //         ],
+    //     ]);
+    // }
+
+    // public function ajaxUpdateAll(Request $request){
+    //     $data = $request->input('banners');
+    //     if (!$data || !is_array($data)) {
+    //         return response()->json(['message' => 'Invalid data submitted.'], 422);
+    //     }
+
+    //     $errors = [];
+    //     $updatedCount = 0;
+
+    //     foreach ($data as $key => $bannerData) {
+    //         $id = $bannerData['id'] ?? null;
+    //         if (!$id) continue;
+
+    //         $banner = Banner::find($id);
+    //         if (!$banner) {
+    //             $errors[$key] = "Banner ID $id not found.";
+    //             continue;
+    //         }
+
+    //         $validator = Validator::make($bannerData, [
+    //             'title' => 'required|string|max:255',
+    //             'status' => 'required|boolean',
+    //             'link' => 'nullable|url|max:255',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             $errors[$key] = $validator->errors()->all();
+    //             continue;
+    //         }
+
+    //         $banner->title = $bannerData['title'];
+    //         $banner->status = $bannerData['status'];
+    //         $banner->link = $bannerData['link'] ?? null;
+
+    //         // Update image with custom filename sa1, sa2, ..., sa10
+    //         if ($request->hasFile("banners.$key.image")) {
+    //             $imageFile = $request->file("banners.$key.image");
+    //             if ($imageFile->isValid()) {
+    //                 // Delete old image
+    //                 if ($banner->image && Storage::exists($banner->image)) {
+    //                     Storage::delete($banner->image);
+    //                 }
+
+    //                 // Generate custom filename: sa{id}.{ext}
+    //                 $extension = $imageFile->getClientOriginalExtension();
+    //                 $filename = 'sa' . $id . '.' . $extension;
+    //                 $path = $imageFile->storeAs('banners', $filename, 'public');
+    //                 $banner->image = $path;
+    //             }
+    //         }
+
+    //         $banner->save();
+    //         $updatedCount++;
+    //     }
+
+    //     if (count($errors) > 0) {
+    //         return response()->json([
+    //             'message' => 'Some banners failed to update.',
+    //             'errors' => $errors,
+    //         ], 422);
+    //     }
+
+    //     return response()->json([
+    //         'message' => "Successfully updated $updatedCount banner(s).",
+    //     ]);
+    // }
+
+public function banners()
+{
+    $banners = Banner::orderBy('id')->get();
+    if ($banners->isEmpty()) {
+        $banners = collect([new Banner()]);
     }
 
-    public function ajaxUpdateAll(Request $request){
-        $data = $request->input('banners');
-        if (!$data || !is_array($data)) {
-            return response()->json(['message' => 'Invalid data submitted.'], 422);
+    return view('admin.settings.banners', compact('banners'))->with([
+        'pageTitle' => 'Banners',
+        'breadcrumbs' => [
+            ['label' => 'Dashboard', 'url' => route('dashboard'), 'active' => false],
+            ['label' => 'Banners', 'url' => route('settings.banners'), 'active' => true],
+        ],
+    ]);
+}
+
+public function ajaxUpdateAll(Request $request)
+{
+    $bannersData = $request->input('banners', []);
+
+    foreach ($bannersData as $i => $bannerData) {
+        // If id exists → update
+        if (!empty($bannerData['id'])) {
+            $banner = Banner::find($bannerData['id']);
+        } else {
+            // Otherwise create new banner
+            $banner = new Banner();
         }
 
-        $errors = [];
-        $updatedCount = 0;
+        $banner->title = $bannerData['title'] ?? '';
+        $banner->status = $bannerData['status'] ?? 0;
+        $banner->link   = $bannerData['link'] ?? '';
 
-        foreach ($data as $key => $bannerData) {
-            $id = $bannerData['id'] ?? null;
-            if (!$id) continue;
-
-            $banner = Banner::find($id);
-            if (!$banner) {
-                $errors[$key] = "Banner ID $id not found.";
-                continue;
-            }
-
-            $validator = Validator::make($bannerData, [
-                'title' => 'required|string|max:255',
-                'status' => 'required|boolean',
-                'link' => 'nullable|url|max:255',
-            ]);
-
-            if ($validator->fails()) {
-                $errors[$key] = $validator->errors()->all();
-                continue;
-            }
-
-            $banner->title = $bannerData['title'];
-            $banner->status = $bannerData['status'];
-            $banner->link = $bannerData['link'] ?? null;
-
-            // Update image with custom filename sa1, sa2, ..., sa10
-            if ($request->hasFile("banners.$key.image")) {
-                $imageFile = $request->file("banners.$key.image");
-                if ($imageFile->isValid()) {
-                    // Delete old image
-                    if ($banner->image && Storage::exists($banner->image)) {
-                        Storage::delete($banner->image);
-                    }
-
-                    // Generate custom filename: sa{id}.{ext}
-                    $extension = $imageFile->getClientOriginalExtension();
-                    $filename = 'sa' . $id . '.' . $extension;
-                    $path = $imageFile->storeAs('banners', $filename, 'public');
-                    $banner->image = $path;
-                }
-            }
-
-            $banner->save();
-            $updatedCount++;
+        // Handle file upload
+        if ($request->hasFile("banners.$i.image")) {
+            $path = $request->file("banners.$i.image")->store('banners', 'public');
+            $banner->image = $path;
         }
 
-        if (count($errors) > 0) {
-            return response()->json([
-                'message' => 'Some banners failed to update.',
-                'errors' => $errors,
-            ], 422);
-        }
-
-        return response()->json([
-            'message' => "Successfully updated $updatedCount banner(s).",
-        ]);
+        $banner->save();
     }
+
+    return response()->json(['message' => 'Banners updated successfully.']);
+}
+
+
 }

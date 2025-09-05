@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\{
     UserController,
     BillerController,
     WarehouseController,
+    GroupsController,
     ReportController
 };
 // Route::middleware('auth')
@@ -41,6 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/products/show/{id}', [ProductController::class, 'show'])->name('products.show');
     Route::get('/products/subcategories', [ProductController::class, 'getSubCategories'])->name('products.subcategories');
     Route::delete('/products/images/{id}', [ProductController::class, 'removeImage'])->name('products.images.remove');
+    Route::get('/products/export', [ProductController::class, 'export'])->name('products.export');
 
     // Brands
     Route::resource('brands', BrandController::class)->except(['show']);
@@ -78,7 +80,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/banner/ajax-update-all', [SettingsController::class, 'ajaxUpdateAll'])->name('banners.ajaxUpdateAll');
     Route::post('/settings/update', [SettingsController::class, 'ajaxUpdate'])->name('settings.update');
     Route::resource('warehouse',WarehouseController::class)->except(['show']);
-
+    Route::resource('groups',GroupsController::class)->except(['show']);
+    Route::post('groups/bulkDelete', [GroupsController::class, 'bulkDelete'])->name('groups.bulkDelete');
 
     // Users & Billers
     Route::resource('users', UserController::class)->except(['show']);
@@ -88,6 +91,9 @@ Route::middleware('auth')->group(function () {
         ->name('billers.users.add');
     Route::post('/billers/{id}/users/store', [BillerController::class, 'storeUser'])
         ->name('billers.users.store');
+    Route::get('/billers/{id}/users/edit', [BillerController::class, 'editUser'])
+        ->name('billers.users.edit');
+    Route::delete('/billers/users/{id}/delete', [BillerController::class, 'deleteUser'])->name('billers.users.delete');
 
     // Reports
 

@@ -2,8 +2,13 @@
     <ul class="list-group">
         @foreach($biller->users as $user)
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                {{ $user->name }}
-                <span class="text-muted small">{{ $user->email }}</span>
+                <div>
+                    <strong>{{ $user->name }}</strong>
+                    <span class="text-muted small">({{ $user->email }})</span>
+                </div>
+                <div>
+                    {!! $user->action !!}
+                </div>
             </li>
         @endforeach
     </ul>

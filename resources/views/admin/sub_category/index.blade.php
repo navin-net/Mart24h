@@ -5,13 +5,18 @@
 @section('content')
 <div class="container-fluid py-4">
     <div class="pagetitle mb-4">
-        <h1 class="display-6 fw-bold">Stock Management System</h1>
-        <p class="text-muted">Welcome to the dashboard</p>
+        <h1 class="display-6 fw-bold">{{ $pageTitle }}</h1>
         <nav>
             <ol class="breadcrumb rounded-3 p-2">
-                <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}" class="text-primary">Dashboard</a></li>
-                <li class="breadcrumb-item">Settings</li>
-                <li class="breadcrumb-item active">Subcategories</li>
+                @foreach ($breadcrumbs as $breadcrumb)
+                    <li class="breadcrumb-item {{ $breadcrumb['active'] ? 'active text-muted' : '' }}">
+                        @if (!$breadcrumb['active'])
+                            <a href="{{ $breadcrumb['url'] }}" class="text-primary text-decoration-none">{{ $breadcrumb['label'] }}</a>
+                        @else
+                            {{ $breadcrumb['label'] }}
+                        @endif
+                    </li>
+                @endforeach
             </ol>
         </nav>
     </div>
@@ -25,8 +30,8 @@
                         <i class="bi bi-gear-fill me-1"></i> Actions
                     </button>
                     <ul class="dropdown-menu shadow-sm">
-                        <li><a class="dropdown-item" id="addSubCategoryBtn">Add Subcategory</a></li>
-                        <li><a class="dropdown-item" id="bulkDeleteBtn" disabled>Delete Selected</a></li>
+                        <li><a class="dropdown-item" id="addSubCategoryBtn">{{ __('messages.add') }}</a></li>
+                        <li><a class="dropdown-item" id="bulkDeleteBtn" disabled>{{ __('messages.delete') }} </a></li>
                     </ul>
                 </div>
             </div>

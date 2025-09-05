@@ -9,6 +9,8 @@ class Groups extends Model
 {
     use HasFactory;
 
+    public $timestamps = false; 
+
     protected $fillable = ['name'];
 
 }

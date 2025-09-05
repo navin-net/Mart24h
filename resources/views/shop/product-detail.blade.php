@@ -156,7 +156,7 @@
     <div class="container mt-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Products</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('shop.products') }}" class="text-decoration-none">Products</a></li>
                 <li class="breadcrumb-item active">{{ $product->name }}</li>
             </ol>
         </nav>
@@ -356,7 +356,7 @@
                         <div class="col-md-8 p-3">
 
                             <h4>Product Description</h4>
-                            <p>{{ $product->description }}</p>
+                            <p>{!! $product->description !!}</p>
                             
                             <h5 class="mt-4">Advanced Health Monitoring</h5>
                             <p>Keep track of your health metrics with precision. The Smart Watch Pro monitors your heart rate, blood oxygen levels, sleep patterns, and stress levels. It also tracks your daily activity, including steps, distance, calories burned, and floors climbed.</p>

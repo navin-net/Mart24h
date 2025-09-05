@@ -128,8 +128,8 @@
             <div class="col-lg-4 mb-3">
                 <div class="card stat-card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Sales by Category</h5>
-                        <small class="text-muted">Product category breakdown</small>
+                        <h5 class="card-title mb-0">Sales by Brands</h5>
+                        <small class="text-muted">Product Brand breakdown</small>
                     </div>
                     <div class="card-body">
                         <div class="chart-container">
@@ -142,7 +142,7 @@
 
         <!-- Top Products -->
         <div class="row mb-4">
-            <div class="col-lg-6 mb-3">
+            <!-- <div class="col-lg-6 mb-3">
                 <div class="card stat-card">
                     <div class="card-header">
                         <h5 class="card-title mb-0">Top Selling Products</h5>
@@ -152,13 +152,13 @@
                         <div id="topProducts"></div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
-            <div class="col-lg-6 mb-3">
+            <div class="col-lg-12 mb-3">
                 <div class="card stat-card">
                     <div class="card-header">
                         <h5 class="card-title mb-0">Sales Goals</h5>
-                        <small class="text-muted">Progress towards daily targets</small>
+                        <small class="text-muted">Progress towards daily targets 15000</small>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
@@ -245,20 +245,17 @@
 <script>
            // Sample data
         const salesData = {
-            totalSales: 24750.50,
-            totalOrders: 156,
+            // totalSales: 24750.50,
+            // totalOrders: 156,
             totalCustomers: 89,
             dailyTarget: 30000,
             weeklyTarget: 180000,
             monthlyTarget: 750000,
-            hourlySales: [1200, 1800, 2100, 2800, 3200, 4100, 3800, 4500, 3900, 3200, 2800, 2100, 1800, 1500, 1200, 1800, 2400, 3200, 4100, 3800, 3200, 2400, 1800, 1200],
-            categories: {
-                'Electronics': 8500,
-                'Clothing': 6200,
-                'Home & Garden': 4800,
-                'Sports': 3200,
-                'Books': 2050
-            },
+            // hourlySales: [1200, 1800, 2100, 2800, 3200, 4100, 3800, 4500, 3900, 3200, 2800, 2100, 1800, 1500, 1200, 1800, 2400, 3200, 4100, 3800, 3200, 2400, 1800, 1200],
+            categories: @json($brandsData),
+            hourlySales: @json($hourlySales),
+            //     'Books': 2050
+            // },
             // topProducts: [
             //     { name: 'iPhone 15 Pro', sales: 45, revenue: 4500 },
             //     { name: 'Nike Air Max', sales: 32, revenue: 3200 },
@@ -267,18 +264,19 @@
             //     { name: 'AirPods Pro', sales: 28, revenue: 2100 }
             // ],
         topProducts: @json($topProducts),
-
-
-            transactions: [
-                { id: 'ORD-001', customer: 'John Smith', product: 'iPhone 15 Pro', amount: 999, status: 'completed', time: '10:30 AM' },
-                { id: 'ORD-002', customer: 'Sarah Johnson', product: 'Nike Air Max', amount: 129, status: 'completed', time: '10:25 AM' },
-                { id: 'ORD-003', customer: 'Mike Davis', product: 'Samsung TV 55"', amount: 799, status: 'pending', time: '10:20 AM' },
-                { id: 'ORD-004', customer: 'Emily Brown', product: 'MacBook Air', amount: 1299, status: 'completed', time: '10:15 AM' },
-                { id: 'ORD-005', customer: 'David Wilson', product: 'AirPods Pro', amount: 249, status: 'completed', time: '10:10 AM' },
-                { id: 'ORD-006', customer: 'Lisa Garcia', product: 'iPad Pro', amount: 899, status: 'refunded', time: '10:05 AM' },
-                { id: 'ORD-007', customer: 'Tom Anderson', product: 'Apple Watch', amount: 399, status: 'completed', time: '10:00 AM' },
-                { id: 'ORD-008', customer: 'Anna Martinez', product: 'Dell Laptop', amount: 699, status: 'pending', time: '09:55 AM' }
-            ]
+        totalSales: @json($totalSales),
+        totalOrders: @json($totalOrders),
+        transactions: @json($transactions),
+            // transactions: [
+            //     { id: 'ORD-001', customer: 'John Smith', product: 'iPhone 15 Pro', amount: 999, status: 'completed', time: '10:30 AM' },
+            //     { id: 'ORD-002', customer: 'Sarah Johnson', product: 'Nike Air Max', amount: 129, status: 'completed', time: '10:25 AM' },
+            //     { id: 'ORD-003', customer: 'Mike Davis', product: 'Samsung TV 55"', amount: 799, status: 'pending', time: '10:20 AM' },
+            //     { id: 'ORD-004', customer: 'Emily Brown', product: 'MacBook Air', amount: 1299, status: 'completed', time: '10:15 AM' },
+            //     { id: 'ORD-005', customer: 'David Wilson', product: 'AirPods Pro', amount: 249, status: 'completed', time: '10:10 AM' },
+            //     { id: 'ORD-006', customer: 'Lisa Garcia', product: 'iPad Pro', amount: 899, status: 'refunded', time: '10:05 AM' },
+            //     { id: 'ORD-007', customer: 'Tom Anderson', product: 'Apple Watch', amount: 399, status: 'completed', time: '10:00 AM' },
+            //     { id: 'ORD-008', customer: 'Anna Martinez', product: 'Dell Laptop', amount: 699, status: 'pending', time: '09:55 AM' }
+            // ]
         };
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {

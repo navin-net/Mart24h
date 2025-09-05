@@ -30,7 +30,7 @@ class QualitysController extends Controller
             'description' => __('messages.dashboard_welcome'),
             'breadcrumbs' => [
                 ['label' => __('messages.dashboard'), 'url' => '/admin/dashboard', 'active' => false],
-                ['label' => __('messages.settings'), 'url' => '#', 'active' => false],
+                
                 ['label' => __('messages.qualitys'), 'url' => '', 'active' => true],
             ]
         ]);

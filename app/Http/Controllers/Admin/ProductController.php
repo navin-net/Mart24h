@@ -36,7 +36,8 @@ class ProductController extends Controller
                 ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
                 ->leftJoin('sub_categories', 'products.subcategory_id', '=', 'sub_categories.id')
                 ->leftJoin('qualitys', 'products.quality_id', '=', 'qualitys.id')
-                ->leftJoin('units', 'products.unit_id', '=', 'units.id');
+                ->leftJoin('units', 'products.unit_id', '=', 'units.id')
+                ->orderBy('products.id', 'DESC');
             return DataTables::of($data)
                 ->addColumn('action', function ($row) {
                     return view('admin.products.partials.actions', compact('row'))->render();

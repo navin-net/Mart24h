@@ -47,7 +47,7 @@ public function index(Request $request)
         'description' => __('messages.dashboard_welcome'),
         'breadcrumbs' => [
             ['label' => __('messages.dashboard'), 'url' => '/admin/dashboard', 'active' => false],
-            ['label' => __('messages.settings'), 'url' => '#', 'active' => false],
+            
             ['label' => __('messages.categories'), 'url' => '', 'active' => true],
         ]
     ]);
@@ -141,7 +141,18 @@ public function index(Request $request)
                 ->make(true);
         }
 
-        return view('admin.sub_category.index', compact('categories'));
+        // return view('admin.sub_category.index', compact('categories'));
+        return view('admin.sub_category.index', [
+            'categories'  => $categories,
+            'pageTitle'   => __('messages.categories_list'),
+            'heading'     => __('messages.stock_management_system'),
+            'description' => __('messages.dashboard_welcome'),
+            'breadcrumbs' => [
+                ['label' => __('messages.dashboard'), 'url' => '/admin/dashboard', 'active' => false],
+                ['label' => __('messages.categories'), 'url' => '', 'active' => true],
+            ],
+        ]);
+
     }
 
 

@@ -27,7 +27,7 @@
                 <div class="card border-0 shadow-sm rounded-3">
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="card-title mb-0 fw-semibold">Units Table</h5>
+                            <h5 class="card-title mb-0 fw-semibold"></h5>
                             <div class="dropdown">
                                 <button class="btn btn-primary btn-sm dropdown-toggle rounded-3" type="button"
                                     data-bs-toggle="dropdown" aria-expanded="false">

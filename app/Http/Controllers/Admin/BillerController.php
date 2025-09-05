@@ -34,19 +34,35 @@ class BillerController extends Controller
                 return DataTables::of($query)
                     ->addColumn('action', function ($row) {
                         return '
-                            <a href="'.route('billers.users.add', $row->id).'" class="btn btn-success btn-sm" title="'.__('messages.add_user').'">
-                            <i class="bi bi-person-plus"></i>
-                            </a>
-                            <a class="btn btn-info btn-sm listUser" data-id="'.$row->id.'" title="'. __('messages.list_user') .'">
-                                <i class="bi bi-people"></i>
-                            </a>
-                            <a href="'.url('billers/'.$row->id.'/edit').'" class="btn btn-primary btn-sm" title="'. __('messages.edit') .'">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
-                            <a class="btn btn-danger btn-sm deleteBillerBtn" data-id="'.$row->id.'" title="'. __('messages.delete') .'">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        ';
+<div class="dropdown">
+    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton'.$row->id.'" data-bs-toggle="dropdown" aria-expanded="false">
+    '.__('messages.action').'
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton'.$row->id.'">
+        <li>
+            <a class="dropdown-item" href="'.route('billers.users.add', $row->id).'" title="'.__('messages.add_user').'">
+                <i class="bi bi-person-plus me-2"></i>'.__('messages.add_user').'
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item listUser" href="#" data-id="'.$row->id.'" title="'.__('messages.list_user').'">
+                <i class="bi bi-people me-2"></i>'.__('messages.list_user').'
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="'.url('billers/'.$row->id.'/edit').'" title="'.__('messages.edit').'">
+                <i class="bi bi-pencil-square me-2"></i>'.__('messages.edit').'
+            </a>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+            <a class="dropdown-item text-danger deleteBillerBtn" href="#" data-id="'.$row->id.'" title="'.__('messages.delete').'">
+                <i class="bi bi-trash me-2"></i>'.__('messages.delete').'
+            </a>
+        </li>
+    </ul>
+</div>
+';
                     })
                 ->filterColumn('group_name', function ($query, $keyword) {
                     $query->where('groups.name', 'like', "%{$keyword}%");
@@ -140,7 +156,7 @@ class BillerController extends Controller
     {
         $request->validate([
             'name' => 'required|max:255',
-            // 'email' => 'required|email|unique:companies,email,'.$id,
+            'email' => 'required|email|unique:companies,email,'.$id,
             'address' => 'required|max:255',
             'phone' => 'required|max:20',
             'warehouse_id' => 'required|exists:warehouses,id',
@@ -166,7 +182,25 @@ class BillerController extends Controller
     public function listUsers($id)
     {
         $biller = Companies::with('users')->findOrFail($id);
+
+        $biller->users->transform(function ($user) {
+            $user->action = '
+                <a href="'.route('billers.users.edit', $user->id).'" class="btn btn-success btn-sm" title="'.__('messages.edit_user').'">
+                    <i class="bi bi-person-plus"></i>
+                </a>
+                <a class="btn btn-danger btn-sm deleteUserBtn" data-id="'.$user->id.'" title="'. __('messages.delete') .'">
+                    <i class="bi bi-trash"></i>
+                </a>';
+            return $user;
+        });
         return view('admin.billers.partials.user_list', compact('biller'));
+    }
+
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+        return response()->json(['success' => __('messages.selected_billers_deleted_successfully')]);
     }
 
     public function addUser($id)
@@ -179,10 +213,9 @@ class BillerController extends Controller
     {
         $request->validate([
             'name' => 'required|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|unique:companies,email,'.$id,
             'password' => 'required|min:6|confirmed',
         ]);
-
         $biller = Companies::findOrFail($id);
         $user = $biller->users()->create([
             'name' => $request->name,
@@ -191,16 +224,37 @@ class BillerController extends Controller
             'group_id' => 2,
             'password' => bcrypt($request->password),
         ]);
-
         return redirect()
             ->route('billers.index')
             ->with('success', __('messages.user_added_successfully'));
     }
 
+    public function editUser($id)
+    {
+        $user = User::findOrFail($id);
+        pp($user);
+        return view('admin.billers.partials.edit_user', compact('user'));
+    }
 
+    public function updateUser(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|max:255',
+            'email' => 'required|email|unique:users,email,'.$id,
+            'password' => 'nullable|min:6|confirmed',
+        ]);
 
+        $user = User::findOrFail($id);
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password ? bcrypt($request->password) : $user->password,
+        ]);
 
-
+        return redirect()
+            ->route('billers.index')
+            ->with('success', __('messages.user_updated_successfully'));
+    }
 
     public function destroy($id)
     {

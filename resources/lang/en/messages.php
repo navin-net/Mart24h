@@ -228,11 +228,18 @@ return [
     'add_biller' => 'Add Biller',
     'second_name' => 'Second Name',
     'unit' => 'Units',
+    'month' => 'Month',
     'image_review' => 'Image Review',
+    'sales_by_month' => 'Sales by Month',
+    'purchases_by_month' => 'Purchases By Month',
     'warehouse_list' => 'Warehouse List',
     'biller_deleted_successfully' => 'Biller Deleted Successfully',
     'no_low_stock' => 'No Low Stock',
     'report_daily' => 'Report Daily',
+    'select_unit' => 'Select Unit',
+    'groups_list' => 'Groups List',
+    'no_products_available' => 'No Products Available',
+    'groups' => 'Groups',
     'You cannot delete your own account while logged in.' =>   'You cannot delete your own account while logged in.',
     'product_cannot_be_deleted_has_sales' =>  'Product Cannot Be Deleted Has Sales'
 ];

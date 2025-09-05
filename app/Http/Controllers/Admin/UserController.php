@@ -23,8 +23,8 @@ class UserController extends Controller
                     'users.email',
                     'groups.name as group_name'
                 ])
-                ->leftJoin('groups', 'users.group_id', '=', 'groups.id');
-                // ->whereNull('users.company_id'); // only group_id IS NULL
+                ->leftJoin('groups', 'users.group_id', '=', 'groups.id')
+                ->where('users.company_id', NULL);
 
             return DataTables::of($data)
                 ->addColumn('action', function ($row) {

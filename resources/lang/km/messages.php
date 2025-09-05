@@ -200,6 +200,16 @@ return [
     'no_low_stock' => 'គ្មានស្តុកទាប',
     'biller_deleted_successfully' => 'បានលុបអ្នកវិភាគដោយជោគជ័យ',
     'You cannot delete your own account while logged in.' => 'អ្នកមិនអាចលុបគណនីរបស់ខ្លួននៅពេលចូលប្រើបានទេ។',
+    'sales_by_month' => 'ការលក់តាមខែ',
+    'groups_list' => 'បញ្ជីក្រុម',
+    'select_unit' => 'ជ្រើសរើសឯកតា',
+    'select_brand' => 'ជ្រើសរើសម៉ាក', 
+    'select_category' => 'ជ្រើសរើស​ប្រភេទ', 
+    'select_subcategory' => 'ជ្រើសរើសប្រភេទរង', 
+    'select_quality' => 'ជ្រើសរើសគុណភាព',
+    'groups' => 'ក្រុម',
+    'no_products_available' => 'គ្មានផលិតផលដែលអាចប្រើបាន',
+    'purchases_by_month' => 'ទិញតាមខែ',
     'total_quantity' => 'បរិមាណសរុប'
 
 

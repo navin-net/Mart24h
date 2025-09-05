@@ -31,7 +31,7 @@ class BrandController extends Controller
             'description' => __('messages.dashboard_welcome'),
             'breadcrumbs' => [
                 ['label' => __('messages.dashboard'), 'url' => '/admin/dashboard', 'active' => false],
-                ['label' => __('messages.settings'), 'url' => '#', 'active' => false],
+                
                 ['label' => __('messages.brands'), 'url' => '', 'active' => true],
             ]
         ]);

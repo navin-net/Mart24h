@@ -102,9 +102,9 @@
                             </div>
                         </div>
                     @empty
-                        <div class="list-group-item text-center text-muted py-3">
+<!--                         <div class="list-group-item text-center text-muted py-3">
                             {{ __('messages.no_recent_sales') }}
-                        </div>
+                        </div> -->
                     @endforelse
 
                     <!-- Before 6 months summary -->

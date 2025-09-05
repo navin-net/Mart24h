@@ -7,13 +7,14 @@
         <nav>
             <ol class="breadcrumb rounded-3 p-2">
                 @foreach ($breadcrumbs as $breadcrumb)
-                    <li class="breadcrumb-item {{ $breadcrumb['active'] ? 'active text-muted' : '' }}">
-                        @if (!$breadcrumb['active'])
-                            <a href="{{ $breadcrumb['url'] }}" class="text-primary text-decoration-none">{{ $breadcrumb['label'] }}</a>
-                        @else
-                            {{ $breadcrumb['label'] }}
-                        @endif
-                    </li>
+                <li class="breadcrumb-item {{ $breadcrumb['active'] ? 'active text-muted' : '' }}">
+                    @if (!$breadcrumb['active'])
+                    <a href="{{ $breadcrumb['url'] }}"
+                        class="text-primary text-decoration-none">{{ $breadcrumb['label'] }}</a>
+                    @else
+                    {{ $breadcrumb['label'] }}
+                    @endif
+                </li>
                 @endforeach
             </ol>
         </nav>
@@ -32,13 +33,23 @@
                                     <i class="bi bi-gear-fill me-1"></i> Actions
                                 </button>
                                 <ul class="dropdown-menu shadow-sm rounded-3">
-                                    <li><a class="dropdown-item" id="addUserBtn">{{ __('messages.add') }}</a></li>
-                                    <li><a class="dropdown-item" id="bulkDeleteBtn" disabled>{{ __('messages.delete') }}</a></li>
+                                    <li><a class="dropdown-item" href="{{ __('billers/create') }}" id="addProductBtn">
+                                        <i class="bi bi-plus-circle me-2"></i>{{ __('messages.add') }}</a>
+                                    </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="#" id="bulkDeleteBtn" disabled>
+                                        <i class="bi bi-trash me-2"></i>{{ __('messages.delete') }}</a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
                         <div id="alertsContainer" class="mb-4"></div>
-
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ __('messages.close') }}"></button>
+                        </div>
+                    @endif
                         <div class="table-responsive">
                             <table class="table table-striped table-bordered rounded-3 align-middle" id="billersTable">
                                 <thead class="table-primary">
@@ -74,15 +85,42 @@
             <div class="modal-body" id="companyDetailsContent">
                 <table class="table table-bordered">
                     <tbody>
-                        <tr><th>Name</th><td id="c_name"></td></tr>
-                        <tr><th>Email</th><td id="c_email"></td></tr>
-                        <tr><th>Phone</th><td id="c_phone"></td></tr>
-                        <tr><th>City</th><td id="c_city"></td></tr>
-                        <tr><th>Street</th><td id="c_street"></td></tr>
-                        <tr><th>Address</th><td id="c_address"></td></tr>
-                        <tr><th>Group</th><td id="c_group"></td></tr>
-                        <tr><th>Warehouse</th><td id="c_warehouse"></td></tr>
-                        <tr><th>Number of Houses</th><td id="c_houses"></td></tr>
+                        <tr>
+                            <th>Name</th>
+                            <td id="c_name"></td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td id="c_email"></td>
+                        </tr>
+                        <tr>
+                            <th>Phone</th>
+                            <td id="c_phone"></td>
+                        </tr>
+                        <tr>
+                            <th>City</th>
+                            <td id="c_city"></td>
+                        </tr>
+                        <tr>
+                            <th>Street</th>
+                            <td id="c_street"></td>
+                        </tr>
+                        <tr>
+                            <th>Address</th>
+                            <td id="c_address"></td>
+                        </tr>
+                        <tr>
+                            <th>Group</th>
+                            <td id="c_group"></td>
+                        </tr>
+                        <tr>
+                            <th>Warehouse</th>
+                            <td id="c_warehouse"></td>
+                        </tr>
+                        <tr>
+                            <th>Number of Houses</th>
+                            <td id="c_houses"></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -98,49 +136,48 @@
 
 <!-- User List Modal -->
 <div class="modal fade" id="userListModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">{{ __('messages.list_user') }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body" id="userListContent">
-        <!-- loader placeholder -->
-        <div class="text-center p-3">
-          <div class="spinner-border text-primary" role="status"></div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ __('messages.list_user') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="userListContent">
+                <!-- loader placeholder -->
+                <div class="text-center p-3">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
 
 
 
 
-        <!-- Delete Confirmation Modal -->
-        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content rounded-3 border-0 shadow">
-                    <div class="modal-header border-0 rounded-top-3">
-                        <h5 class="modal-title fw-semibold" id="deleteModalLabel">{{ __('messages.confirm_delete') }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        {{ __('messages.delete_confirm') }}
-                    </div>
-                    <div class="modal-footer border-0">
-                        <button type="button" class="btn btn-secondary btn-sm rounded-3"
-                            data-bs-dismiss="modal">{{ __('messages.cancel') }}</button>
-                        <form id="deleteForm" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                class="btn btn-danger btn-sm rounded-3">{{ __('messages.delete') }}</button>
-                        </form>
-                    </div>
-                </div>
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 border-0 shadow">
+            <div class="modal-header border-0 rounded-top-3">
+                <h5 class="modal-title fw-semibold" id="deleteModalLabel">{{ __('messages.confirm_delete') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ __('messages.delete_confirm') }}
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary btn-sm rounded-3"
+                    data-bs-dismiss="modal">{{ __('messages.cancel') }}</button>
+                <form id="deleteForm" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-sm rounded-3">{{ __('messages.delete') }}</button>
+                </form>
             </div>
         </div>
+    </div>
+</div>
 
 
 @endsection
@@ -152,22 +189,59 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ajax: "{{ route('billers.index') }}",
-        columns: [
-            { 
+        columns: [{
                 data: 'id',
                 render: data => `<input type="checkbox" class="selectRow" value="${data}">`,
                 orderable: false,
                 searchable: false
             },
-            { data: 'name', name: 'name' },
-            { data: 'group_name', name: 'group_name' },
-            { data: 'warehouse_name', name: 'warehouse_name' },
-            { data: 'email', name: 'email' },
-            { data: 'phone', name: 'phone' },
-            { data: 'city', name: 'city' },
-            { data: 'action', orderable: false, searchable: false, className: 'text-center' }
-        ]
-    });
+            {
+                data: 'name',
+                name: 'name'
+            },
+            {
+                data: 'group_name',
+                name: 'group_name'
+            },
+            {
+                data: 'warehouse_name',
+                name: 'warehouse_name'
+            },
+            {
+                data: 'email',
+                name: 'email'
+            },
+            {
+                data: 'phone',
+                name: 'phone'
+            },
+            {
+                data: 'city',
+                name: 'city'
+            },
+            {
+                data: 'action',
+                orderable: false,
+                searchable: false,
+                className: 'text-center'
+            }
+        ],
+
+                language: {
+                    paginate: {
+                        previous: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>',
+                        next: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>'
+                    },
+                    // info: 'Showing _START_ to _END_ of _TOTAL_ entries',
+                    lengthMenu: '{{ __('messages.show') }} _MENU_{{ __('messages.entries') }}',
+                    search: '{{ __('messages.search') }}',
+                    emptyTable: "{{ __('messages.no_data_available') }}",
+                    processing: "{{ __('messages.processing') }}",
+                    zeroRecords: "{{ __('messages.no_matching_records') }}",
+                    infoEmpty: "{{ __('messages.showing_0_to_0_of_0_entries') }}",
+                    infoFiltered: "{{ __('messages.filtered_from_total_entries', ['total' => '_MAX_']) }}"
+                }
+            });
 
     // Row click to show modal (skip first & last column)
     $('#billersTable tbody').on('click', 'td', function(e) {
@@ -200,7 +274,9 @@ $(document).ready(function() {
         const content = document.getElementById('companyDetailsContent').innerHTML;
         const printWindow = window.open('', '', 'width=900,height=700');
         printWindow.document.write('<html><head><title>Biller Details</title>');
-        printWindow.document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">');
+        printWindow.document.write(
+            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">'
+            );
         printWindow.document.write('</head><body>');
         printWindow.document.write('<h3 class="mb-4">Biller Details</h3>');
         printWindow.document.write(content);
@@ -223,10 +299,8 @@ $(document).ready(function() {
         $('#userListContent').html(
             '<div class="text-center p-3"><div class="spinner-border text-primary" role="status"></div></div>'
         );
-
-        // Fetch content by Ajax
         $.ajax({
-            url: '/billers/' + id + '/users', // You will create this route
+            url: '/billers/' + id + '/users', 
             method: 'GET',
             success: function(response) {
                 $('#userListContent').html(response);
@@ -244,37 +318,46 @@ $(document).ready(function() {
         window.location.href = '/billers/' + id + '/users/add';
     });
 
-            $(document).on('click', '.deleteBillerBtn', function() {
-                const billerId = $(this).data('id');
-                const deleteUrl = "{{ url('billers') }}/" + billerId;
-                $('#deleteForm').attr('action', deleteUrl);
-                $('#deleteModal').modal('show');
-            });
+    $(document).on('click', '.deleteBillerBtn', function() {
+        const billerId = $(this).data('id');
+        const deleteUrl = "{{ url('billers') }}/" + billerId;
+        $('#deleteForm').attr('action', deleteUrl);
+        $('#deleteModal').modal('show');
+    });
 
-            $('#deleteForm').on('submit', function(e) {
-                e.preventDefault();
-                const form = $(this);
-                const action = form.attr('action');
+    $(document).on('click', '.deleteUserBtn', function() {
+        const userId = $(this).data('id');
+        const deleteUrl = "{{ url('billers/users') }}/" + userId + "/delete"; // match your route
+        $('#deleteForm').attr('action', deleteUrl);
+        $('#deleteModal').modal('show');
+    });
 
-                $.ajax({
-                    url: action,
-                    type: 'DELETE',
-                    data: form.serialize(),
-                    success: function(response) {
-                        $('#deleteModal').modal('hide');
-                        table.ajax.reload();
-                        const successAlert = `
+    $('#deleteForm').on('submit', function(e) {
+        e.preventDefault();
+        const form = $(this);
+        const action = form.attr('action');
+
+        $.ajax({
+            url: action,
+            type: 'DELETE',
+            data: form.serialize(),
+            success: function(response) {
+                $('#deleteModal').modal('hide');
+                $('#userListModal').modal('hide');
+                table.ajax.reload();
+                // location.reload();
+                const successAlert = `
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ __('messages.biller_deleted_successfully') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>`;
-                        $('#alertsContainer').html(successAlert);
-                    },
-                    error: function(xhr) {
-                        alert('Failed to delete the biller. Please try again.');
-                    }
-                });
-            });
+                $('#alertsContainer').html(successAlert);
+            },
+            error: function(xhr) {
+                alert('Failed to delete the biller. Please try again.');
+            }
+        });
+    });
 
 
 

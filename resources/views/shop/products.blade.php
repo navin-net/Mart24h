@@ -9,9 +9,14 @@
                 <div class="filter-sidebar p-3 border rounded bg-light">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="filter-title mb-0 fw-semibold"><i class="fas fa-filter me-2"></i>Filters</h5>
+                        {{-- Added clear all filters button in header --}}
+                        <a href="{{ route('shop.products') }}" class="btn btn-sm btn-outline-secondary" title="Clear all filters">
+                            <i class="fas fa-times"></i>
+                        </a>
                     </div>
 
                     <form id="filterForm" action="{{ route('shop.products') }}" method="GET">
+                        {{-- Improved categories section with better accessibility --}}
                         <div class="filter-group mb-4">
                             <h6 class="filter-group-title fw-semibold">Categories</h6>
                             @foreach ($categories as $name => $category)
@@ -20,46 +25,147 @@
                                         <input class="form-check-input" type="checkbox" name="category[]" value="{{ $category }}"
                                             id="category-{{ \Illuminate\Support\Str::slug($category) }}"
                                             {{ in_array($category, request()->input('category', [])) ? 'checked' : '' }}
-                                            onchange="document.getElementById('filterForm').submit();">
+                                            onchange="submitFormWithDelay();"
+                                            aria-describedby="category-help">
                                         <label class="form-check-label" for="category-{{ \Illuminate\Support\Str::slug($category) }}">{{ ucfirst($category) }}</label>
                                     </div>
                                 </div>
                             @endforeach
+                            <small id="category-help" class="form-text text-muted">Select one or more categories</small>
                         </div>
 
+                        {{-- Fixed brand image paths and improved error handling --}}
                         <div class="filter-group mb-4">
-                            <h6 class="filter-group-title fw-semibold">Brands</h6>
-                            @foreach ($brands as $brand)
-                                <div class="filter-check">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="brand[]" value="{{ $brand->name }}"
-                                            id="brand-{{ \Illuminate\Support\Str::slug($brand->name) }}"
-                                            {{ in_array($brand->name, request()->input('brand', [])) ? 'checked' : '' }}
-                                            onchange="document.getElementById('filterForm').submit();">
-                                        <label class="form-check-label" for="brand-{{ \Illuminate\Support\Str::slug($brand->name) }}">{{ ucfirst($brand->name) }}</label>
-                                    </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="filter-group-title fw-semibold mb-0">Brands</h6>
+                                
+                                <div class="btn-group btn-group-sm" role="group" aria-label="Brand view options">
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            onclick="switchBrandView('dropdown')" id="dropdownViewBtn"
+                                            aria-pressed="false">
+                                        <i class="fas fa-list me-1"></i>List
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" 
+                                            onclick="switchBrandView('grid')" id="gridViewBtn"
+                                            aria-pressed="true">
+                                        <i class="fas fa-th me-1"></i>Grid
+                                    </button>
                                 </div>
-                            @endforeach
-                            @if(request()->filled('brand'))
-                                <div class="mt-2 small">
-                                    <strong>Selected Brands:</strong>
-                                    @foreach (request()->input('brand', []) as $brand)
-                                        <span class="badge bg-secondary me-1">{{ ucfirst($brand) }}</span>
+                            </div>
+                            
+                            <div class="brand-dropdown-container" id="brandDropdownView" style="display: none;">
+                                <button type="button" class="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center" 
+                                        id="brandDropdownToggle" onclick="toggleBrandDropdown()"
+                                        aria-expanded="false" aria-haspopup="true">
+                                    <span id="brandDropdownText">
+                                        @if(request()->filled('brand'))
+                                            {{ count(request()->input('brand', [])) }} brand(s) selected
+                                        @else
+                                            Select brands
+                                        @endif
+                                    </span>
+                                    <i class="fas fa-chevron-down transition-all" id="brandDropdownIcon"></i>
+                                </button>
+                                
+                                <div class="brand-dropdown-menu position-absolute w-100 bg-white border rounded shadow-sm mt-1 d-none" 
+                                     id="brandDropdownMenu" style="z-index: 1000; max-height: 300px; overflow-y: auto;"
+                                     role="listbox" aria-label="Brand selection">
+                                    @foreach ($brands as $brand)
+                                        <div class="brand-option p-2 d-flex align-items-center" 
+                                             onclick="toggleBrandSelection('{{ $brand->name }}', this)"
+                                             role="option" tabindex="0"
+                                             onkeypress="if(event.key==='Enter'||event.key===' ') toggleBrandSelection('{{ $brand->name }}', this)">
+                                            <input type="checkbox" name="brand[]" value="{{ $brand->name }}" 
+                                                   class="form-check-input me-2 brand-checkbox" 
+                                                   id="brand-dropdown-{{ \Illuminate\Support\Str::slug($brand->name) }}"
+                                                   {{ in_array($brand->name, request()->input('brand', [])) ? 'checked' : '' }}>
+                                            
+                                            {{-- Standardized image path and improved fallback --}}
+                                            <img src="{{ asset('upload/image/' . strtolower($brand->image)) }}" 
+                                                 alt="{{ $brand->name }} logo" class="brand-logo me-2" 
+                                                 style="width: 24px; height: 24px; object-fit: contain;"
+                                                 onerror="this.src='{{ asset('images/placeholder-brand.svg') }}'; this.onerror=null;">
+                                            
+                                            <label class="form-check-label mb-0 flex-grow-1 cursor-pointer" 
+                                                   for="brand-dropdown-{{ \Illuminate\Support\Str::slug($brand->name) }}">
+                                                {{ ucfirst($brand->name) }}
+                                            </label>
+                                        </div>
                                     @endforeach
+                                </div>
+                            </div>
+                            
+                            <div class="brand-grid d-flex flex-wrap gap-2" id="brandGridView">
+                                @foreach ($brands as $brand)
+                                    <div class="brand-card border rounded-3 p-3 text-center position-relative {{ in_array($brand->name, request()->input('brand', [])) ? 'border-primary bg-primary bg-opacity-10' : 'border-light' }}" 
+                                         style="width: 90px; cursor: pointer; transition: all 0.3s ease;" 
+                                         onclick="toggleBrandCard(this, '{{ $brand->name }}')"
+                                         role="button" tabindex="0" aria-pressed="{{ in_array($brand->name, request()->input('brand', [])) ? 'true' : 'false' }}"
+                                         onkeypress="if(event.key==='Enter'||event.key===' ') toggleBrandCard(this, '{{ $brand->name }}')">
+                                        
+                                        <input type="checkbox" name="brand[]" value="{{ $brand->name }}" 
+                                               class="form-check-input position-absolute brand-grid-checkbox d-none" 
+                                               id="brand-grid-{{ \Illuminate\Support\Str::slug($brand->name) }}"
+                                               {{ in_array($brand->name, request()->input('brand', [])) ? 'checked' : '' }}>
+                                        
+                                        {{-- Consistent image path and better error handling --}}
+                                        <img src="{{ asset('upload/image/' . strtolower($brand->image)) }}" 
+                                             alt="{{ $brand->name }} logo" class="brand-logo-large mb-2" 
+                                             style="width: 40px; height: 40px; object-fit: contain; transition: transform 0.2s ease;"
+                                             onerror="this.src='{{ asset('images/placeholder-brand.svg') }}'; this.onerror=null;">
+                                        
+                                        <small class="d-block text-truncate fw-medium">{{ ucfirst($brand->name) }}</small>
+                                        
+                                        <div class="selection-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center rounded-3 {{ in_array($brand->name, request()->input('brand', [])) ? '' : 'd-none' }}" 
+                                             style="background: rgba(13, 110, 253, 0.15); backdrop-filter: blur(1px);">
+                                            <i class="fas fa-check-circle text-primary" style="font-size: 1.5rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));"></i>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            
+                            @if(request()->filled('brand'))
+                                <div class="mt-3 p-2 bg-light rounded-2">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-filter text-primary me-2"></i>
+                                        <small class="fw-semibold text-muted">Selected Brands ({{ count(request()->input('brand', [])) }})</small>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        @foreach (request()->input('brand', []) as $brand)
+                                            <span class="badge bg-primary d-inline-flex align-items-center py-1 px-2">
+                                                {{-- Fixed image path consistency --}}
+                                                <img src="{{ asset('upload/image/' . strtolower($brand) . '.png') }}" 
+                                                     alt="{{ $brand }}" class="me-1" 
+                                                     style="width: 14px; height: 14px; object-fit: contain;"
+                                                     onerror="this.style.display='none'">
+                                                {{ ucfirst($brand) }}
+                                                <button type="button" class="btn-close btn-close-white ms-1" 
+                                                        style="font-size: 0.6em;" 
+                                                        onclick="removeBrandFilter('{{ $brand }}')"
+                                                        title="Remove {{ $brand }}"
+                                                        aria-label="Remove {{ $brand }} filter"></button>
+                                            </span>
+                                        @endforeach
+                                    </div>
                                 </div>
                             @endif
                         </div>
 
+                        {{-- Improved price range with better UX --}}
                         <div class="filter-group mb-4">
                             <h6 class="filter-group-title fw-semibold">Price Range</h6>
                             <div class="price-slider">
                                 <input type="range" class="form-range" min="0" max="15000" step="10"
-                                name="max_price" id="priceRange" value="{{ request()->input('max_price', 15000) }}" onmouseup="document.getElementById('filterForm').submit();" onchange="document.getElementById('filterForm').submit();">
+                                name="max_price" id="priceRange" value="{{ request()->input('max_price', 15000) }}" 
+                                oninput="updatePriceDisplay(this.value)"
+                                onchange="submitFormWithDelay()"
+                                aria-describedby="price-help">
                                 <div class="d-flex justify-content-between mt-2 small text-muted">
                                     <span>$0</span>
-                                    <span id="maxPrice">${{ number_format(request()->input('max_price',15000), 0) }}</span>
-                                    <span>$15000</span>
+                                    <span id="maxPrice" class="fw-semibold text-primary">${{ number_format(request()->input('max_price',15000), 0) }}</span>
+                                    <span>$15,000</span>
                                 </div>
+                                <small id="price-help" class="form-text text-muted">Drag to set maximum price</small>
                             </div>
                         </div>
 
@@ -129,28 +235,42 @@
                             @endfor
                         </div>
 
+                        {{-- Improved availability section --}}
                         <div class="filter-group mb-4">
                             <h6 class="filter-group-title fw-semibold">Availability</h6>
                             <div class="filter-check">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="availability[]" value="in_stock" id="inStock"
-                                        {{ in_array('in_stock', request()->input('availability', [])) ? 'checked' : '' }} onchange="document.getElementById('filterForm').submit();">
-                                    <label class="form-check-label" for="inStock">In Stock</label>
+                                        {{ in_array('in_stock', request()->input('availability', [])) ? 'checked' : '' }} 
+                                        onchange="submitFormWithDelay();">
+                                    <label class="form-check-label" for="inStock">
+                                        <i class="fas fa-check-circle text-success me-1"></i>In Stock
+                                    </label>
                                 </div>
                             </div>
                             <div class="filter-check">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="availability[]" value="out_of_stock" id="outOfStock"
-                                        {{ in_array('out_of_stock', request()->input('availability', [])) ? 'checked' : '' }}onchange="document.getElementById('filterForm').submit();">
-                                    <label class="form-check-label" for="outOfStock">Out of Stock</label>
+                                        {{ in_array('out_of_stock', request()->input('availability', [])) ? 'checked' : '' }}
+                                        onchange="submitFormWithDelay();">
+                                    <label class="form-check-label" for="outOfStock">
+                                        <i class="fas fa-times-circle text-danger me-1"></i>Out of Stock
+                                    </label>
                                 </div>
                             </div>
                         </div>
 
                         <input type="hidden" name="sort" value="{{ request()->input('sort', 'default') }}">
 
-                        <button type="submit" class="btn btn-primary w-100 mt-3">Apply Filters</button>
-                        <a href="{{ route('shop.products') }}" class="btn btn-secondary w-100 mt-3">Clear All</a>
+                        {{-- Improved filter action buttons --}}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" id="applyFiltersBtn">
+                                <i class="fas fa-search me-2"></i>Apply Filters
+                            </button>
+                            <a href="{{ route('shop.products') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-refresh me-2"></i>Clear All Filters
+                            </a>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -206,7 +326,7 @@
                                     <h6 class="card-title fw-semibold">
                                         <a href="{{ route('shop.productDetail', $product['id']) }}" class="text-decoration-none text-dark">{{ $product['name'] }}</a>
                                     </h6>
-                                    <p class="text-muted small mb-2">{{ \Illuminate\Support\Str::limit($product['description'], 60) }}</p>
+                                    <!-- <p class="text-muted small mb-2">{{ \Illuminate\Support\Str::limit($product['description'], 60) }}</p> -->
                                     <div class="mb-2 text-warning">
                                         @for ($i = 1; $i <= 5; $i++)
                                             <i class="{{ $i <= $product['rating'] ? 'fas' : 'far' }} fa-star"></i>
@@ -239,6 +359,62 @@
             </div>
         </div>
     </div>
+
+@push('style')
+<style>
+    .brand-option {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-radius: 0.375rem;
+    margin: 2px;
+}
+
+.brand-option:hover {
+    background-color: #f8f9fa !important;
+}
+
+.brand-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.brand-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.brand-card:hover .brand-logo-large {
+    transform: scale(1.1) !important;
+}
+
+.selection-overlay {
+    transition: all 0.3s ease;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.transition-all {
+    transition: all 0.2s ease;
+}
+
+#brandDropdownIcon {
+    transition: transform 0.2s ease;
+}
+
+.btn-group .btn {
+    transition: all 0.2s ease;
+}
+
+.badge {
+    transition: all 0.2s ease;
+}
+
+.badge:hover {
+    transform: scale(1.05);
+}
+</style>
+@endpush
 
     @push('scripts')
         <script>
@@ -315,6 +491,140 @@
                 // Auto-submit form to update filters immediately
                 document.getElementById('filterForm').submit();
             }
+
+
+let isSubmitting = false;
+
+function toggleBrandDropdown() {
+    const menu = document.getElementById('brandDropdownMenu');
+    const icon = document.getElementById('brandDropdownIcon');
+    
+    menu.classList.toggle('d-none');
+    icon.classList.toggle('fa-chevron-down');
+    icon.classList.toggle('fa-chevron-up');
+}
+
+function toggleBrandSelection(brandName, element) {
+    if (isSubmitting) return;
+    
+    const checkbox = element.querySelector('.brand-checkbox');
+    checkbox.checked = !checkbox.checked;
+    
+    updateBrandDropdownText();
+    submitFormWithDelay();
+}
+
+function toggleBrandCard(cardElement, brandName) {
+    if (isSubmitting) return;
+    
+    const checkbox = cardElement.querySelector('.brand-grid-checkbox');
+    const overlay = cardElement.querySelector('.selection-overlay');
+    const img = cardElement.querySelector('.brand-logo-large');
+    
+    checkbox.checked = !checkbox.checked;
+    
+    if (checkbox.checked) {
+        cardElement.classList.add('border-primary', 'bg-primary', 'bg-opacity-10');
+        cardElement.classList.remove('border-light');
+        overlay.classList.remove('d-none');
+        img.style.transform = 'scale(1.1)';
+    } else {
+        cardElement.classList.remove('border-primary', 'bg-primary', 'bg-opacity-10');
+        cardElement.classList.add('border-light');
+        overlay.classList.add('d-none');
+        img.style.transform = 'scale(1)';
+    }
+    
+    submitFormWithDelay();
+}
+
+function updateBrandDropdownText() {
+    const checkedBoxes = document.querySelectorAll('.brand-checkbox:checked');
+    const dropdownText = document.getElementById('brandDropdownText');
+    
+    dropdownText.textContent = checkedBoxes.length === 0 ? 
+        'Select brands' : `${checkedBoxes.length} brand(s) selected`;
+}
+
+function removeBrandFilter(brandName) {
+    if (isSubmitting) return;
+    
+    const checkboxes = document.querySelectorAll(`input[name="brand[]"][value="${brandName}"]`);
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+        
+        const card = checkbox.closest('.brand-card');
+        if (card) {
+            card.classList.remove('border-primary', 'bg-primary', 'bg-opacity-10');
+            card.classList.add('border-light');
+            const overlay = card.querySelector('.selection-overlay');
+            const img = card.querySelector('.brand-logo-large');
+            if (overlay) overlay.classList.add('d-none');
+            if (img) img.style.transform = 'scale(1)';
+        }
+    });
+    
+    updateBrandDropdownText();
+    submitFormWithDelay();
+}
+
+function switchBrandView(viewType) {
+    const dropdownBtn = document.getElementById('dropdownViewBtn');
+    const gridBtn = document.getElementById('gridViewBtn');
+    const dropdownView = document.getElementById('brandDropdownView');
+    const gridView = document.getElementById('brandGridView');
+    
+    if (viewType === 'dropdown') {
+        dropdownBtn.classList.remove('btn-outline-secondary');
+        dropdownBtn.classList.add('btn-secondary');
+        gridBtn.classList.remove('btn-secondary');
+        gridBtn.classList.add('btn-outline-secondary');
+        
+        dropdownView.style.display = 'block';
+        gridView.style.display = 'none';
+    } else {
+        gridBtn.classList.remove('btn-outline-secondary');
+        gridBtn.classList.add('btn-secondary');
+        dropdownBtn.classList.remove('btn-secondary');
+        dropdownBtn.classList.add('btn-outline-secondary');
+        
+        dropdownView.style.display = 'none';
+        gridView.style.display = 'flex';
+    }
+    
+    localStorage.setItem('brandViewPreference', viewType);
+}
+
+function submitFormWithDelay() {
+    if (isSubmitting) return;
+    
+    isSubmitting = true;
+    setTimeout(() => {
+        document.getElementById('filterForm').submit();
+    }, 300);
+}
+
+// Event listeners
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('brandDropdownToggle');
+    const menu = document.getElementById('brandDropdownMenu');
+    
+    if (dropdown && menu && !dropdown.contains(event.target) && !menu.contains(event.target)) {
+        menu.classList.add('d-none');
+        const icon = document.getElementById('brandDropdownIcon');
+        if (icon) {
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+        }
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    updateBrandDropdownText();
+    
+    const savedView = localStorage.getItem('brandViewPreference') || 'grid';
+    switchBrandView(savedView);
+});
         </script>
     @endpush
 @endsection

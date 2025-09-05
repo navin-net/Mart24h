@@ -15,13 +15,10 @@ class WarehouseController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            // Must include ID for checkbox and edit/delete actions
             $data = Warehouses::select(['id', 'name', 'location', 'note']);
 
             return DataTables::of($data)
                 ->addColumn('action', function ($row) {
-                    // Use a Blade partial or inline HTML
-                    // This partial should render Edit/Delete buttons with data-id attributes
                     return view('admin.warehouse.partials.actions', compact('row'))->render();
                 })
                 ->rawColumns(['action'])
@@ -34,7 +31,7 @@ class WarehouseController extends Controller
             'description' => __('messages.dashboard_welcome'),
             'breadcrumbs' => [
                 ['label' => __('messages.dashboard'), 'url' => '/admin/dashboard', 'active' => false],
-                ['label' => __('messages.settings'), 'url' => '#', 'active' => false],
+                
                 ['label' => __('messages.warehouse'), 'url' => '', 'active' => true],
             ]
         ]);

@@ -604,6 +604,25 @@
 
                 });
             });
+
+            $('#exportProducts').on('click', function() {
+                var selectedIds = $('.ProductCheckbox:checked').map(function() {
+                    return $(this).val();
+                }).get();
+
+                var url = "{{ route('products.export') }}";
+                if (selectedIds.length > 0) {
+                    url += '?ids=' + selectedIds.join(',');
+                    window.location.href = url;
+                } else {
+                    const errorAlert = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ __('messages.please_select_someone_columns_first_if_you_want_to_export') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`;
+                    $('#alertsContainer').html(errorAlert);
+                }
+            });
         });
     </script>
 @endpush
