@@ -49,6 +49,14 @@ When you clone a Laravel project from GitHub and it doesn't include the `.env` a
    php artisan serve
    ```
 8. **Fix storage if error**
-   if Laravel storage:link not working follow this delete forlder storage
-
+   if Laravel storage:link not working follow this delete forlder storage let go to delete folder storage and install storage again
+   **Command line Window**
+   ```bash
+   cd /path/to/laravel/project
+   rmdir /s /q "C:\path\to\laravel\storage\logs"
+   ```
+   **Install Storage Laravel Project**
+   ```bash
+   php artisan storage:link
+   ```
 Following these steps should get your Laravel project up and running. If you encounter any issues, feel free to ask for more help!
