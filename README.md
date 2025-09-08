@@ -49,7 +49,7 @@ When you clone a Laravel project from GitHub and it doesn't include the `.env` a
    php artisan serve
    ```
 8. **Fix storage if error**
-   if Laravel storage:link not working follow this delete forlder storage let go to delete folder storage and install storage again
+   To fix the Laravel storage:link error, first, delete the public/storage directory. Then, run the php artisan storage:link command again from your terminal.
    **Command line Window**
    ```bash
    cd /path/to/laravel/project
