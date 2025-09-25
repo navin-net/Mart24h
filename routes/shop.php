@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Shop\MainController;
 
-Route::get('/', [MainController::class, 'index']);
+// Route::get('/', [MainController::class, 'index']);
 Route::get('shop/products', [MainController::class, 'products'])->name('shop.products');
 Route::get('/product-detail/{id}', [MainController::class, 'productDetail'])->name('shop.productDetail');
 Route::get('shop/about', [MainController::class, 'about'])->name('shop.about');

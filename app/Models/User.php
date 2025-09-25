@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Models\Groups;
 // use Symfony\Component\HttpKernel\Profiler\Profile;
 use App\Models\Profile;
 
 
-class User extends Authenticatable
+class User extends Authenticatable implements \Tymon\JWTAuth\Contracts\JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -26,6 +28,8 @@ class User extends Authenticatable
         'password',
         'group_id',
         'company_id',
+        'api_token', // Make sure this is included
+
     ];
 
     /**
@@ -49,13 +53,29 @@ class User extends Authenticatable
 
     ];
 
-    // public function isAdmin()
-    // {
-    //     return $this->role_id === 'admin';
-    // }
-
     public function profile()
     {
         return $this->hasOne(Profile::class);
     }
+
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
+    public function groups()
+    {
+        // return $this->belongsTo(Groups::class);
+        return $this->belongsTo(Groups::class, 'group_id');
+
+    }
+
+
+
 }
